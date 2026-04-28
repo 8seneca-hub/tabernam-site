@@ -11,7 +11,7 @@
 </head>
 <body>
   <header class="site-header">
-    <a href="index.html" class="logo">TABERNAM</a>
+    <a href="index.html" class="logo">Tabernam</a>
     <nav class="nav">
       <a href="contact.html">Contact</a>
       <a href="about.html">About me</a>
@@ -22,19 +22,22 @@
   <main>
     <section class="hero">
       <div class="hero-text">
-        <h1>Lorem ipsum dolor sit amet consectetur adipiscing</h1>
+        <h1>Lorem ipsum dolor sit consectetur</h1>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        <a href="about.html" class="btn">Learn more</a>
       </div>
-      <div class="hero-gallery">
-        <div class="frame frame-large">
-          <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=80" alt="Business meeting">
-        </div>
-        <div class="frame frame-small-left">
-          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80" alt="Diplomatic handshake">
-        </div>
-        <div class="frame frame-small-right">
-          <img src="https://images.unsplash.com/photo-1542223616-740d5dff7f56?auto=format&fit=crop&w=900&q=80" alt="Beijing skyline">
+      <div class="carousel" id="hero-carousel" aria-roledescription="carousel">
+        <div class="carousel-track" id="carousel-track"></div>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="carousel-prev" aria-label="Previous">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="carousel-btn" id="carousel-next" aria-label="Next">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
     </section>
@@ -49,22 +52,61 @@
         <h2>Lorem ipsum dolor sit amet</h2>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       </div>
-      <div class="activity-body">
-        <ul class="business-list">
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-          <li><a href="#">Business</a></li>
-        </ul>
-        <div class="globe">
-          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80" alt="Global network">
+
+      <ul class="business-list" id="business-list" role="tablist"></ul>
+
+      <div class="globe-stage" id="globe-stage">
+        <div class="globe-wrap" id="globe-wrap">
+          <div class="globe-3d" id="globe-3d"></div>
         </div>
+
+        <aside class="detail-card" id="detail-card" aria-hidden="true">
+          <button class="card-close" id="card-close" aria-label="Close">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="card-image"><img id="card-image" alt=""></div>
+          <div class="card-text">
+            <h3 id="card-title">Lorem ipsum dolor</h3>
+            <p id="card-body"></p>
+          </div>
+          <a class="btn btn-sm" id="card-link" href="business.html">Learn more</a>
+          <div class="card-progress"><span id="card-progress-bar"></span></div>
+        </aside>
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Tabernam</a>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </div>
+      <nav class="footer-col" aria-label="Footer navigation">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About me</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="index.html#activity">Activity</a></li>
+        </ul>
+      </nav>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@tabernam.com">hello@tabernam.com</a></li>
+          <li>Bratislava, Slovakia</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span id="footer-year">2026</span> Tabernam. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/globe.gl@2"></script>
+  <script src="script.js"></script>
 </body>
 </html>
