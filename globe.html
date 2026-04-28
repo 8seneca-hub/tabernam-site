@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Globe</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #e8eef5; overflow: hidden; }
+  #globe { width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<div id="globe"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2"></script>
+<script>
+  // 20 anchor cities
+  const CITIES = [
+    { name: 'New York',     lat:  40.7128, lng:  -74.0060 },
+    { name: 'San Francisco',lat:  37.7749, lng: -122.4194 },
+    { name: 'Toronto',      lat:  43.6532, lng:  -79.3832 },
+    { name: 'Mexico City',  lat:  19.4326, lng:  -99.1332 },
+    { name: 'Sao Paulo',    lat: -23.5505, lng:  -46.6333 },
+    { name: 'Buenos Aires', lat: -34.6037, lng:  -58.3816 },
+    { name: 'London',       lat:  51.5074, lng:   -0.1278 },
+    { name: 'Paris',        lat:  48.8566, lng:    2.3522 },
+    { name: 'Berlin',       lat:  52.5200, lng:   13.4050 },
+    { name: 'Moscow',       lat:  55.7558, lng:   37.6173 },
+    { name: 'Cairo',        lat:  30.0444, lng:   31.2357 },
+    { name: 'Tel Aviv',     lat:  32.0853, lng:   34.7818 },
+    { name: 'Dubai',        lat:  25.2048, lng:   55.2708 },
+    { name: 'Lagos',        lat:   6.5244, lng:    3.3792 },
+    { name: 'Mumbai',       lat:  19.0760, lng:   72.8777 },
+    { name: 'Singapore',    lat:   1.3521, lng:  103.8198 },
+    { name: 'Beijing',      lat:  39.9042, lng:  116.4074 },
+    { name: 'Seoul',        lat:  37.5665, lng:  126.9780 },
+    { name: 'Tokyo',        lat:  35.6762, lng:  139.6503 },
+    { name: 'Sydney',       lat: -33.8688, lng:  151.2093 }
+  ];
+
+  // Palettes re-tuned for a light background — darker, fully opaque so they pop
+  const PALETTES = {
+    surveilling: [
+      'rgba(217,70,8,1)',
+      'rgba(154,52,18,0.7)',
+      'rgba(124,45,18,0.55)',
+      'rgba(124,45,18,0.55)',
+      'rgba(154,52,18,0.7)',
+      'rgba(217,70,8,1)'
+    ],
+    providing: [
+      'rgba(5,150,105,1)',
+      'rgba(4,120,87,0.7)',
+      'rgba(6,95,70,0.55)',
+      'rgba(6,95,70,0.55)',
+      'rgba(4,120,87,0.7)',
+      'rgba(5,150,105,1)'
+    ],
+    funding: [
+      'rgba(29,78,216,1)',
+      'rgba(30,64,175,0.7)',
+      'rgba(30,58,138,0.55)',
+      'rgba(30,58,138,0.55)',
+      'rgba(30,64,175,0.7)',
+      'rgba(29,78,216,1)'
+    ]
+  };
+
+  // Build animated arcs across the 20 cities, evenly split across the three palettes
+  const TYPES = ['surveilling', 'providing', 'funding'];
+  const ARC_COUNT = 60;
+  const arcs = [];
+  for (let i = 0; i < ARC_COUNT; i++) {
+    const a = CITIES[Math.floor(Math.random() * CITIES.length)];
+    let b = CITIES[Math.floor(Math.random() * CITIES.length)];
+    while (b === a) b = CITIES[Math.floor(Math.random() * CITIES.length)];
+    const type = TYPES[i % TYPES.length];
+    const dashGap = 15;
+    const dashLength = 1;
+    arcs.push({
+      startLat: a.lat, startLng: a.lng,
+      endLat:   b.lat, endLng:   b.lng,
+      color: PALETTES[type],
+      stroke: 0.8,
+      dashLength,
+      dashGap,
+      dashInitialGap: Math.random() * (dashLength + dashGap),
+      dashAnimateTime: 2000
+    });
+  }
+
+  const globe = Globe()(document.getElementById('globe'))
+    .backgroundColor('rgba(0,0,0,0)')
+    .atmosphereColor('#dfe8f2')
+    .atmosphereAltitude(0.15)
+    .globeImageUrl('earth-blue-marble.jpg')
+    .bumpImageUrl('globe-topology.png')
+    .arcsData(arcs)
+    .arcColor('color')
+    .arcStroke('stroke')
+    .arcAltitudeAutoScale(0.5)
+    .arcDashLength('dashLength')
+    .arcDashGap('dashGap')
+    .arcDashInitialGap('dashInitialGap')
+    .arcDashAnimateTime('dashAnimateTime')
+    .arcsTransitionDuration(0);
+
+  globe.globeMaterial().bumpScale = 5;
+
+  const controls = globe.controls();
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.4;
+  controls.enableZoom = true;
+
+  window.addEventListener('resize', () => {
+    globe.width(window.innerWidth).height(window.innerHeight);
+  });
+</script>
+</body>
+</html>
