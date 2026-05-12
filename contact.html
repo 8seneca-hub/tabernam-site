@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=35">
 </head>
 <body>
   <header class="site-header">
@@ -19,10 +19,54 @@
     </nav>
   </header>
 
-  <main class="page">
-    <h1>Contact</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-    <p>Email: <a href="mailto:hello@tabernam.com">hello@tabernam.com</a></p>
+  <main class="contact-page">
+    <section class="contact-intro">
+      <h1>Contact</h1>
+      <p>Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac.</p>
+    </section>
+
+    <section class="contact-portrait">
+      <div class="portrait-reveal" aria-hidden="true"></div>
+    </section>
+
+    <aside class="contact-details">
+      <details class="info-card" open>
+        <summary>
+          <span class="info-card-title">Address 1</span>
+          <span class="info-card-toggle" aria-hidden="true"></span>
+        </summary>
+        <div class="info-card-body">
+          <p>Quam adipiscing vestibulum id tristique.</p>
+          <p>Penatibus lacus luctus magna laoreet torquent curae integer ultricies.</p>
+          <p>Sagittis vehicula aenean nascetur augue e inceptos.</p>
+          <p>Blandit faucibus interdum</p>
+        </div>
+      </details>
+      <details class="info-card">
+        <summary>
+          <span class="info-card-title">Address 2</span>
+          <span class="info-card-toggle" aria-hidden="true"></span>
+        </summary>
+        <div class="info-card-body">
+          <p>Quam adipiscing vestibulum id tristique.</p>
+          <p>Penatibus lacus luctus magna laoreet torquent curae integer ultricies.</p>
+          <p>Sagittis vehicula aenean nascetur augue e inceptos.</p>
+          <p>Blandit faucibus interdum</p>
+        </div>
+      </details>
+      <details class="info-card">
+        <summary>
+          <span class="info-card-title">Address 3</span>
+          <span class="info-card-toggle" aria-hidden="true"></span>
+        </summary>
+        <div class="info-card-body">
+          <p>Quam adipiscing vestibulum id tristique.</p>
+          <p>Penatibus lacus luctus magna laoreet torquent curae integer ultricies.</p>
+          <p>Sagittis vehicula aenean nascetur augue e inceptos.</p>
+          <p>Blandit faucibus interdum</p>
+        </div>
+      </details>
+    </aside>
   </main>
 
   <footer class="site-footer">
@@ -52,5 +96,7 @@
       <p>&copy; 2026 Tabernam. All rights reserved.</p>
     </div>
   </footer>
+
+  <script src="script.js?v=51"></script>
 </body>
 </html>

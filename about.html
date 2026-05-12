@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=35">
 </head>
 <body>
   <header class="site-header">
@@ -19,10 +19,18 @@
     </nav>
   </header>
 
-  <main class="page">
-    <h1>About me</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  <main class="split-page about-page">
+    <section class="split-intro">
+      <div class="split-intro-text">
+        <h1>About me</h1>
+        <p>Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac.</p>
+      </div>
+      <a href="#" class="btn">View my CV</a>
+    </section>
+
+    <section class="split-content portrait-content">
+      <div class="portrait" aria-hidden="true"></div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -52,5 +60,7 @@
       <p>&copy; 2026 Tabernam. All rights reserved.</p>
     </div>
   </footer>
+
+  <script src="script.js?v=51"></script>
 </body>
 </html>

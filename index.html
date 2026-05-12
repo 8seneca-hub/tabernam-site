@@ -6,8 +6,9 @@
   <title>TABERNAM</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=35">
 </head>
 <body>
   <header class="site-header">
@@ -16,65 +17,139 @@
       <a href="contact.html">Contact</a>
       <a href="about.html">About me</a>
       <a href="#activity">Activity</a>
+      <div class="lang-switcher" data-lang-switcher>
+        <button type="button" class="lang-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="lang-label">Slovakia</span>
+          <span class="lang-flag" aria-hidden="true">🇸🇰</span>
+          <svg class="lang-chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="lang-menu" role="listbox" hidden>
+          <li><button type="button" role="option" data-lang="sk"><span class="lang-name">Slovakia</span><span class="lang-flag" aria-hidden="true">🇸🇰</span></button></li>
+          <li><button type="button" role="option" data-lang="en"><span class="lang-name">English</span><span class="lang-flag" aria-hidden="true">🇺🇸</span></button></li>
+        </ul>
+      </div>
     </nav>
   </header>
 
   <main>
     <section class="hero">
       <div class="hero-text">
-        <h1>Lorem ipsum dolor sit consectetur</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <div class="hero-headline">
+          <h1>Lorem ipsum dolor sit consectetur adipiscing elit</h1>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <button type="button" class="btn">Get started</button>
       </div>
-      <div class="carousel" id="hero-carousel" aria-roledescription="carousel">
-        <div class="carousel-track" id="carousel-track"></div>
-        <div class="carousel-controls">
-          <button class="carousel-btn" id="carousel-prev" aria-label="Previous">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button class="carousel-btn" id="carousel-next" aria-label="Next">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+      <div class="hero-grid" aria-hidden="true">
+        <div class="hero-row hero-row-1">
+          <div class="hero-cell hero-cell-video">
+            <video autoplay muted loop playsinline preload="metadata"
+                   poster="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="hero-cell">
+            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=600&h=900&q=80" alt="">
+          </div>
+        </div>
+        <div class="hero-row hero-row-2">
+          <div class="hero-cell">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&h=600&q=80" alt="">
+          </div>
+          <div class="hero-cell">
+            <img src="https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?auto=format&fit=crop&w=900&h=520&q=80" alt="">
+          </div>
         </div>
       </div>
     </section>
 
     <section class="quote">
-      <p class="quote-en">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      <p class="quote-zh">罗马假名痛苦坐在这里，构成了一个精致的学术界。为了工作和痛苦的巨大利益，进行了一些临时的工作。为了最小化请求，谁也不想进行不必要的劳动，除非是为了获得某种便利。</p>
+      <div class="quote-text">
+        <p class="quote-en">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p class="quote-zh">罗马假名痛苦坐在这里，构成了一个精致的学术界。为了工作和痛苦的巨大利益，进行了一些临时的工作。为了最小化请求，谁也不想进行不必要的劳动，除非是为了获得某种便利。</p>
+      </div>
+      <ul class="features">
+        <li class="feature">
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M3 12h18"/>
+              <path d="M12 3a14 14 0 0 1 0 18"/>
+              <path d="M12 3a14 14 0 0 0 0 18"/>
+            </svg>
+          </span>
+          <p>Morbi leo risus porta ac consectetur ac, vestibulum at eros. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+        </li>
+        <li class="feature">
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 17 8.5 14.5a2 2 0 0 1 0-2.83l3.67-3.67a2 2 0 0 1 2.83 0L17.5 10.5"/>
+              <path d="m13 19 1.5 1.5a2 2 0 0 0 2.83 0L21 17a2 2 0 0 0 0-2.83L18.5 11.5"/>
+              <path d="M3 14.5 5.5 17a2 2 0 0 0 2.83 0l1.17-1.17"/>
+              <path d="M2 11.5 5.5 8 9 11.5"/>
+            </svg>
+          </span>
+          <p>Morbi leo risus porta ac consectetur ac, vestibulum at eros. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+        </li>
+        <li class="feature">
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 17 9 11l4 4 8-8"/>
+              <path d="M14 7h7v7"/>
+            </svg>
+          </span>
+          <p>Morbi leo risus porta ac consectetur ac, vestibulum at eros. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+        </li>
+      </ul>
     </section>
 
     <section id="activity" class="activity">
-      <div class="activity-intro">
-        <h2>Lorem ipsum dolor sit amet</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      </div>
-
-      <ul class="business-list" id="business-list" role="tablist"></ul>
-
       <div class="globe-stage" id="globe-stage">
+        <div class="globe-aura" aria-hidden="true"></div>
         <div class="globe-wrap" id="globe-wrap">
           <div class="globe-3d" id="globe-3d"></div>
         </div>
+      </div>
 
-        <aside class="detail-card" id="detail-card" aria-hidden="true">
-          <button class="card-close" id="card-close" aria-label="Close">
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <div class="activity-intro" id="activity-intro">
+        <div class="activity-intro-text">
+          <h2>Lorem ipsum dolor sit consectetur adipiscing elit.</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+        </div>
+        <button type="button" class="btn-outline" id="view-cities">View cities</button>
+      </div>
+
+      <aside class="city-panel" id="city-panel" aria-hidden="true">
+        <button type="button" class="btn-back" id="go-back">Go back</button>
+        <ul class="business-list" id="business-list" role="tablist" hidden></ul>
+        <div class="city-pill" role="tablist" aria-label="Cities">
+          <button type="button" class="pill-nav" id="city-prev" aria-label="Previous city">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <div class="card-image"><img id="card-image" alt=""></div>
-          <div class="card-text">
-            <h3 id="card-title">Lorem ipsum dolor</h3>
-            <p id="card-body"></p>
+          <span class="city-name" id="city-name">Beijing</span>
+          <button type="button" class="pill-nav" id="city-next" aria-label="Next city">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="city-card" id="detail-card">
+          <div class="city-card-top">
+            <div class="card-image"><img id="card-image" alt=""></div>
+            <div class="card-text">
+              <span class="card-city" id="card-city"></span>
+              <h3 id="card-title">Lorem ipsum dolor</h3>
+              <p id="card-body"></p>
+            </div>
           </div>
-          <a class="btn btn-sm" id="card-link" href="business.html">Learn more</a>
+          <a class="btn" id="card-link" href="business.html">Learn more</a>
           <div class="card-progress"><span id="card-progress-bar"></span></div>
-        </aside>
-      </div>
+        </div>
+      </aside>
     </section>
   </main>
 
@@ -107,6 +182,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/globe.gl@2"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=51"></script>
 </body>
 </html>
