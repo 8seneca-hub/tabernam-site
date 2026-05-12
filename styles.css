@@ -2,11 +2,13 @@
   --color-bg: #ffffff;
   --color-text: #2e2e2e;
   --color-muted: #646464;
-  --color-surface: #b7b7b7;
-  --color-button: #d9d9d9;
-  --color-header: #b7b7b7;
+  --color-surface: #c7c7c7;
+  --color-button: #e8e8e8;
+  --color-header: #ffffff;
+  --color-border: #c7c7c7;
   --max-width: 1512px;
-  --side-padding: 48px;
+  --side-padding: 40px;
+  --header-height: 60px;
 }
 
 *,
@@ -42,36 +44,43 @@ a {
 
 /* ─────────── Header ─────────── */
 .site-header {
-  height: 80px;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--side-padding);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 100;
+  background: var(--color-header);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px var(--side-padding);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.site-header.is-hidden {
+  transform: translateY(-100%);
 }
 
 .logo {
   font-weight: 500;
   font-size: 24px;
   letter-spacing: 0;
-  color: var(--color-text);
+  color: #000;
 }
 
 .nav {
   display: flex;
+  align-items: center;
   gap: 18px;
 }
 
 .nav a {
-  font-size: 18px;
-  font-weight: 500;
-  padding: 8px 12px;
-  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 14px 20px;
+  color: #000;
   transition: opacity 0.2s ease;
 }
 
@@ -83,7 +92,6 @@ a {
 main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 var(--side-padding);
 }
 
 section {
@@ -92,42 +100,172 @@ section {
 
 /* ─────────── Hero ─────────── */
 .hero {
-  height: 100vh;
-  min-height: 600px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 100px 0 40px;
-  position: relative;
-  /* Clip lateral card overflow only — let the bottom shadow bleed
-     into the next section so there's no hard horizontal seam. */
-  overflow-x: clip;
-  overflow-y: visible;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 146px var(--side-padding) 100px;
+  /* Section always fills exactly one viewport tall. */
+  height: 100vh;
+  min-height: 760px;
 }
 
 .hero-text {
-  max-width: 970px;
-  text-align: center;
+  /* 3:4 split with .hero-grid → text gets 3/7 of the row width. */
+  flex: 3 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 0 var(--side-padding);
+  gap: 60px;
+  align-items: flex-start;
+  text-align: left;
+  color: var(--color-text);
+}
+
+.hero-headline {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
 }
 
 .hero-text h1 {
-  font-size: 56px;
+  font-size: 48px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
   color: var(--color-text);
 }
 
 .hero-text p {
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.55;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
   color: var(--color-text);
-  max-width: 720px;
+}
+
+.hero-grid {
+  /* 4 of the 7-share row width — paired with .hero-text's flex: 3. */
+  flex: 4 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hero-row {
+  display: grid;
+  gap: 20px;
+}
+
+.hero-row-1 { grid-template-columns: 494fr 190fr; }
+.hero-row-2 { grid-template-columns: 234fr 450fr; }
+
+.hero-cell {
+  background: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-cell > img,
+.hero-cell > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-row-1 .hero-cell:nth-child(1) { aspect-ratio: 494 / 264; }
+.hero-row-1 .hero-cell:nth-child(2) { aspect-ratio: 190 / 264; }
+.hero-row-2 .hero-cell:nth-child(1) { aspect-ratio: 234 / 264; }
+.hero-row-2 .hero-cell:nth-child(2) { aspect-ratio: 450 / 264; }
+
+/* ─────────── Language switcher ─────────── */
+.lang-switcher {
+  position: relative;
+  margin-left: 4px;
+}
+
+.lang-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 0;
+  padding: 14px 20px;
+  font: inherit;
+  font-size: 16px;
+  color: #000;
+  cursor: pointer;
+  width: 162px;
+}
+
+.lang-trigger .lang-label {
+  flex: 1;
+  text-align: left;
+}
+
+.lang-trigger .lang-flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.lang-trigger .lang-chevron {
+  flex-shrink: 0;
+  color: #000;
+  transition: transform 0.2s ease;
+}
+
+.lang-switcher.is-open .lang-chevron {
+  transform: rotate(180deg);
+}
+
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 110;
+}
+
+.lang-menu[hidden] {
+  display: none;
+}
+
+.lang-menu li {
+  list-style: none;
+}
+
+.lang-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 20px;
+  background: 0;
+  border: 0;
+  font: inherit;
+  font-size: 16px;
+  color: #000;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lang-menu button .lang-name {
+  flex: 1;
+}
+
+.lang-menu button:hover,
+.lang-menu button:focus-visible {
+  background: #f5f5f5;
+  outline: none;
 }
 
 .btn {
@@ -136,66 +274,71 @@ section {
   justify-content: center;
   background: var(--color-button);
   color: #000;
-  font-size: 22px;
-  font-weight: 600;
-  padding: 18px 36px;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 20px;
   border-radius: 8px;
+  border: 0;
   width: max-content;
+  cursor: pointer;
+  font-family: inherit;
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .btn:hover {
-  background: #c8c8c8;
+  background: #d9d9d9;
   transform: translateY(-1px);
 }
 
-/* ─────────── Hero carousel ─────────── */
+/* ─────────── Hero carousel ───────────
+   "Film tape": 7 cards in a flat horizontal row, gap 25px, vertically
+   centred. Heights/widths step down toward the centre (Figma 251:564),
+   so the silhouette pinches in the middle and bows out at both edges.
+   Edge cards are rotated on Y to give the trapezoid wrap that makes
+   the row read as a strip of film curving away from the viewer. Every
+   CAROUSEL_INTERVAL_MS the strip advances one slot to the left; cards
+   that pass slot -3 wrap to the far right off-stage without animating. */
 .carousel {
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 64px;
-  user-select: none;
+  height: 460px;
+  perspective: 1600px;
+  perspective-origin: 50% 50%;
+  pointer-events: none;
 }
 
 .carousel-track {
   position: relative;
   width: 100%;
-  flex: 1;
-  min-height: 0;
-  perspective: 1600px;
-  perspective-origin: center center;
+  height: 100%;
   transform-style: preserve-3d;
+  --carousel-scale: 1;
 }
 
 .carousel-card {
   position: absolute;
   top: 50%;
   left: 50%;
-  height: min(100%, 486px, 95vw);
-  aspect-ratio: 360 / 486;
-  padding: 0;
-  border: 0;
-  border-radius: 20px;
+  width: 194px;
+  height: 250px;
+  border-radius: 14px;
   overflow: hidden;
   background: var(--color-surface);
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
+  border: 0;
+  padding: 0;
+  pointer-events: auto;
   transform: translate(-50%, -50%);
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  will-change: transform, opacity;
   transition:
-    transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 0.5s ease,
-    box-shadow 0.5s ease;
-  box-shadow:
-    0 30px 60px -20px rgba(0, 0, 0, 0.35),
-    0 16px 28px -12px rgba(0, 0, 0, 0.18);
+    transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+    width 1.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 1.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.6s ease;
+  will-change: transform, width, height;
 }
 
 .carousel-card img {
@@ -206,91 +349,60 @@ section {
   -webkit-user-drag: none;
 }
 
-.carousel-card:hover {
-  box-shadow:
-    0 36px 72px -20px rgba(0, 0, 0, 0.4),
-    0 18px 32px -12px rgba(0, 0, 0, 0.22);
-}
+/* Flat row positions: x is the card centre, computed cumulatively from
+   neighbour widths plus a 25px gap. Each step away from centre adds a
+   little more rotateY so the outer cards read as wrapping around the
+   viewer (matches the Figma trapezoid silhouette). */
+.carousel-card[data-slot="0"]   { width: 194px; height: 250px; transform: translate(-50%, -50%) translate3d(0,        0, 0) rotateY(0);     z-index: 10; }
+.carousel-card[data-slot="1"]   { width: 198px; height: 272px; transform: translate(-50%, -50%) translate3d(221px,    0, 0) rotateY(-8deg);  z-index: 9; }
+.carousel-card[data-slot="-1"]  { width: 198px; height: 272px; transform: translate(-50%, -50%) translate3d(-221px,   0, 0) rotateY(8deg);   z-index: 9; }
+.carousel-card[data-slot="2"]   { width: 204px; height: 324px; transform: translate(-50%, -50%) translate3d(447px,    0, 0) rotateY(-22deg); z-index: 8; }
+.carousel-card[data-slot="-2"]  { width: 204px; height: 324px; transform: translate(-50%, -50%) translate3d(-447px,   0, 0) rotateY(22deg);  z-index: 8; }
+.carousel-card[data-slot="3"]   { width: 209px; height: 404px; transform: translate(-50%, -50%) translate3d(678.5px,  0, 0) rotateY(-36deg); z-index: 7; }
+.carousel-card[data-slot="-3"]  { width: 209px; height: 404px; transform: translate(-50%, -50%) translate3d(-678.5px, 0, 0) rotateY(36deg);  z-index: 7; }
+.carousel-card[data-slot="4"]   { width: 209px; height: 404px; transform: translate(-50%, -50%) translate3d(912.5px,  0, 0) rotateY(-46deg); z-index: 6; opacity: 0; }
+.carousel-card[data-slot="-4"]  { width: 209px; height: 404px; transform: translate(-50%, -50%) translate3d(-912.5px, 0, 0) rotateY(46deg);  z-index: 6; opacity: 0; }
 
-.carousel-card.is-active {
-  z-index: 5;
-  box-shadow:
-    0 48px 96px -24px rgba(0, 0, 0, 0.45),
-    0 24px 40px -16px rgba(0, 0, 0, 0.28);
-}
-
-.carousel-card[data-distance="0"]  { transform: translate(-50%, -50%) translateX(0)      translateZ(40px)   rotateY(0)        scale(1);    z-index: 5; }
-.carousel-card[data-distance="1"]  { transform: translate(-50%, -50%) translateX(108%)   translateZ(-80px)  rotateY(32deg)    scale(0.95); z-index: 4; }
-.carousel-card[data-distance="-1"] { transform: translate(-50%, -50%) translateX(-108%)  translateZ(-80px)  rotateY(-32deg)   scale(0.95); z-index: 4; }
-.carousel-card[data-distance="2"]  { transform: translate(-50%, -50%) translateX(190%)   translateZ(-220px) rotateY(42deg)    scale(0.9);  z-index: 3; }
-.carousel-card[data-distance="-2"] { transform: translate(-50%, -50%) translateX(-190%)  translateZ(-220px) rotateY(-42deg)   scale(0.9);  z-index: 3; }
-.carousel-card[data-distance="3"]  { transform: translate(-50%, -50%) translateX(258%)   translateZ(-360px) rotateY(48deg)    scale(0.85); z-index: 2; opacity: 0.55; }
-.carousel-card[data-distance="-3"] { transform: translate(-50%, -50%) translateX(-258%)  translateZ(-360px) rotateY(-48deg)   scale(0.85); z-index: 2; opacity: 0.55; }
-.carousel-card[data-distance="4"]  { transform: translate(-50%, -50%) translateX(315%)   translateZ(-500px) rotateY(52deg)    scale(0.8);  z-index: 1; opacity: 0; }
-.carousel-card[data-distance="-4"] { transform: translate(-50%, -50%) translateX(-315%)  translateZ(-500px) rotateY(-52deg)   scale(0.8);  z-index: 1; opacity: 0; }
-
-/* Anything past ±4 is parked off-stage and fully hidden so it can't show
-   through during a wrap-around. */
 .carousel-card.is-far {
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, -50%) translateX(0) scale(0.7);
-}
-
-.carousel-card[data-distance="0"]  { cursor: default; }
-
-.carousel-controls {
-  position: relative;
-  display: flex;
-  gap: 16px;
-  margin-top: 20px;
-  z-index: 6;
-}
-
-.carousel-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 0;
-  background: var(--color-button);
-  color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.carousel-btn:hover {
-  background: #c8c8c8;
-  transform: translateY(-1px);
+  pointer-events: none;
 }
 
 /* ─────────── Quote / Lorem block ─────────── */
 .quote {
   min-height: 100vh;
-  max-width: 940px;
+  width: 1018px;
+  max-width: calc(100% - 80px);
   margin: 0 auto;
-  text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 64px;
-  padding: 80px 0;
+  align-items: center;
+  gap: 60px;
+  padding: 0 0 60px;
+}
+
+.quote-text {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  text-align: center;
 }
 
 .quote-en {
-  font-size: 32px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 400;
   color: var(--color-text);
   line-height: 1.4;
 }
 
 .quote-zh {
   font-family: 'Inter', 'Noto Sans SC', sans-serif;
-  font-size: 32px;
-  font-weight: 500;
-  color: var(--color-muted);
+  font-size: 24px;
+  font-weight: 400;
+  color: #868686;
   line-height: 1.6;
 }
 
@@ -325,87 +437,292 @@ section {
   }
 }
 
-/* ─────────── Activity ─────────── */
+/* Feature columns under the quote: three 229px stacks separated by 60px,
+   each with an outlined-square icon and a paragraph. */
+.features {
+  list-style: none;
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.feature {
+  width: 229px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #000;
+  border-radius: 14px;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.feature p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000;
+  line-height: 1.5;
+}
+
+/* ─────────── Activity ───────────
+   Two states share one stage:
+   - Intro (default): hero text + "View cities" button on the left, globe
+     peeking from the right.
+   - Detail (.is-detail): "Go back" + city pill + card on the left, larger
+     globe centred on the right.
+   The activity-intro and city-panel both occupy the left column; the
+   globe-stage repositions and resizes. .is-revealed slides the globe up
+   from below when the section first scrolls into view. */
 .activity {
   position: relative;
   min-height: 100vh;
-  padding: 120px 0 80px;
-  overflow: hidden;
+  /* Bottom padding scales with viewport so the 1093-px detail globe
+     always fits between the section and the footer. The globe extends
+     ~547px below viewport centre, so the section needs at least
+     (547 - 50vh) extra px past 100vh on shorter viewports. */
+  padding: 0 0 max(60px, calc(660px - 50vh));
+  /* Horizontal clip only — the globe intentionally extends past the
+     section bottom, so vertical overflow must be visible. The pre-reveal
+     globe is opacity:0 so it never shows below before the user scrolls. */
+  overflow-x: clip;
+}
+
+.activity-intro,
+.city-panel {
+  position: absolute;
+  left: 40px;
+  z-index: 3;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .activity-intro {
-  position: relative;
-  z-index: 2;
-  max-width: 480px;
+  top: 169px;
+  width: 490px;
+  max-width: calc(100% - 80px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-bottom: 64px;
-  transition: opacity 0.5s ease;
+  gap: 60px;
+  align-items: flex-start;
 }
 
-.activity.is-focused .activity-intro {
-  opacity: 0.6;
+.activity.is-detail .activity-intro {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-12px);
+}
+
+.activity-intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .activity-intro h2 {
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 1.15;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-text);
 }
 
 .activity-intro p {
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
 }
 
-.business-list {
-  position: relative;
-  z-index: 2;
-  list-style: none;
+.btn-outline {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border: 1px solid #c0c0c0;
+  border-radius: 8px;
+  padding: 20px 40px;
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: #888;
+}
+
+/* ─────────── City panel (detail state) ─────────── */
+.city-panel {
+  top: 38px;
+  width: 414px;
+  max-width: calc(100% - 80px);
+  height: calc(100vh - 76px);
+  max-height: 898px;
   display: flex;
   flex-direction: column;
-  gap: 36px;
-  width: 160px;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(12px);
 }
 
-.business-list button {
+.activity.is-detail .city-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.btn-back {
+  align-self: flex-start;
   background: none;
   border: 0;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
-  font-size: 28px;
+  padding: 12px 20px;
+  font-size: 16px;
   font-weight: 500;
-  color: var(--color-text);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: #000;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 }
 
-.business-list button:hover {
-  opacity: 0.65;
+.btn-back:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.business-list button.is-active {
-  font-weight: 700;
-  transform: translateX(6px);
+.city-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #eee;
+  border: 1px solid #c2c2c2;
+  border-radius: 20px;
+  padding: 10px 20px;
+}
+
+.pill-nav {
+  background: none;
+  border: 0;
+  padding: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.pill-nav:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Let clicks land on the button, not the path inside it. */
+.pill-nav svg {
+  pointer-events: none;
+}
+
+.city-name {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000;
+  padding: 10px;
+}
+
+.city-card {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #f8f8f8;
+  border: 1px solid #cbcbcb;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.city-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 0;
 }
 
 /* ─────────── Globe stage ─────────── */
 .globe-stage {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
   z-index: 1;
+  pointer-events: none;
+  top: 116px;
+  left: calc(28.57% + 183px);
+  width: 827px;
+  height: 827px;
+  transition: top 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+              left 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+              width 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+              height 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+              transform 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+              opacity 0.9s ease;
+  transform: translateY(60vh);
+  opacity: 0;
+}
+
+.activity.is-revealed .globe-stage {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.activity.is-detail .globe-stage {
+  /* 50vh (not 50%) keeps the globe vertically centred in the viewport
+     when the section is pinned at top:0, regardless of section padding. */
+  top: calc(50vh - 546px);
+  left: calc(28.57% + 50px);
+  width: 1093px;
+  height: 1093px;
+}
+
+/* CSS aura — soft halo behind the globe. Mirrors globe-v2.html: bright
+   at the centre, fades to transparent at ~62% of the radius so it reads
+   as a wide blue glow rather than a thin ring. */
+.globe-aura {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(120, 170, 220, 0.45) 0%,
+    rgba(140, 185, 230, 0.30) 22%,
+    rgba(170, 205, 240, 0.18) 35%,
+    rgba(210, 228, 245, 0.08) 48%,
+    rgba(255, 255, 255, 0)    62%
+  );
 }
 
 .globe-wrap {
-  position: relative;
-  width: min(58vh, 580px);
-  aspect-ratio: 1 / 1;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   transform-origin: center center;
   transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -497,60 +814,14 @@ section {
   100% { transform: scale(2.6); opacity: 0; }
 }
 
-/* ─────────── Detail card ─────────── */
-.detail-card {
-  position: absolute;
-  top: 96px;
-  right: 48px;
-  z-index: 3;
-  width: 420px;
-  max-width: calc(100vw - 96px);
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-  opacity: 0;
-  transform: translateX(24px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  pointer-events: none;
-}
-
-.activity.is-focused .detail-card {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-.card-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  background: var(--color-button);
-  border: 0;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #000;
-  transition: background 0.2s ease;
-}
-
-.card-close:hover {
-  background: #c8c8c8;
-}
-
+/* ─────────── City detail card ─────────── */
 .card-image {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--color-surface);
-  border-radius: 6px;
+  height: 315px;
+  background: #c9c9c9;
+  border-radius: 12px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .card-image img {
@@ -562,35 +833,54 @@ section {
 .card-text {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+}
+
+.card-city {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 500;
+  color: #646464;
+  background: #eee;
+  border: 1px solid #c2c2c2;
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
 }
 
 .card-text h3 {
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.card-text p {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.55;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--color-text);
 }
 
-.btn-sm {
+.card-text p {
   font-size: 16px;
-  padding: 10px 18px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  /* Cap body height so it can't overflow into the bottom-pinned
+     "Learn more" button when the card's available height is tight. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city-card .btn {
   align-self: flex-start;
 }
 
 .card-progress {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 8px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
   height: 4px;
-  background: rgba(0, 0, 0, 0.08);
-  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
@@ -598,7 +888,7 @@ section {
   display: block;
   height: 100%;
   width: 0;
-  background: var(--color-text);
+  background: #cbcbcb;
   transition: width 0.1s linear;
 }
 
@@ -621,20 +911,353 @@ section {
   margin-bottom: 16px;
 }
 
-/* business detail page */
-.business-page {
-  max-width: 1080px;
+/* Split pages (Contact, About me): 5-column grid where the heading +
+   text fills cols 1-2 on the left and a content block fills cols 3-5
+   on the right. Padding 40px sides; row aligns to viewport bottom. */
+.split-page {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 60px;
+  align-items: start;
+  padding: calc(var(--header-height) + 80px) 40px 80px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: 160px var(--side-padding) 120px;
+  min-height: 100vh;
+}
+
+.split-intro {
+  grid-column: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  align-items: flex-start;
+}
+
+.split-intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.split-intro h1 {
+  font-size: 48px;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+}
+
+.split-intro p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #191919;
+  line-height: 1.5;
+}
+
+.split-content {
+  grid-column: 3 / span 3;
+}
+
+/* Contact: stack of address cards */
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.address-card {
+  background: #ededed;
+  border-radius: 12px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.address-card h2 {
+  font-size: 24px;
+  font-weight: 500;
+  color: #000;
+}
+
+.address-card p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #191919;
+  line-height: 1.5;
+}
+
+/* About me: portrait placeholder centred in its column */
+.portrait-content {
+  display: flex;
+  justify-content: center;
+}
+
+.portrait {
+  width: 519px;
+  max-width: 100%;
+  aspect-ratio: 519 / 524;
+  background: #ededed;
+  border-radius: 12px;
+}
+
+/* ─────────── Contact page ───────────
+   Heading + intro on top (left columns). Below: portrait on the left,
+   accordion of contact details on the right. No entrance animation on
+   the portrait or the cards — they appear immediately. */
+.contact-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 60px;
+  row-gap: 60px;
+  align-items: start;
+  padding: calc(var(--header-height) + 80px) var(--side-padding) 80px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.contact-intro {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 760px;
+}
+
+.contact-intro h1 {
+  font-size: 48px;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.1;
+}
+
+.contact-intro p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #191919;
+  line-height: 1.5;
+}
+
+.contact-portrait {
+  grid-column: 1;
+}
+
+.contact-details {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.portrait-reveal {
+  width: 100%;
+  aspect-ratio: 519 / 495;
+  background: #ededed;
+  border-radius: 12px;
+  opacity: 0;
+  animation: split-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s forwards;
+}
+
+/* Accordion contact cards: title row with +/− toggle; body reveals when
+   the native <details> is open. */
+.info-card {
+  background: #ededed;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.info-card > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.info-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.info-card-title {
+  flex: 1;
+  font-size: 24px;
+  font-weight: 500;
+  color: #000;
+}
+
+.info-card-toggle {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.info-card-toggle::before,
+.info-card-toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: #000;
+  transition: transform 0.25s ease;
+}
+
+.info-card-toggle::after {
+  transform: rotate(90deg);
+}
+
+.info-card[open] .info-card-toggle::after {
+  transform: rotate(0);
+}
+
+.info-card[open] > summary {
+  border-bottom: 1px solid #c6c6c6;
+}
+
+.info-card-body {
+  padding: 20px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-card-body p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #191919;
+  line-height: 1.5;
+}
+
+.contact-intro h1,
+.contact-intro p {
+  opacity: 0;
+  animation: split-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.contact-intro h1 { animation-delay: 0.05s; }
+.contact-intro p  { animation-delay: 0.15s; }
+
+.contact-details .info-card {
+  opacity: 0;
+  animation: split-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.contact-details .info-card:nth-child(1) { animation-delay: 0.30s; }
+.contact-details .info-card:nth-child(2) { animation-delay: 0.40s; }
+.contact-details .info-card:nth-child(3) { animation-delay: 0.50s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait-reveal,
+  .contact-intro h1,
+  .contact-intro p,
+  .contact-details .info-card {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .contact-page {
+    grid-template-columns: 1fr;
+  }
+  .contact-portrait,
+  .contact-details {
+    grid-column: 1;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .split-page {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .split-intro,
+  .split-content {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Page-load entrance: each block fades up with a staggered delay so
+   the page doesn't appear all at once. */
+@keyframes split-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.split-intro-text,
+.split-intro h1,
+.split-intro p,
+.split-intro > .btn,
+.address-card,
+.portrait {
+  opacity: 0;
+  animation: split-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.split-intro h1            { animation-delay: 0.05s; }
+.split-intro p             { animation-delay: 0.15s; }
+.split-intro > .btn        { animation-delay: 0.30s; }
+
+.address-card:nth-child(1) { animation-delay: 0.20s; }
+.address-card:nth-child(2) { animation-delay: 0.35s; }
+.address-card:nth-child(3) { animation-delay: 0.50s; }
+
+.portrait                  { animation-delay: 0.20s; }
+
+/* Page-load entrance — when the whole .split-intro-text block animates,
+   we don't want children to also animate (would double up). */
+.split-intro-text {
+  animation-delay: 0.05s;
+}
+.split-intro-text h1,
+.split-intro-text p {
+  opacity: 1;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-intro-text,
+  .split-intro h1,
+  .split-intro p,
+  .split-intro > .btn,
+  .address-card,
+  .portrait {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* business detail page — matches Figma 255:486:
+   centred 706px column with Go back, hero image, title, body paragraphs,
+   and an inline second image. */
+.business-page {
+  width: 706px;
+  max-width: calc(100% - 80px);
+  margin: 0 auto;
+  padding: 109px 0 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.business-back {
+  align-self: flex-start;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 
 .business-hero {
   width: 100%;
-  aspect-ratio: 2 / 1;
-  border-radius: 8px;
+  height: 374px;
+  border-radius: 12px;
   overflow: hidden;
-  background: var(--color-surface);
-  margin-bottom: 48px;
+  background: #e3e3e3;
 }
 
 .business-hero img {
@@ -644,20 +1267,26 @@ section {
 }
 
 .business-body {
-  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .business-body h1 {
   font-size: 48px;
   font-weight: 500;
-  margin-bottom: 24px;
+  color: var(--color-text);
 }
 
 .business-body p {
   font-size: 16px;
-  line-height: 1.7;
-  margin-bottom: 16px;
+  line-height: 1.5;
   color: var(--color-text);
+}
+
+.business-body .business-hero {
+  height: 377px;
+  margin: 0;
 }
 
 /* ─────────── Footer ─────────── */
@@ -734,15 +1363,31 @@ section {
 /* ─────────── Responsive ─────────── */
 @media (max-width: 1100px) {
   .hero {
-    padding: 90px 0 32px;
+    flex-direction: column;
+    padding-top: 120px;
+    padding-bottom: 80px;
+    gap: 48px;
+  }
+
+  .hero-text {
+    width: 100%;
+    gap: 40px;
+  }
+
+  .hero-headline {
+    gap: 20px;
   }
 
   .hero-text h1 {
-    font-size: 44px;
+    font-size: 40px;
   }
 
   .hero-text p {
-    font-size: 16px;
+    font-size: 18px;
+  }
+
+  .hero-grid {
+    width: 100%;
   }
 
   .quote {
@@ -788,13 +1433,19 @@ section {
   }
 }
 
+@media (max-width: 768px) {
+  .hero-text h1 {
+    font-size: 32px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+  }
+}
+
 @media (max-width: 640px) {
   :root {
     --side-padding: 24px;
-  }
-
-  .site-header {
-    height: 72px;
   }
 
   .logo {
@@ -802,15 +1453,40 @@ section {
   }
 
   .nav {
-    gap: 20px;
+    gap: 4px;
   }
 
   .nav a {
     font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .hero {
+    padding-top: 100px;
+    padding-bottom: 64px;
+    gap: 32px;
+  }
+
+  .hero-text {
+    gap: 32px;
+  }
+
+  .hero-headline {
+    gap: 16px;
   }
 
   .hero-text h1 {
-    font-size: 36px;
+    font-size: 30px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+  }
+
+  .lang-trigger {
+    width: 140px;
+    padding: 10px 14px;
+    font-size: 14px;
   }
 
   .activity-intro h2 {
