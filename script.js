@@ -405,6 +405,16 @@ function exitDetailMode(viaTour = false) {
   els.activity.classList.remove('is-detail');
   if (els.globe && els.globeArcs) els.globe.arcsData(els.globeArcs);
   if (els.globeControls) els.globeControls.autoRotate = true;
+  // Reset the camera to the intro pose; otherwise a closer-zoom city
+  // altitude (e.g. 1.4) leaves the sphere looking bigger when we return
+  // to the intro view. (Module-scope SLOVAKIA is SVG coords; the lat/lng
+  // pair lives inside setupActivityGlobe — inline the values here.)
+  if (els.globe) {
+    els.globe.pointOfView(
+      { lat: 48.1486, lng: 17.1077, altitude: 1.55 },
+      1200,
+    );
+  }
   clearActive();
   // When the exit came from tour completion (auto-cycle ended or
   // chevroned past either edge), suppress the scroll-down trigger so the
@@ -830,11 +840,15 @@ function setupHeaderHide() {
 
   function tick() {
     raf = 0;
-    // Freeze the header state while the activity detail view is open.
-    // The detail-mode scroll-pin can fire synthetic upward scrolls (the
-    // snap-back when entering detail, the bounce-back when the user
-    // tries to drag past), and we don't want those to flash the nav in.
-    if (activityEl && activityEl.classList.contains('is-detail')) {
+    // Only freeze the header while the page is actually pinned at the
+    // activity (the snap-back / bounce-back synthetic scrolls happen
+    // there). Once the user scrolls meaningfully above the pin, normal
+    // show-on-up behavior must resume so the nav comes back.
+    if (
+      activityEl &&
+      activityEl.classList.contains('is-detail') &&
+      Math.abs(window.scrollY - activityEl.offsetTop) < 5
+    ) {
       lastY = window.scrollY;
       return;
     }
@@ -855,6 +869,222 @@ function setupHeaderHide() {
     if (raf) return;
     raf = requestAnimationFrame(tick);
   }, { passive: true });
+}
+
+/* ─── i18n ───────────────────────────────────────────────────── */
+const SUPPORTED_LANGS = ['en', 'sk'];
+
+const I18N = {
+  en: {
+    'page.title.home': 'TABERNAM',
+    'page.title.about': 'About me — TABERNAM',
+    'page.title.business': 'Business — TABERNAM',
+    'page.title.contact': 'Contact — TABERNAM',
+    'nav.contact': 'Contact',
+    'nav.about': 'About me',
+    'nav.activity': 'Activity',
+    'nav.home': 'Home',
+    'btn.getStarted': 'Get started',
+    'btn.viewCities': 'View cities',
+    'btn.goBack': 'Go back',
+    'btn.learnMore': 'Learn more',
+    'btn.viewCV': 'View my CV',
+    'heading.aboutMe': 'About me',
+    'heading.contact': 'Contact',
+    'footer.navigation': 'Navigation',
+    'footer.contact': 'Contact',
+    'footer.copyright': '© 2026 Tabernam. All rights reserved.',
+    'contact.address1': 'Address 1',
+    'contact.address2': 'Address 2',
+    'contact.address3': 'Address 3',
+    'aria.prevCity': 'Previous city',
+    'aria.nextCity': 'Next city',
+    'aria.cities': 'Cities',
+    'aria.footerNav': 'Footer navigation',
+  },
+  sk: {
+    'page.title.home': 'TABERNAM',
+    'page.title.about': 'O mne — TABERNAM',
+    'page.title.business': 'Biznis — TABERNAM',
+    'page.title.contact': 'Kontakt — TABERNAM',
+    'nav.contact': 'Kontakt',
+    'nav.about': 'O mne',
+    'nav.activity': 'Aktivita',
+    'nav.home': 'Domov',
+    'btn.getStarted': 'Začať',
+    'btn.viewCities': 'Zobraziť mestá',
+    'btn.goBack': 'Späť',
+    'btn.learnMore': 'Zistiť viac',
+    'btn.viewCV': 'Zobraziť životopis',
+    'heading.aboutMe': 'O mne',
+    'heading.contact': 'Kontakt',
+    'footer.navigation': 'Navigácia',
+    'footer.contact': 'Kontakt',
+    'footer.copyright': '© 2026 Tabernam. Všetky práva vyhradené.',
+    'contact.address1': 'Adresa 1',
+    'contact.address2': 'Adresa 2',
+    'contact.address3': 'Adresa 3',
+    'aria.prevCity': 'Predchádzajúce mesto',
+    'aria.nextCity': 'Ďalšie mesto',
+    'aria.cities': 'Mestá',
+    'aria.footerNav': 'Navigácia v päte stránky',
+  },
+};
+
+function getLang() {
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) { /* private mode */ }
+  return SUPPORTED_LANGS.includes(saved) ? saved : 'en';
+}
+
+function setLang(lang) {
+  try { localStorage.setItem('lang', lang); } catch (e) { /* private mode */ }
+}
+
+function applyI18n(lang) {
+  const dict = I18N[lang] || I18N.en;
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.dataset.i18n;
+    if (dict[key] != null) el.textContent = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
+    el.dataset.i18nAttr.split(',').forEach((pair) => {
+      const [attr, key] = pair.split(':').map((s) => s.trim());
+      if (attr && key && dict[key] != null) el.setAttribute(attr, dict[key]);
+    });
+  });
+
+  const titleEl = document.querySelector('title');
+  const titleKey = titleEl?.dataset?.i18n;
+  if (titleKey && dict[titleKey]) document.title = dict[titleKey];
+}
+
+/* ─── Hero auto-slide (mobile) ───────────────────────────────── */
+function setupHeroAutoSlide() {
+  if (!window.matchMedia('(max-width: 768px)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const grid = document.querySelector('.hero-grid');
+  if (!grid) return;
+  const cells = Array.from(grid.querySelectorAll('.hero-cell'));
+  if (cells.length < 2) return;
+
+  const INTERVAL_MS = 3000;
+  const RESUME_DELAY_MS = 4000;
+
+  let currentIndex = 0;
+  let autoTimer = 0;
+  let resumeTimer = 0;
+
+  const cardLeft = (i) => cells[i].offsetLeft - grid.offsetLeft;
+
+  const advance = () => {
+    currentIndex = (currentIndex + 1) % cells.length;
+    grid.scrollTo({ left: cardLeft(currentIndex), behavior: 'smooth' });
+  };
+
+  const start = () => {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(advance, INTERVAL_MS);
+  };
+
+  const pause = () => {
+    clearInterval(autoTimer);
+    autoTimer = 0;
+    clearTimeout(resumeTimer);
+  };
+
+  const resumeSoon = () => {
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(start, RESUME_DELAY_MS);
+  };
+
+  // Pause auto-slide while the user is touching/dragging the strip.
+  ['pointerdown', 'touchstart'].forEach((evt) =>
+    grid.addEventListener(evt, pause, { passive: true }),
+  );
+  ['pointerup', 'pointercancel', 'touchend', 'touchcancel'].forEach((evt) =>
+    grid.addEventListener(evt, resumeSoon, { passive: true }),
+  );
+
+  // Keep currentIndex in sync with where the user has actually scrolled
+  // so auto-advance resumes from there rather than snapping back.
+  let scrollIdle;
+  grid.addEventListener(
+    'scroll',
+    () => {
+      clearTimeout(scrollIdle);
+      scrollIdle = setTimeout(() => {
+        const x = grid.scrollLeft;
+        let best = 0;
+        let bestDist = Infinity;
+        cells.forEach((c, i) => {
+          const d = Math.abs(cardLeft(i) - x);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        currentIndex = best;
+      }, 120);
+    },
+    { passive: true },
+  );
+
+  // Desktop wheel testing: a vertical wheel inside the strip becomes
+  // horizontal scroll so the carousel is reachable without a touchpad.
+  grid.addEventListener(
+    'wheel',
+    (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      grid.scrollLeft += e.deltaY;
+      pause();
+      resumeSoon();
+    },
+    { passive: false },
+  );
+
+  start();
+}
+
+/* ─── Mobile nav (hamburger) ─────────────────────────────────── */
+function setupMobileNav() {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('primary-nav');
+  if (!toggle || !nav) return;
+
+  const close = () => {
+    nav.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+  const open = () => {
+    nav.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+  };
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (nav.classList.contains('is-open')) close();
+    else open();
+  });
+
+  // Tapping a nav link closes the menu before the page navigates so
+  // returning via in-page anchors doesn't leave it open.
+  nav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => close());
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !toggle.contains(e.target)) close();
+  });
 }
 
 /* ─── Language switcher ──────────────────────────────────────── */
@@ -878,6 +1108,13 @@ function setupLangSwitcher() {
     menu.hidden = false;
   };
 
+  const syncTriggerToButton = (btn) => {
+    const name = btn.querySelector('.lang-name')?.textContent?.trim();
+    const flagText = btn.querySelector('.lang-flag')?.textContent?.trim();
+    if (name) label.textContent = name;
+    if (flagText) flag.textContent = flagText;
+  };
+
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
     if (switcher.classList.contains('is-open')) close();
@@ -894,13 +1131,18 @@ function setupLangSwitcher() {
 
   menu.querySelectorAll('button[data-lang]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const name = btn.querySelector('.lang-name')?.textContent?.trim();
-      const flagText = btn.querySelector('.lang-flag')?.textContent?.trim();
-      if (name) label.textContent = name;
-      if (flagText) flag.textContent = flagText;
+      const lang = btn.dataset.lang;
+      if (SUPPORTED_LANGS.includes(lang)) {
+        setLang(lang);
+        applyI18n(lang);
+      }
+      syncTriggerToButton(btn);
       close();
     });
   });
+
+  const initialBtn = menu.querySelector(`button[data-lang="${getLang()}"]`);
+  if (initialBtn) syncTriggerToButton(initialBtn);
 }
 
 /* ─── Programmatic scroll helper ─────────────────────────────── */
@@ -928,7 +1170,10 @@ function smoothScrollTo(targetY, durationSeconds = 0.9) {
 
 /* ─── Init ───────────────────────────────────────────────────── */
 function init() {
+  applyI18n(getLang());
   setupHeaderHide();
+  setupMobileNav();
+  setupHeroAutoSlide();
   setupLangSwitcher();
   buildCarousel();
   setupQuoteReveal();
@@ -975,6 +1220,11 @@ function init() {
 
 function setupActivityScrollTrigger() {
   if (!els.activity) return;
+  // The wheel/touch capture, scroll-pin, and snap-back behaviors are a
+  // desktop-only flow. On mobile the activity section is a normal column
+  // (intro → globe → button → drawer) and the "View cities" button drives
+  // detail mode directly via its click handler.
+  if (window.matchMedia('(max-width: 768px)').matches) return;
   const quote = document.querySelector('.quote');
   const activity = els.activity;
 

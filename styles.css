@@ -31,6 +31,7 @@ body {
   line-height: 1.4;
 }
 
+
 img {
   display: block;
   max-width: 100%;
@@ -86,6 +87,44 @@ a {
 
 .nav a:hover {
   opacity: 0.65;
+}
+
+/* Hamburger toggle — hidden on desktop, shown on mobile via the
+   responsive block at the bottom of this file. */
+.nav-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.nav-toggle-bar {
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  height: 2px;
+  background: #000;
+  transition: transform 0.25s ease, opacity 0.2s ease, top 0.25s ease;
+}
+
+.nav-toggle-bar:nth-child(1) { top: 12px; }
+.nav-toggle-bar:nth-child(2) { top: 19px; }
+.nav-toggle-bar:nth-child(3) { top: 26px; }
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+  top: 19px;
+  transform: rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+  top: 19px;
+  transform: rotate(-45deg);
 }
 
 /* ─────────── Layout ─────────── */
@@ -919,7 +958,7 @@ section {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 60px;
   align-items: start;
-  padding: calc(var(--header-height) + 80px) 40px 80px;
+  padding: calc(var(--header-height) + 80px) var(--side-padding) 80px;
   max-width: var(--max-width);
   margin: 0 auto;
   min-height: 100vh;
@@ -998,6 +1037,8 @@ section {
   aspect-ratio: 519 / 524;
   background: #ededed;
   border-radius: 12px;
+  object-fit: cover;
+  display: block;
 }
 
 /* ─────────── Contact page ───────────
@@ -1049,21 +1090,37 @@ section {
   gap: 10px;
 }
 
-.portrait-reveal {
+.portrait-stack {
+  position: relative;
   width: 100%;
   aspect-ratio: 519 / 495;
   background: #ededed;
   border-radius: 12px;
+  overflow: hidden;
   opacity: 0;
   animation: split-rise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.2s forwards;
+}
+
+.portrait-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.portrait-img.is-active {
+  opacity: 1;
 }
 
 /* Accordion contact cards: title row with +/− toggle; body reveals when
    the native <details> is open. */
 .info-card {
-  background: #ededed;
+  border: 1px solid #dcdcdc;
   border-radius: 12px;
-  padding: 20px;
+  padding: 19px;
 }
 
 .info-card > summary {
@@ -1151,7 +1208,7 @@ section {
 .contact-details .info-card:nth-child(3) { animation-delay: 0.50s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .portrait-reveal,
+  .portrait-stack,
   .contact-intro h1,
   .contact-intro p,
   .contact-details .info-card {
@@ -1441,6 +1498,76 @@ section {
   .hero-text p {
     font-size: 16px;
   }
+
+  /* Contain the horizontal scroll: without this the grid's full-bleed
+     margins push the page wider than the viewport. Also widen the gap
+     between the headline copy and the image strip. */
+  .hero {
+    overflow-x: clip;
+    gap: 56px;
+  }
+
+  /* Flatten the 2x2 hero collage into a horizontal scroller. The rows
+     drop their layout box via display: contents so all four cells
+     become flex children of .hero-grid. */
+  .hero-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    /* Top-align children so the default `stretch` doesn't grow cells
+       past their aspect-ratio height. */
+    align-items: flex-start;
+    /* Fix the grid at viewport width and offset with a negative
+       margin-left to span edge-to-edge. With an explicit width,
+       cells that exceed it become real overflow that overflow-x:auto
+       can scroll — width:auto would just grow the grid to fit them. */
+    width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: visible;
+    margin-left: calc(-1 * var(--side-padding));
+    margin-right: calc(-1 * var(--side-padding));
+    padding: 0 var(--side-padding) 8px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+
+  .hero-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-row {
+    display: contents;
+  }
+
+  /* Shared height + per-cell widths give a dynamic, varied-aspect
+     filmstrip instead of uniform tiles. */
+  .hero-row-1 .hero-cell:nth-child(1),
+  .hero-row-1 .hero-cell:nth-child(2),
+  .hero-row-2 .hero-cell:nth-child(1),
+  .hero-row-2 .hero-cell:nth-child(2) {
+    flex: 0 0 auto;
+    height: clamp(260px, 72vw, 300px);
+    aspect-ratio: auto;
+    scroll-snap-align: start;
+  }
+
+  .hero-row-1 .hero-cell:nth-child(1) {
+    width: clamp(260px, 78vw, 300px);
+  }
+  .hero-row-1 .hero-cell:nth-child(2) {
+    width: clamp(170px, 50vw, 200px);
+  }
+  .hero-row-2 .hero-cell:nth-child(1) {
+    width: clamp(220px, 64vw, 250px);
+  }
+  .hero-row-2 .hero-cell:nth-child(2) {
+    width: clamp(290px, 86vw, 330px);
+  }
 }
 
 @media (max-width: 640px) {
@@ -1501,5 +1628,286 @@ section {
 
   .site-footer {
     padding: 56px var(--side-padding) 24px;
+  }
+}
+
+/* ─────────── Mobile nav (hamburger) ─────────── */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
+
+  .site-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--color-header);
+    padding: 0 var(--side-padding);
+    max-height: 0;
+    overflow: hidden;
+    border-bottom: 0 solid var(--color-border);
+    transition:
+      max-height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+      padding 0.3s ease,
+      border-width 0.3s ease;
+  }
+
+  .nav.is-open {
+    max-height: 80vh;
+    padding: 8px var(--side-padding) 16px;
+    border-bottom-width: 1px;
+  }
+
+  .nav a {
+    padding: 16px 0;
+    font-size: 16px;
+    border-bottom: 1px solid #ededed;
+    width: 100%;
+  }
+
+  .lang-switcher {
+    margin: 8px 0 0;
+  }
+
+  .lang-trigger {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 16px;
+  }
+
+  .lang-menu {
+    left: 0;
+    right: 0;
+  }
+}
+
+/* ─────────── Mobile activity section ─────────── */
+@media (max-width: 768px) {
+  .activity {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: auto;
+    padding: calc(var(--header-height) + 40px) var(--side-padding) 60px;
+    gap: 28px;
+  }
+
+  /* Intro mode pads the top so the heading clears the fixed header.
+     Detail mode hides the intro text, so the globe goes flush. The
+     flex `gap` would otherwise reserve space between the collapsed
+     intro elements and the globe. */
+  .activity.is-detail {
+    padding-top: var(--header-height);
+    gap: 0;
+  }
+
+  /* Flatten the intro wrapper so text → globe → button order via flex
+     `order` works against direct children of .activity. */
+  .activity-intro {
+    display: contents;
+  }
+
+  .activity-intro-text {
+    order: 1;
+  }
+
+  .activity-intro h2 {
+    font-size: 28px;
+  }
+
+  .globe-stage,
+  .activity.is-revealed .globe-stage {
+    order: 2;
+    position: relative;
+    top: auto;
+    left: auto;
+    /* Explicit width AND height (no aspect-ratio) so both are
+       transitionable values between intro and detail states. */
+    width: min(360px, 80vw);
+    height: min(360px, 80vw);
+    aspect-ratio: auto;
+    /* Cross-axis centering via flex align-self stays constant across
+       states; margin auto would flip to a different keyword in detail
+       and break the transition. */
+    align-self: center;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+  }
+
+  #view-cities {
+    order: 3;
+    align-self: center;
+    padding: 14px 32px;
+    font-size: 16px;
+    margin-top: 16px;
+    /* Collapse smoothly when entering detail mode. */
+    max-height: 80px;
+    overflow: hidden;
+    transition: opacity 0.3s ease,
+                max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Smooth fade-and-collapse instead of display:none so the globe
+     transitions into the freed space rather than snapping into it. */
+  .activity-intro-text {
+    max-height: 600px;
+    overflow: hidden;
+    transition: opacity 0.3s ease,
+                max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .activity.is-detail .activity-intro-text {
+    opacity: 0;
+    max-height: 0;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  .activity.is-detail #view-cities {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+  }
+
+  /* Detail state: full-bleed sphere pinned at the top of the section.
+     Width grows from min(360,80vw) to 100vw; height shrinks from
+     min(360,80vw) to 62vw — both transitionable. The stage stays
+     centered via align-self; .globe-3d is oversized so the sphere
+     still fills the visible band. */
+  .activity.is-detail .globe-stage {
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
+    height: 62vw;
+    top: auto;
+    left: auto;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  /* Transition the inner canvas alongside the stage so its position
+     and size animate rather than snapping when .is-detail toggles. */
+  .globe-3d {
+    transition: top 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+                left 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+                width 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+                height 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .activity.is-detail .globe-3d {
+    /* Oversize the canvas and shift it so the sphere's widest band sits
+       inside the visible stage. A 100vw sphere in a 62vw-tall window
+       leaves curved corners empty — a 150vw sphere fills them. */
+    inset: auto;
+    top: -25vw;
+    left: -25vw;
+    width: 150vw;
+    height: 150vw;
+  }
+
+  /* Drawer: slides up + fades in on entering detail; slides down +
+     fades out on exit. Bidirectional transitions (not a one-shot
+     animation) so both directions are smooth. max-height collapse
+     keeps the panel from reserving flex space when hidden. */
+  .city-panel {
+    order: 4;
+    display: flex;
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding-top: 8px;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(80px);
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+                opacity 0.45s ease,
+                transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .activity.is-detail .city-panel {
+    max-height: 2000px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Repurpose the "Go back" button as a circular X in the top-right
+     corner of the drawer. */
+  .city-panel .btn-back {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    background: #eee;
+    border: 1px solid #c2c2c2;
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
+    cursor: pointer;
+    z-index: 5;
+  }
+
+  .city-panel .btn-back::before {
+    content: '×';
+    display: block;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 34px;
+    color: #000;
+  }
+
+  .city-card {
+    background: #ededed;
+    border: 0;
+    border-radius: 16px;
+    padding: 16px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    gap: 16px;
+  }
+
+  .city-card-top {
+    gap: 16px;
+  }
+
+  .card-image {
+    height: 220px;
+  }
+
+  .card-text p {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .card-progress {
+    display: none;
   }
 }
