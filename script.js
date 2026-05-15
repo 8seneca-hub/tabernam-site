@@ -405,6 +405,16 @@ function exitDetailMode(viaTour = false) {
   els.activity.classList.remove('is-detail');
   if (els.globe && els.globeArcs) els.globe.arcsData(els.globeArcs);
   if (els.globeControls) els.globeControls.autoRotate = true;
+  // Reset the camera to the intro pose; otherwise a closer-zoom city
+  // altitude (e.g. 1.4) leaves the sphere looking bigger when we return
+  // to the intro view. (Module-scope SLOVAKIA is SVG coords; the lat/lng
+  // pair lives inside setupActivityGlobe — inline the values here.)
+  if (els.globe) {
+    els.globe.pointOfView(
+      { lat: 48.1486, lng: 17.1077, altitude: 1.55 },
+      1200,
+    );
+  }
   clearActive();
   // When the exit came from tour completion (auto-cycle ended or
   // chevroned past either edge), suppress the scroll-down trigger so the
@@ -952,6 +962,131 @@ function applyI18n(lang) {
   if (titleKey && dict[titleKey]) document.title = dict[titleKey];
 }
 
+/* ─── Hero auto-slide (mobile) ───────────────────────────────── */
+function setupHeroAutoSlide() {
+  if (!window.matchMedia('(max-width: 768px)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const grid = document.querySelector('.hero-grid');
+  if (!grid) return;
+  const cells = Array.from(grid.querySelectorAll('.hero-cell'));
+  if (cells.length < 2) return;
+
+  const INTERVAL_MS = 3000;
+  const RESUME_DELAY_MS = 4000;
+
+  let currentIndex = 0;
+  let autoTimer = 0;
+  let resumeTimer = 0;
+
+  const cardLeft = (i) => cells[i].offsetLeft - grid.offsetLeft;
+
+  const advance = () => {
+    currentIndex = (currentIndex + 1) % cells.length;
+    grid.scrollTo({ left: cardLeft(currentIndex), behavior: 'smooth' });
+  };
+
+  const start = () => {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(advance, INTERVAL_MS);
+  };
+
+  const pause = () => {
+    clearInterval(autoTimer);
+    autoTimer = 0;
+    clearTimeout(resumeTimer);
+  };
+
+  const resumeSoon = () => {
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(start, RESUME_DELAY_MS);
+  };
+
+  // Pause auto-slide while the user is touching/dragging the strip.
+  ['pointerdown', 'touchstart'].forEach((evt) =>
+    grid.addEventListener(evt, pause, { passive: true }),
+  );
+  ['pointerup', 'pointercancel', 'touchend', 'touchcancel'].forEach((evt) =>
+    grid.addEventListener(evt, resumeSoon, { passive: true }),
+  );
+
+  // Keep currentIndex in sync with where the user has actually scrolled
+  // so auto-advance resumes from there rather than snapping back.
+  let scrollIdle;
+  grid.addEventListener(
+    'scroll',
+    () => {
+      clearTimeout(scrollIdle);
+      scrollIdle = setTimeout(() => {
+        const x = grid.scrollLeft;
+        let best = 0;
+        let bestDist = Infinity;
+        cells.forEach((c, i) => {
+          const d = Math.abs(cardLeft(i) - x);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        currentIndex = best;
+      }, 120);
+    },
+    { passive: true },
+  );
+
+  // Desktop wheel testing: a vertical wheel inside the strip becomes
+  // horizontal scroll so the carousel is reachable without a touchpad.
+  grid.addEventListener(
+    'wheel',
+    (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      grid.scrollLeft += e.deltaY;
+      pause();
+      resumeSoon();
+    },
+    { passive: false },
+  );
+
+  start();
+}
+
+/* ─── Mobile nav (hamburger) ─────────────────────────────────── */
+function setupMobileNav() {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('primary-nav');
+  if (!toggle || !nav) return;
+
+  const close = () => {
+    nav.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+  const open = () => {
+    nav.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+  };
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (nav.classList.contains('is-open')) close();
+    else open();
+  });
+
+  // Tapping a nav link closes the menu before the page navigates so
+  // returning via in-page anchors doesn't leave it open.
+  nav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => close());
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !toggle.contains(e.target)) close();
+  });
+}
+
 /* ─── Language switcher ──────────────────────────────────────── */
 function setupLangSwitcher() {
   const switcher = document.querySelector('[data-lang-switcher]');
@@ -1037,6 +1172,8 @@ function smoothScrollTo(targetY, durationSeconds = 0.9) {
 function init() {
   applyI18n(getLang());
   setupHeaderHide();
+  setupMobileNav();
+  setupHeroAutoSlide();
   setupLangSwitcher();
   buildCarousel();
   setupQuoteReveal();
@@ -1083,6 +1220,11 @@ function init() {
 
 function setupActivityScrollTrigger() {
   if (!els.activity) return;
+  // The wheel/touch capture, scroll-pin, and snap-back behaviors are a
+  // desktop-only flow. On mobile the activity section is a normal column
+  // (intro → globe → button → drawer) and the "View cities" button drives
+  // detail mode directly via its click handler.
+  if (window.matchMedia('(max-width: 768px)').matches) return;
   const quote = document.querySelector('.quote');
   const activity = els.activity;
 

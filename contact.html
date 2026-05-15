@@ -7,12 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=36">
+  <link rel="stylesheet" href="styles.css?v=66">
 </head>
 <body>
   <header class="site-header">
     <a href="index.html" class="logo">Tabernam</a>
-    <nav class="nav">
+    <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <nav class="nav" id="primary-nav">
       <a href="contact.html" data-i18n="nav.contact">Contact</a>
       <a href="about.html" data-i18n="nav.about">About me</a>
       <a href="index.html#activity" data-i18n="nav.activity">Activity</a>
@@ -117,7 +122,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=53"></script>
+  <script src="script.js?v=60"></script>
   <script>
     (function () {
       const cards = document.querySelectorAll('.info-card');
