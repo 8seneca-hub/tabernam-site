@@ -3,36 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact — TABERNAM</title>
+  <title data-i18n="page.title.contact">Contact — TABERNAM</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=35">
+  <link rel="stylesheet" href="styles.css?v=36">
 </head>
 <body>
   <header class="site-header">
     <a href="index.html" class="logo">Tabernam</a>
     <nav class="nav">
-      <a href="contact.html">Contact</a>
-      <a href="about.html">About me</a>
-      <a href="index.html#activity">Activity</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+      <a href="about.html" data-i18n="nav.about">About me</a>
+      <a href="index.html#activity" data-i18n="nav.activity">Activity</a>
+      <div class="lang-switcher" data-lang-switcher>
+        <button type="button" class="lang-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="lang-label">English</span>
+          <span class="lang-flag" aria-hidden="true">🇺🇸</span>
+          <svg class="lang-chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="lang-menu" role="listbox" hidden>
+          <li><button type="button" role="option" data-lang="sk"><span class="lang-name">Slovakia</span><span class="lang-flag" aria-hidden="true">🇸🇰</span></button></li>
+          <li><button type="button" role="option" data-lang="en"><span class="lang-name">English</span><span class="lang-flag" aria-hidden="true">🇺🇸</span></button></li>
+        </ul>
+      </div>
     </nav>
   </header>
 
   <main class="contact-page">
     <section class="contact-intro">
-      <h1>Contact</h1>
+      <h1 data-i18n="heading.contact">Contact</h1>
       <p>Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac.</p>
     </section>
 
     <section class="contact-portrait">
-      <div class="portrait-reveal" aria-hidden="true"></div>
+      <div class="portrait-stack" aria-hidden="true">
+        <img class="portrait-img is-active" data-portrait="1"
+             src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1040&h=990&q=80" alt="">
+        <img class="portrait-img" data-portrait="2"
+             src="https://images.unsplash.com/photo-1496564203457-11bb12075d90?auto=format&fit=crop&w=1040&h=990&q=80" alt="">
+        <img class="portrait-img" data-portrait="3"
+             src="https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=1040&h=990&q=80" alt="">
+      </div>
     </section>
 
     <aside class="contact-details">
-      <details class="info-card" open>
+      <details class="info-card" data-portrait="1" open>
         <summary>
-          <span class="info-card-title">Address 1</span>
+          <span class="info-card-title" data-i18n="contact.address1">Address 1</span>
           <span class="info-card-toggle" aria-hidden="true"></span>
         </summary>
         <div class="info-card-body">
@@ -42,9 +62,9 @@
           <p>Blandit faucibus interdum</p>
         </div>
       </details>
-      <details class="info-card">
+      <details class="info-card" data-portrait="2">
         <summary>
-          <span class="info-card-title">Address 2</span>
+          <span class="info-card-title" data-i18n="contact.address2">Address 2</span>
           <span class="info-card-toggle" aria-hidden="true"></span>
         </summary>
         <div class="info-card-body">
@@ -54,9 +74,9 @@
           <p>Blandit faucibus interdum</p>
         </div>
       </details>
-      <details class="info-card">
+      <details class="info-card" data-portrait="3">
         <summary>
-          <span class="info-card-title">Address 3</span>
+          <span class="info-card-title" data-i18n="contact.address3">Address 3</span>
           <span class="info-card-toggle" aria-hidden="true"></span>
         </summary>
         <div class="info-card-body">
@@ -75,17 +95,17 @@
         <a href="index.html" class="logo">Tabernam</a>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       </div>
-      <nav class="footer-col" aria-label="Footer navigation">
-        <h4>Navigation</h4>
+      <nav class="footer-col" aria-label="Footer navigation" data-i18n-attr="aria-label:aria.footerNav">
+        <h4 data-i18n="footer.navigation">Navigation</h4>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About me</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li><a href="index.html#activity">Activity</a></li>
+          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+          <li><a href="about.html" data-i18n="nav.about">About me</a></li>
+          <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
+          <li><a href="index.html#activity" data-i18n="nav.activity">Activity</a></li>
         </ul>
       </nav>
       <div class="footer-col">
-        <h4>Contact</h4>
+        <h4 data-i18n="footer.contact">Contact</h4>
         <ul>
           <li><a href="mailto:hello@tabernam.com">hello@tabernam.com</a></li>
           <li>Bratislava, Slovakia</li>
@@ -93,10 +113,26 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 Tabernam. All rights reserved.</p>
+      <p data-i18n="footer.copyright">© 2026 Tabernam. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="script.js?v=51"></script>
+  <script src="script.js?v=53"></script>
+  <script>
+    (function () {
+      const cards = document.querySelectorAll('.info-card');
+      const imgs = document.querySelectorAll('.portrait-img');
+      cards.forEach((card) => {
+        card.addEventListener('toggle', () => {
+          if (!card.open) return;
+          cards.forEach((c) => { if (c !== card) c.open = false; });
+          const target = card.dataset.portrait;
+          imgs.forEach((img) => {
+            img.classList.toggle('is-active', img.dataset.portrait === target);
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

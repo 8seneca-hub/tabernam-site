@@ -830,11 +830,15 @@ function setupHeaderHide() {
 
   function tick() {
     raf = 0;
-    // Freeze the header state while the activity detail view is open.
-    // The detail-mode scroll-pin can fire synthetic upward scrolls (the
-    // snap-back when entering detail, the bounce-back when the user
-    // tries to drag past), and we don't want those to flash the nav in.
-    if (activityEl && activityEl.classList.contains('is-detail')) {
+    // Only freeze the header while the page is actually pinned at the
+    // activity (the snap-back / bounce-back synthetic scrolls happen
+    // there). Once the user scrolls meaningfully above the pin, normal
+    // show-on-up behavior must resume so the nav comes back.
+    if (
+      activityEl &&
+      activityEl.classList.contains('is-detail') &&
+      Math.abs(window.scrollY - activityEl.offsetTop) < 5
+    ) {
       lastY = window.scrollY;
       return;
     }
@@ -855,6 +859,97 @@ function setupHeaderHide() {
     if (raf) return;
     raf = requestAnimationFrame(tick);
   }, { passive: true });
+}
+
+/* ─── i18n ───────────────────────────────────────────────────── */
+const SUPPORTED_LANGS = ['en', 'sk'];
+
+const I18N = {
+  en: {
+    'page.title.home': 'TABERNAM',
+    'page.title.about': 'About me — TABERNAM',
+    'page.title.business': 'Business — TABERNAM',
+    'page.title.contact': 'Contact — TABERNAM',
+    'nav.contact': 'Contact',
+    'nav.about': 'About me',
+    'nav.activity': 'Activity',
+    'nav.home': 'Home',
+    'btn.getStarted': 'Get started',
+    'btn.viewCities': 'View cities',
+    'btn.goBack': 'Go back',
+    'btn.learnMore': 'Learn more',
+    'btn.viewCV': 'View my CV',
+    'heading.aboutMe': 'About me',
+    'heading.contact': 'Contact',
+    'footer.navigation': 'Navigation',
+    'footer.contact': 'Contact',
+    'footer.copyright': '© 2026 Tabernam. All rights reserved.',
+    'contact.address1': 'Address 1',
+    'contact.address2': 'Address 2',
+    'contact.address3': 'Address 3',
+    'aria.prevCity': 'Previous city',
+    'aria.nextCity': 'Next city',
+    'aria.cities': 'Cities',
+    'aria.footerNav': 'Footer navigation',
+  },
+  sk: {
+    'page.title.home': 'TABERNAM',
+    'page.title.about': 'O mne — TABERNAM',
+    'page.title.business': 'Biznis — TABERNAM',
+    'page.title.contact': 'Kontakt — TABERNAM',
+    'nav.contact': 'Kontakt',
+    'nav.about': 'O mne',
+    'nav.activity': 'Aktivita',
+    'nav.home': 'Domov',
+    'btn.getStarted': 'Začať',
+    'btn.viewCities': 'Zobraziť mestá',
+    'btn.goBack': 'Späť',
+    'btn.learnMore': 'Zistiť viac',
+    'btn.viewCV': 'Zobraziť životopis',
+    'heading.aboutMe': 'O mne',
+    'heading.contact': 'Kontakt',
+    'footer.navigation': 'Navigácia',
+    'footer.contact': 'Kontakt',
+    'footer.copyright': '© 2026 Tabernam. Všetky práva vyhradené.',
+    'contact.address1': 'Adresa 1',
+    'contact.address2': 'Adresa 2',
+    'contact.address3': 'Adresa 3',
+    'aria.prevCity': 'Predchádzajúce mesto',
+    'aria.nextCity': 'Ďalšie mesto',
+    'aria.cities': 'Mestá',
+    'aria.footerNav': 'Navigácia v päte stránky',
+  },
+};
+
+function getLang() {
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) { /* private mode */ }
+  return SUPPORTED_LANGS.includes(saved) ? saved : 'en';
+}
+
+function setLang(lang) {
+  try { localStorage.setItem('lang', lang); } catch (e) { /* private mode */ }
+}
+
+function applyI18n(lang) {
+  const dict = I18N[lang] || I18N.en;
+  document.documentElement.lang = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.dataset.i18n;
+    if (dict[key] != null) el.textContent = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
+    el.dataset.i18nAttr.split(',').forEach((pair) => {
+      const [attr, key] = pair.split(':').map((s) => s.trim());
+      if (attr && key && dict[key] != null) el.setAttribute(attr, dict[key]);
+    });
+  });
+
+  const titleEl = document.querySelector('title');
+  const titleKey = titleEl?.dataset?.i18n;
+  if (titleKey && dict[titleKey]) document.title = dict[titleKey];
 }
 
 /* ─── Language switcher ──────────────────────────────────────── */
@@ -878,6 +973,13 @@ function setupLangSwitcher() {
     menu.hidden = false;
   };
 
+  const syncTriggerToButton = (btn) => {
+    const name = btn.querySelector('.lang-name')?.textContent?.trim();
+    const flagText = btn.querySelector('.lang-flag')?.textContent?.trim();
+    if (name) label.textContent = name;
+    if (flagText) flag.textContent = flagText;
+  };
+
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
     if (switcher.classList.contains('is-open')) close();
@@ -894,13 +996,18 @@ function setupLangSwitcher() {
 
   menu.querySelectorAll('button[data-lang]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const name = btn.querySelector('.lang-name')?.textContent?.trim();
-      const flagText = btn.querySelector('.lang-flag')?.textContent?.trim();
-      if (name) label.textContent = name;
-      if (flagText) flag.textContent = flagText;
+      const lang = btn.dataset.lang;
+      if (SUPPORTED_LANGS.includes(lang)) {
+        setLang(lang);
+        applyI18n(lang);
+      }
+      syncTriggerToButton(btn);
       close();
     });
   });
+
+  const initialBtn = menu.querySelector(`button[data-lang="${getLang()}"]`);
+  if (initialBtn) syncTriggerToButton(initialBtn);
 }
 
 /* ─── Programmatic scroll helper ─────────────────────────────── */
@@ -928,6 +1035,7 @@ function smoothScrollTo(targetY, durationSeconds = 0.9) {
 
 /* ─── Init ───────────────────────────────────────────────────── */
 function init() {
+  applyI18n(getLang());
   setupHeaderHide();
   setupLangSwitcher();
   buildCarousel();
