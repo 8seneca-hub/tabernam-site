@@ -10,8 +10,8 @@ interface Props {
 export default function HeroSection({ texts = {} }: Props) {
   const { t } = useI18n();
 
-  const heroTitle = texts.hero_title || 'Lorem ipsum dolor sit consectetur adipiscing elit';
-  const heroBody = texts.hero_body || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
+  const heroTitle = texts.hero_title || 'Four decades of foreign trade. A trusted bridge between Europe and Asia.';
+  const heroBody = texts.hero_body || 'Tabernam is the consulting practice of a career built on the ground — across boardrooms in Beijing, factories in Shanghai, and trade missions stretching from Vietnam to Singapore. We help European leaders enter, scale and reposition in China and beyond, guided by the kind of judgement that only comes from doing the work, year after year.';
 
   return (
     <section className="hero flex items-start gap-10 px-[var(--side-padding)] pt-[146px] pb-[100px] h-screen min-h-[760px] max-[1100px]:flex-col max-[1100px]:pt-[120px] max-[1100px]:pb-20 max-[1100px]:gap-12 max-md:overflow-x-clip max-md:gap-14 max-sm:pt-[100px] max-sm:pb-16 max-sm:gap-8">

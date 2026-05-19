@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Globe v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #cfd6dd;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    overflow: hidden;
+  }
+  #stars { position: fixed; inset: 0; z-index: 0; display: block; }
+  #globe {
+    position: fixed; inset: 0; z-index: 2;
+    transform: translateY(50%) scale(1);
+    transform-origin: center center;
+    transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1);
+  }
+  #globe.shifted {
+    transform: translate(25%, 0) scale(1.4);
+  }
+
+  #intro {
+    position: fixed; top: 8vh; left: 50%;
+    width: 90%; max-width: 720px;
+    text-align: center;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    color: #ffffff; z-index: 10;
+    pointer-events: none;
+    transform: translate(-50%, 0);
+    opacity: 1;
+    transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1),
+                opacity 0.7s ease;
+  }
+  #intro.out {
+    transform: translate(-50%, -140%);
+    opacity: 0;
+  }
+  #intro h1 {
+    margin: 0 0 16px;
+    font-size: clamp(24px, 2.6vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  #intro p {
+    margin: 0 auto;
+    max-width: 620px;
+    font-size: clamp(13px, 1.05vw, 15px);
+    line-height: 1.6;
+    font-weight: 400;
+    color: #b8c2cc;
+  }
+  #intro .cta {
+    pointer-events: auto;
+    display: inline-block;
+    margin-top: 24px;
+    padding: 12px 26px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  #intro .cta:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: translateY(-1px);
+  }
+
+  /* ─── Cities panel (slides in from the left when globe shifts right) ──── */
+  #cities {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 420px; max-width: 38vw;
+    z-index: 11;
+    padding: 80px 20px 32px 32px;
+    display: flex; flex-direction: column;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    color: #ffffff;
+    background: linear-gradient(90deg,
+      rgba(0,0,0,0.65) 0%,
+      rgba(0,0,0,0.45) 70%,
+      rgba(0,0,0,0) 100%);
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1),
+                opacity 0.7s ease;
+  }
+  #cities.in {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #cities h2 {
+    margin: 0 0 18px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #b8c2cc;
+  }
+  #cities-list {
+    overflow-y: auto;
+    flex: 1;
+    display: flex; flex-direction: column;
+    gap: 12px;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.18) transparent;
+  }
+  #cities-list::-webkit-scrollbar { width: 6px; }
+  #cities-list::-webkit-scrollbar-track { background: transparent; }
+  #cities-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15); border-radius: 3px;
+  }
+  .city-card {
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+  .city-card:hover {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.22);
+    transform: translateX(4px);
+  }
+  .city-thumb {
+    height: 130px;
+    position: relative;
+  }
+  .city-thumb::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);
+  }
+  .city-meta { padding: 12px 14px 14px; }
+  .city-name {
+    font-size: 15px; font-weight: 600;
+    letter-spacing: -0.01em; margin-bottom: 4px;
+  }
+  .city-region {
+    font-size: 11px; color: #8a96a3;
+    letter-spacing: 0.04em;
+  }
+
+  /* film-grain / scan overlay — very subtle on dark */
+  #grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    background-image: url('noise-anim.gif');
+    background-size: 240px 240px;
+    background-repeat: repeat;
+    mix-blend-mode: screen;
+    opacity: 0.04;
+  }
+
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="globe"></div>
+<div id="grain"></div>
+
+<div id="intro">
+  <h1>A career mapped across continents.</h1>
+  <p>Each pin marks years of work — negotiations, factories, partnerships and the people behind them. Explore the cities that have shaped four decades of foreign trade, with a focus on the relationships built across China.</p>
+  <button type="button" class="cta">View cities</button>
+</div>
+
+<aside id="cities">
+  <h2>Destinations · China</h2>
+  <div id="cities-list"></div>
+</aside>
+
+<script>
+  // ─── Animated parallax starfield (multi-layer 2D canvas) ──────────────────
+  (function drawStars() {
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+
+    // Each layer drifts at its own rate. Far layer = many small dim stars,
+    // near layer = fewer larger brighter stars — classic depth illusion.
+    // Each layer drifts at its own rate. Far layer = many small dim stars,
+    // near layer = fewer larger brighter stars — classic depth illusion.
+    const LAYERS = [
+      { density: 9600,  speed: 0.0010, sizeMin: 0.3, sizeMax: 0.7, alphaMin: 0.06, alphaMax: 0.18, brightChance: 0.00 },
+      { density: 14400, speed: 0.0040, sizeMin: 0.5, sizeMax: 1.0, alphaMin: 0.14, alphaMax: 0.32, brightChance: 0.02 },
+      { density: 28000, speed: 0.0080, sizeMin: 0.8, sizeMax: 1.6, alphaMin: 0.28, alphaMax: 0.55, brightChance: 0.12 }
+    ];
+
+    let tileW = 0, tileH = 0;
+    let last = performance.now();
+
+    function buildLayer(layer, dpr) {
+      const count = Math.floor((tileW * tileH) / layer.density);
+      const tile = document.createElement('canvas');
+      tile.width = tileW;
+      tile.height = tileH;
+      const tctx = tile.getContext('2d');
+
+      for (let i = 0; i < count; i++) {
+        const bright = Math.random() < layer.brightChance;
+        const x = Math.random() * tileW;
+        const y = Math.random() * tileH;
+        const r = (layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin)) * dpr * (bright ? 1.6 : 1);
+        const a = (layer.alphaMin + Math.random() * (layer.alphaMax - layer.alphaMin)) * (bright ? 1 : 0.85);
+        const tint = bright && Math.random() < 0.25 ? 'rgba(150,175,210,' : 'rgba(180,195,215,';
+
+        // Draw star plus horizontal wrap copies for seamless tiling.
+        for (const dx of [0, -tileW, tileW]) {
+          tctx.beginPath();
+          tctx.fillStyle = tint + a + ')';
+          tctx.arc(x + dx, y, r, 0, Math.PI * 2);
+          tctx.fill();
+        }
+      }
+
+      return { tile, speed: layer.speed, offset: Math.random() * tileW };
+    }
+
+    let layers = [];
+
+    function seed() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width  = window.innerWidth  * dpr;
+      const h = canvas.height = window.innerHeight * dpr;
+      canvas.style.width  = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+
+      tileW = w * 2;
+      tileH = h;
+      layers = LAYERS.map(l => buildLayer(l, dpr));
+    }
+
+    function tick(now) {
+      const dt = now - last;
+      last = now;
+
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (const L of layers) {
+        const pxPerMs = (canvas.width * L.speed) / 1000;
+        L.offset = (L.offset + dt * pxPerMs) % tileW;
+        ctx.drawImage(L.tile, -L.offset, 0);
+        ctx.drawImage(L.tile, -L.offset + tileW, 0);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    seed();
+    requestAnimationFrame(tick);
+    window.addEventListener('resize', seed);
+  })();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2"></script>
+<script>
+  // ─── Single origin ────────────────────────────────────────────────────────
+  const SLOVAKIA = { lat: 48.1486, lng: 17.1077 }; // Bratislava
+
+  // ─── ~20 destinations across China ────────────────────────────────────────
+  const CHINA_DESTINATIONS = [
+    { name: 'Beijing',    lat: 39.9042, lng: 116.4074 },
+    { name: 'Shanghai',   lat: 31.2304, lng: 121.4737 },
+    { name: 'Guangzhou',  lat: 23.1291, lng: 113.2644 },
+    { name: 'Shenzhen',   lat: 22.5429, lng: 114.0596 },
+    { name: 'Chengdu',    lat: 30.5728, lng: 104.0668 },
+    { name: 'Chongqing',  lat: 29.5630, lng: 106.5516 },
+    { name: "Xi'an",      lat: 34.3416, lng: 108.9398 },
+    { name: 'Wuhan',      lat: 30.5928, lng: 114.3055 },
+    { name: 'Hangzhou',   lat: 30.2741, lng: 120.1551 },
+    { name: 'Tianjin',    lat: 39.3434, lng: 117.3616 },
+    { name: 'Nanjing',    lat: 32.0603, lng: 118.7969 },
+    { name: 'Harbin',     lat: 45.8038, lng: 126.5340 },
+    { name: 'Shenyang',   lat: 41.8057, lng: 123.4315 },
+    { name: 'Kunming',    lat: 25.0389, lng: 102.7183 },
+    { name: 'Lhasa',      lat: 29.6520, lng:  91.1721 },
+    { name: 'Urumqi',     lat: 43.8256, lng:  87.6168 },
+    { name: 'Lanzhou',    lat: 36.0611, lng: 103.8343 },
+    { name: 'Qingdao',    lat: 36.0671, lng: 120.3826 },
+    { name: 'Hong Kong',  lat: 22.3193, lng: 114.1694 },
+    { name: 'Xiamen',     lat: 24.4798, lng: 118.0894 }
+  ];
+
+  // ─── Arc styling (green "supplying tech" palette from source bundle) ──────
+  const PALETTE = [
+    'rgba(25,250,143,0.5)',  'rgba(25,250,143,0.25)', 'rgba(3,109,60,0.125)',
+    'rgba(3,109,60,0.125)',  'rgba(25,250,143,0.25)', 'rgba(25,250,143,0.5)'
+  ];
+  const DASH_LEN = 1, DASH_GAP = 15;
+
+  const arcs = CHINA_DESTINATIONS.map(d => ({
+    startLat: SLOVAKIA.lat, startLng: SLOVAKIA.lng,
+    endLat:   d.lat,        endLng:   d.lng,
+    color: PALETTE,
+    stroke: 0.5,
+    dashLength: DASH_LEN, dashGap: DASH_GAP,
+    dashInitialGap: Math.random() * (DASH_LEN + DASH_GAP),
+    dashAnimateTime: 2000
+  }));
+
+  (async () => {
+    const globe = Globe()(document.getElementById('globe'))
+      .backgroundColor('rgba(0,0,0,0)')
+      .atmosphereColor('#6db4ff')
+      .atmosphereAltitude(0.22)
+      .globeImageUrl('earth-blue-marble.jpg')
+      .bumpImageUrl('globe-topology.png')
+
+      // Arcs: 20 lines, all from Slovakia, fanning out across China
+      .arcsData(arcs)
+      .arcColor('color')
+      .arcStroke('stroke')
+      .arcAltitudeAutoScale(0.5)
+      .arcDashLength('dashLength')
+      .arcDashGap('dashGap')
+      .arcDashInitialGap('dashInitialGap')
+      .arcDashAnimateTime('dashAnimateTime')
+      .arcsTransitionDuration(0)
+
+      // Pulsing ripple at the Slovakia origin
+      .ringsData([{ lat: SLOVAKIA.lat, lng: SLOVAKIA.lng }])
+      .ringColor(() => t => `rgba(255,255,255,${0.9 * (1 - t)})`)
+      .ringMaxRadius(2.5)
+      .ringPropagationSpeed(0.9)
+      .ringRepeatPeriod(700)
+      .ringAltitude(0.005)
+
+      // Solid green dot at the origin
+      .pointsData([{ lat: SLOVAKIA.lat, lng: SLOVAKIA.lng }])
+      .pointColor(() => 'rgb(25,250,143)')
+      .pointAltitude(0.012)
+      .pointRadius(0.3);
+
+    globe.globeMaterial().bumpScale = 5;
+
+    // Start centered on Slovakia; auto-rotate will bring China into view
+    globe.pointOfView({ lat: SLOVAKIA.lat, lng: SLOVAKIA.lng, altitude: 2.2 }, 0);
+
+    const ctrl = globe.controls();
+    ctrl.autoRotate = true;
+    ctrl.autoRotateSpeed = 0.3;
+    ctrl.enableZoom = false;
+
+    window.addEventListener('resize', () => {
+      globe.width(window.innerWidth).height(window.innerHeight);
+    });
+  })().catch(err => {
+    console.error(err);
+  });
+
+  // ─── Build the cities list from the destination data ──────────────────────
+  (function buildCityList() {
+    const list = document.getElementById('cities-list');
+    const n = CHINA_DESTINATIONS.length;
+    CHINA_DESTINATIONS.forEach((d, i) => {
+      const hue  = Math.floor((i * 360) / n);
+      const hue2 = (hue + 28) % 360;
+      const card = document.createElement('div');
+      card.className = 'city-card';
+      card.innerHTML = `
+        <div class="city-thumb" style="background: linear-gradient(135deg,
+            hsl(${hue}, 48%, 30%) 0%,
+            hsl(${hue2}, 58%, 16%) 100%)"></div>
+        <div class="city-meta">
+          <div class="city-name">${d.name}</div>
+          <div class="city-region">China · ${d.lat.toFixed(2)}°, ${d.lng.toFixed(2)}°</div>
+        </div>`;
+      list.appendChild(card);
+    });
+  })();
+
+  // ─── CTA: shift + scale the globe, slide intro out, slide cities in ──────
+  document.querySelector('#intro .cta').addEventListener('click', () => {
+    document.getElementById('globe').classList.toggle('shifted');
+    document.getElementById('intro').classList.toggle('out');
+    document.getElementById('cities').classList.toggle('in');
+  });
+</script>
+</body>
+</html>

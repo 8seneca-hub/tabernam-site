@@ -10,7 +10,7 @@ interface Props {
 export default function AboutContent({ texts }: Props) {
   const { t } = useI18n();
 
-  const aboutBody = texts.about_body || 'Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac.';
+  const aboutBody = texts.about_body || 'I have spent more than four decades in foreign trade, working primarily with partners and enterprises in China. Along the way, the work has taken me to Vietnam, Mongolia, Japan, the United States, Kenya, Germany, Austria, Sweden, Laos, Cambodia, Singapore — and dozens of other markets. What I offer today is not a service catalogue. It is the accumulated judgement of a long career: how to read a counterparty, how to structure a relationship, and how to make business in unfamiliar places feel familiar.';
 
   return (
     <main className="split-page grid grid-cols-5 gap-15 items-start px-[var(--side-padding)] pt-[calc(var(--header-height)+80px)] pb-20 max-w-[var(--max-width)] mx-auto min-h-screen max-[900px]:grid-cols-1 max-[900px]:gap-10">

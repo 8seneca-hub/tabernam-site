@@ -18,7 +18,7 @@ const PORTRAIT_IMAGES = [
 export default function ContactContent({ texts, addresses }: Props) {
   const { t, lang } = useI18n();
 
-  const contactBody = texts.contact_body || 'Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac.';
+  const contactBody = texts.contact_body || 'If you are entering, scaling or repositioning your business in Asia — or simply want a candid second opinion before you take the next step — I welcome the conversation. Reach out through any of the offices below and we will arrange a time to talk.';
 
   useEffect(() => {
     const cards = document.querySelectorAll<HTMLDetailsElement>('.info-card');

@@ -93,7 +93,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1542223616-740d5dff7f56?auto=format&fit=crop&w=900&q=80',
     title: 'Beijing CBD Office',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: 'The heart of corporate China. Decades of meetings, ministry calls and partnership talks have started in this district — where policy, capital and ambition meet.',
   },
   {
     id: 'beijing-wangjing',
@@ -105,7 +105,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=900&q=80',
     title: 'Beijing Wangjing Hub',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: 'A quieter side of the capital, where regional offices of multinationals sit beside Chinese tech leaders. A useful base for the long, patient work of building cross-border partnerships.',
   },
   {
     id: 'beijing-zhongguancun',
@@ -117,7 +117,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=80',
     title: 'Beijing Zhongguancun Tech Centre',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: "China's first technology district. Years of dialogue with founders and engineers here have shaped my view of how Chinese innovation actually moves — and how to work with it.",
   },
   {
     id: 'shanghai-pudong',
@@ -129,7 +129,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?auto=format&fit=crop&w=900&q=80',
     title: 'Shanghai Pudong Tower',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: 'The skyline that announced modern China to the world. Pudong has been the setting for some of the most consequential negotiations of my career — fast, formal, and unforgiving of unprepared visitors.',
   },
   {
     id: 'shanghai-jingan',
@@ -141,7 +141,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=900&q=80',
     title: "Shanghai Jing'an Plaza",
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: "Old Shanghai meets the new economy. Jing'an has long been my preferred ground for the slower, relationship-led conversations that come before any deal is announced.",
   },
   {
     id: 'shenzhen-futian',
@@ -153,7 +153,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1536599018102-9f803c140fc1?auto=format&fit=crop&w=900&q=80',
     title: 'Shenzhen Futian Studio',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: 'The most restless city I know. Shenzhen turns ideas into products at a speed that has to be seen to be understood — and remains, after all these years, a place I keep returning to.',
   },
   {
     id: 'guangzhou-tianhe',
@@ -165,7 +165,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?auto=format&fit=crop&w=900&q=80',
     title: 'Guangzhou Tianhe Loft',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: "Trading capital of the south. Generations of merchants have made Guangzhou what it is, and the city's instinct for commerce still shapes every meeting I take here.",
   },
   {
     id: 'chengdu',
@@ -177,7 +177,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1605101100278-5d1deb2b6498?auto=format&fit=crop&w=900&q=80',
     title: 'Chengdu Riverside Atelier',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: 'The unhurried heart of western China. Chengdu rewards patience — and many of my most enduring partnerships in the region began at a slower table here.',
   },
   {
     id: 'hangzhou',
@@ -189,7 +189,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1605101100278-5d1deb2b6498?auto=format&fit=crop&w=900&q=80',
     title: 'Hangzhou West Lake Studio',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: "Home to some of China's most ambitious private enterprises. Hangzhou has taught me how quickly a regional city can become a national centre of gravity when its founders are ready.",
   },
   {
     id: 'xian',
@@ -201,7 +201,7 @@ export const BUSINESSES: Business[] = [
     focus: { x: 0, y: 0, scale: 1.2 },
     image: 'https://images.unsplash.com/photo-1546548970-71785318a17b?auto=format&fit=crop&w=900&q=80',
     title: "Xi'an Heritage Office",
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    body: "Where the old Silk Road began, and where today's overland routes back into Central Asia and Europe still take shape. Xi'an is a useful reminder that East–West trade is older than any of us.",
   },
 ];
 
@@ -219,9 +219,39 @@ export const CHINA_DESTINATIONS = [
 ];
 
 export const CONTACT_ADDRESSES: ContactAddress[] = [
-  { title_en: 'Address 1', title_sk: 'Adresa 1', lines: ['Quam adipiscing vestibulum id tristique.', 'Penatibus lacus luctus magna laoreet torquent curae integer ultricies.', 'Sagittis vehicula aenean nascetur augue e inceptos.', 'Blandit faucibus interdum'], portrait_index: 1 },
-  { title_en: 'Address 2', title_sk: 'Adresa 2', lines: ['Quam adipiscing vestibulum id tristique.', 'Penatibus lacus luctus magna laoreet torquent curae integer ultricies.', 'Sagittis vehicula aenean nascetur augue e inceptos.', 'Blandit faucibus interdum'], portrait_index: 2 },
-  { title_en: 'Address 3', title_sk: 'Adresa 3', lines: ['Quam adipiscing vestibulum id tristique.', 'Penatibus lacus luctus magna laoreet torquent curae integer ultricies.', 'Sagittis vehicula aenean nascetur augue e inceptos.', 'Blandit faucibus interdum'], portrait_index: 3 },
+  {
+    title_en: 'Bratislava — Head Office',
+    title_sk: 'Bratislava — hlavná kancelária',
+    lines: [
+      'Tabernam Consulting',
+      'Bratislava, Slovakia',
+      'By appointment only.',
+      'hello@tabernam.com',
+    ],
+    portrait_index: 1,
+  },
+  {
+    title_en: 'Beijing — China Practice',
+    title_sk: 'Peking — Čínska prax',
+    lines: [
+      'Tabernam China Practice',
+      'Beijing, China',
+      'Meetings arranged in advance via our Bratislava office.',
+      'china@tabernam.com',
+    ],
+    portrait_index: 2,
+  },
+  {
+    title_en: 'Shanghai — Partner Network',
+    title_sk: 'Šanghaj — partnerská sieť',
+    lines: [
+      'Tabernam Partner Network',
+      'Shanghai, China',
+      'Available for delegations and site visits on request.',
+      'shanghai@tabernam.com',
+    ],
+    portrait_index: 3,
+  },
 ]
 
 export const DEFAULT_SETTINGS: SiteSettings = {

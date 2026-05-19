@@ -14,7 +14,7 @@ export default function Footer() {
       <div className="max-w-[var(--max-width)] mx-auto grid grid-cols-[1.6fr_1fr_1fr] gap-16 pb-14 max-sm:grid-cols-1 max-sm:gap-10 max-sm:pb-10">
         <div className="flex flex-col gap-4 max-w-[400px]">
           <Link href="/" className="font-medium text-[28px] text-black">{logoText}</Link>
-          <p className="text-[15px] leading-relaxed text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+          <p className="text-[15px] leading-relaxed text-muted">A consulting practice rooted in four decades of foreign trade. Based in Bratislava, working with partners across China and dozens of markets beyond.</p>
         </div>
         <nav className="footer-col" aria-label={t('aria.footerNav')}>
           <h4 className="text-[13px] font-semibold tracking-widest uppercase text-text mb-5">{t('footer.navigation')}</h4>

@@ -533,8 +533,8 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
 
       <div className="activity-intro flex flex-col gap-15 items-start" id="activity-intro">
         <div className="activity-intro-text flex flex-col gap-5">
-          <h2 className="text-4xl font-medium leading-tight text-text max-sm:text-[28px]">Lorem ipsum dolor sit consectetur adipiscing elit.</h2>
-          <p className="text-base font-normal leading-normal text-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+          <h2 className="text-4xl font-medium leading-tight text-text max-sm:text-[28px]">A career mapped across continents.</h2>
+          <p className="text-base font-normal leading-normal text-text">Each pin marks years of work — negotiations, factories, partnerships and the people behind them. Explore the cities that have shaped four decades of foreign trade, with a focus on the relationships built across China.</p>
         </div>
         <button type="button" className="btn-outline bg-white/10 backdrop-blur-sm border border-[#c0c0c0] rounded-lg px-10 py-5 text-xl font-medium text-black font-[inherit] cursor-pointer transition-[background,border-color] duration-200 hover:bg-white/50 hover:border-[#888]" id="view-cities" onClick={() => enterDetailMode(0)}>
           {t('btn.viewCities')}
@@ -567,7 +567,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
             </div>
             <div className="card-text flex flex-col gap-4">
               <span ref={cardCityRef} className="inline-block self-start text-xs font-medium text-[#646464] bg-[#eee] border border-[#c2c2c2] px-3 py-1 rounded-full tracking-wide" id="card-city"></span>
-              <h3 ref={cardTitleRef} className="text-2xl font-bold text-text" id="card-title">Lorem ipsum dolor</h3>
+              <h3 ref={cardTitleRef} className="text-2xl font-bold text-text" id="card-title"></h3>
               <p ref={cardBodyRef} className="text-base font-normal leading-normal text-text" id="card-body"></p>
             </div>
           </div>
