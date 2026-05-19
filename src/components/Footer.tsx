@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n-context';
 import { useTheme } from '@/lib/theme-context';
-import ActivityLink from './ActivityLink';
+import ActivityLink from './activity/ActivityLink';
 
 export default function Footer() {
   const { t } = useI18n();

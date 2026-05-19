@@ -1,14 +1,15 @@
 import Script from 'next/script';
-import { getBusinesses, getHeroSlides, getPageTexts } from '@/lib/directus';
-import HeroSection from '@/components/HeroSection';
-import QuoteSection from '@/components/QuoteSection';
-import ActivitySection from '@/components/ActivitySection';
+import { getActivities, getHeroSlides, getPageTexts, getFeatures } from '@/lib/directus';
+import HeroSection from '@/components/hero/HeroSection';
+import QuoteSection from '@/components/quote/QuoteSection';
+import ActivitySection from '@/components/activity/ActivitySection';
 
 export default async function HomePage() {
-  const [businesses, heroSlides, texts] = await Promise.all([
-    getBusinesses(),
+  const [activities, heroSlides, texts, features] = await Promise.all([
+    getActivities(),
     getHeroSlides(),
     getPageTexts('home'),
+    getFeatures(),
   ]);
 
   return (
@@ -19,8 +20,8 @@ export default async function HomePage() {
       />
       <main>
         <HeroSection texts={texts} />
-        <QuoteSection texts={texts} />
-        <ActivitySection businesses={businesses} />
+        <QuoteSection texts={texts} features={features} />
+        <ActivitySection activities={activities} />
       </main>
     </>
   );

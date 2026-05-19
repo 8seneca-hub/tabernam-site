@@ -1,22 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
+import { motion } from 'motion/react';
 import { useI18n } from '@/lib/i18n-context';
 import type { PageTexts, ContactAddress } from '@/lib/directus';
+import FadeIn from '@/animations/FadeIn';
 
 interface Props {
   texts: PageTexts;
   addresses: ContactAddress[];
 }
 
-const PORTRAIT_IMAGES = [
-  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1040&h=990&q=80',
-  'https://images.unsplash.com/photo-1496564203457-11bb12075d90?auto=format&fit=crop&w=1040&h=990&q=80',
-  'https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=1040&h=990&q=80',
-];
-
 export default function ContactContent({ texts, addresses }: Props) {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
 
   const contactBody = texts.contact_body || 'Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac.';
 
@@ -46,31 +42,46 @@ export default function ContactContent({ texts, addresses }: Props) {
   return (
     <main className="contact-page grid grid-cols-2 gap-x-15 gap-y-15 items-start px-[var(--side-padding)] pt-[calc(var(--header-height)+80px)] pb-20 max-w-[var(--max-width)] mx-auto min-h-screen max-[900px]:grid-cols-1">
       <section className="contact-intro col-span-full flex flex-col gap-5 max-w-[760px]">
-        <h1 className="text-5xl font-semibold text-black leading-tight">{t('heading.contact')}</h1>
-        <p className="text-base font-normal text-[#191919] leading-normal">{contactBody}</p>
+        <FadeIn delay={0.05} as="h1">
+          <h1 className="text-5xl font-semibold text-black leading-tight">{t('heading.contact')}</h1>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <p className="text-base font-normal text-[#191919] leading-normal">{contactBody}</p>
+        </FadeIn>
       </section>
 
       <section className="contact-portrait col-start-1 max-[900px]:col-auto">
-        <div className="portrait-stack relative w-full aspect-[519/495] bg-[#ededed] rounded-xl overflow-hidden" aria-hidden="true">
-          {addresses.map((addr, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              className={`portrait-img${i === 0 ? ' is-active' : ''}`}
-              data-portrait={String(addr.portrait_index)}
-              src={PORTRAIT_IMAGES[i] || PORTRAIT_IMAGES[0]}
-              alt=""
-            />
-          ))}
-        </div>
+        <FadeIn delay={0.2}>
+          <div className="portrait-stack relative w-full aspect-[519/495] bg-[#ededed] rounded-xl overflow-hidden" aria-hidden="true">
+            {addresses.map((addr, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                className={`portrait-img${i === 0 ? ' is-active' : ''}`}
+                data-portrait={String(addr.portrait_index)}
+                src={addr.image}
+                alt=""
+              />
+            ))}
+          </div>
+        </FadeIn>
       </section>
 
       <aside className="contact-details col-start-2 flex flex-col gap-2.5 max-[900px]:col-auto">
         {addresses.map((addr, i) => (
-          <details key={i} className="info-card border border-[#dcdcdc] rounded-xl p-[19px]" data-portrait={String(addr.portrait_index)} open={i === 0}>
+          <motion.details
+            key={i}
+            className="info-card border border-[#dcdcdc] rounded-xl p-[19px]"
+            data-portrait={String(addr.portrait_index)}
+            open={i === 0}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ delay: 0.3 + i * 0.1, duration: 0.7, ease: [0.22, 0.61, 0.36, 1] as [number, number, number, number] }}
+          >
             <summary className="flex items-center gap-2.5 p-2.5">
               <span className="info-card-title flex-1 text-2xl font-medium text-black">
-                {lang === 'sk' ? addr.title_sk : addr.title_en}
+                {t(`contact.address${i + 1}`) || addr.title_en}
               </span>
               <span className="info-card-toggle" aria-hidden="true"></span>
             </summary>
@@ -79,7 +90,7 @@ export default function ContactContent({ texts, addresses }: Props) {
                 <p key={j} className="text-base font-normal text-[#191919] leading-normal">{line}</p>
               ))}
             </div>
-          </details>
+          </motion.details>
         ))}
       </aside>
     </main>
