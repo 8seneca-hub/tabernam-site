@@ -2,7 +2,7 @@ import { createDirectus, rest, staticToken, readItems, readSingleton } from '@di
 
 // ── Directus collection types ────────────────────────────────────
 
-export interface CMSBusiness {
+export interface CMSActivity {
   id: number;
   slug: string;
   name: string;
@@ -30,7 +30,7 @@ export interface CMSHeroSlide {
 
 export interface CMSPageText {
   id: number;
-  page: string;       // 'home' | 'about' | 'business' | 'contact'
+  page: string;       // 'home' | 'about' | 'activity' | 'contact'
   section: string;    // e.g. 'hero_title', 'hero_body', 'quote_en', 'quote_zh'
   content: string;
 }
@@ -41,22 +41,41 @@ export interface CMSContactAddress {
   title_sk: string;
   lines: string;      // newline-separated address lines
   portrait_index: number;
+  image: string | null;
   sort: number;
 }
 
 export interface CMSI18nString {
   id: number;
-  key: string;         // e.g. 'nav.contact'
-  en: string;
-  sk: string;
+  key: string;
+  lang: string;
+  value: string;
+}
+
+export interface CMSLanguage {
+  id: number;
+  code: string;
+  name: string;
+  flag: string | null;
+  is_default: boolean;
+  sort: number | null;
+}
+
+export interface CMSFeature {
+  id: number;
+  icon_svg: string | null;
+  text: string;
+  sort: number | null;
 }
 
 export interface CMSSchema {
-  businesses: CMSBusiness[];
+  activities: CMSActivity[];
   hero_slides: CMSHeroSlide[];
   page_texts: CMSPageText[];
   contact_addresses: CMSContactAddress[];
   i18n_strings: CMSI18nString[];
+  features: CMSFeature[];
+  languages: CMSLanguage[];
   site_settings: CMSSiteSettings;
 }
 
@@ -90,23 +109,32 @@ const directus = createDirectus<CMSSchema>(directusUrl)
 
 export default directus;
 
+/** Convert a Directus file UUID (or full URL) to an asset URL. */
+function assetUrl(value: string | null | undefined): string {
+  if (!value) return '';
+  // Already a full URL — return as-is
+  if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  // UUID — build asset URL
+  return `${directusUrl}/assets/${value}`;
+}
+
 // ── Fetchers (server-side, with fallbacks) ──────────────────────
 
 import {
   DEFAULT_SETTINGS,
-  BUSINESSES as FALLBACK_BUSINESSES,
+  ACTIVITIES as FALLBACK_ACTIVITIES,
   CONTACT_ADDRESSES as FALLBACK_CONTACT_ADDRESSES,
   HERO_SLIDES as FALLBACK_HERO_SLIDES
 } from './data';
-import { I18N as FALLBACK_I18N } from './i18n';
-import type { Business, HeroSlide, ContactAddress, SiteSettings, PageTexts } from './data';
-export type { Business, HeroSlide, ContactAddress, SiteSettings, PageTexts };
-import type { Lang } from './i18n';
+import { FALLBACK_DICTIONARIES, FALLBACK_LANGS, type LangInfo } from './i18n';
+import type { Activity, HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature } from './data';
+export type { Activity, HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature };
+export type { LangInfo };
 
-export async function getBusinesses(): Promise<Business[]> {
+export async function getActivities(): Promise<Activity[]> {
   try {
     const items = await directus.request(
-      readItems('businesses', {
+      readItems('activities', {
         sort: ['sort'],
         limit: -1,
       })
@@ -119,12 +147,12 @@ export async function getBusinesses(): Promise<Business[]> {
       altitude: b.altitude,
       dot: { x: b.dot_x, y: b.dot_y },
       focus: { x: b.focus_x, y: b.focus_y, scale: b.focus_scale },
-      image: b.image,
+      image: assetUrl(b.image),
       title: b.title,
       body: b.body,
     }));
   } catch (e) {
-    console.warn('Directus fetch failed for businesses, using fallback:', e);
+    console.warn('Directus fetch failed for activities, using fallback:', e);
     return [];
   }
 }
@@ -138,11 +166,29 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
       })
     );
     return items.map((s) => ({
-      image: s.image,
+      image: assetUrl(s.image),
       alt: s.alt,
     }));
   } catch (e) {
     console.warn('Directus fetch failed for hero_slides, using fallback:', e);
+    return [];
+  }
+}
+
+export async function getFeatures(): Promise<Feature[]> {
+  try {
+    const items = await directus.request(
+      readItems('features', {
+        sort: ['sort'],
+        limit: -1,
+      })
+    );
+    return items.map((f) => ({
+      iconSvg: f.icon_svg || '',
+      text: f.text,
+    }));
+  } catch (e) {
+    console.warn('Directus fetch failed for features, using fallback:', e);
     return [];
   }
 }
@@ -155,9 +201,12 @@ export async function getPageTexts(page: string): Promise<PageTexts> {
         limit: -1,
       })
     );
+    const IMAGE_SECTIONS = ['hero_image_1', 'hero_image_2', 'portrait_image'];
     const texts: PageTexts = {};
     items.forEach((t) => {
-      texts[t.section] = t.content;
+      texts[t.section] = IMAGE_SECTIONS.includes(t.section)
+        ? assetUrl(t.content)
+        : t.content;
     });
     return texts;
   } catch (e) {
@@ -179,6 +228,7 @@ export async function getContactAddresses(): Promise<ContactAddress[]> {
       title_sk: a.title_sk,
       lines: a.lines.split('\n').filter(Boolean),
       portrait_index: a.portrait_index,
+      image: assetUrl(a.image),
     }));
   } catch (e) {
     console.warn('Directus fetch failed for contact_addresses, using fallback:', e);
@@ -212,21 +262,39 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
 }
 
-export async function getI18nStrings(): Promise<Record<Lang, Record<string, string>>> {
+export async function getLanguages(): Promise<LangInfo[]> {
   try {
     const items = await directus.request(
-      readItems('i18n_strings', {
-        limit: -1,
-      })
+      readItems('languages', { sort: ['sort'], limit: -1 })
     );
-    const result: Record<Lang, Record<string, string>> = { en: {}, sk: {} };
+    return items.map((l) => ({
+      code: l.code,
+      name: l.name,
+      flag: l.flag || '',
+      isDefault: l.is_default,
+    }));
+  } catch (e) {
+    console.warn('Directus fetch failed for languages, using fallback:', e);
+    return FALLBACK_LANGS;
+  }
+}
+
+export async function getDictionaries(): Promise<Record<string, Record<string, string>>> {
+  try {
+    const items = await directus.request(
+      readItems('i18n_strings', { limit: -1 })
+    );
+    const result: Record<string, Record<string, string>> = {};
     items.forEach((s) => {
-      result.en[s.key] = s.en;
-      result.sk[s.key] = s.sk;
+      if (!result[s.lang]) result[s.lang] = {};
+      result[s.lang][s.key] = s.value;
     });
+    for (const [lang, dict] of Object.entries(FALLBACK_DICTIONARIES)) {
+      result[lang] = { ...dict, ...result[lang] };
+    }
     return result;
   } catch (e) {
     console.warn('Directus fetch failed for i18n_strings, using fallback:', e);
-    return FALLBACK_I18N;
+    return FALLBACK_DICTIONARIES;
   }
 }

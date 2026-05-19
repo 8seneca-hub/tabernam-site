@@ -1,55 +1,57 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
-import { getLang, setLang as persistLang, I18N as FALLBACK_I18N, type Lang } from './i18n';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import { getLang, setLang as persistLang, type LangInfo } from './i18n';
 
 interface I18nContextValue {
-  lang: Lang;
-  switchLang: (lang: Lang) => void;
+  lang: string;
+  languages: LangInfo[];
+  switchLang: (lang: string) => void;
   t: (key: string) => string;
 }
 
 const I18nContext = createContext<I18nContextValue>({
   lang: 'en',
+  languages: [],
   switchLang: () => {},
   t: (key) => key,
 });
 
 interface I18nProviderProps {
   children: ReactNode;
-  dictionaries?: Record<Lang, Record<string, string>>;
+  languages: LangInfo[];
+  dictionaries: Record<string, Record<string, string>>;
 }
 
-export function I18nProvider({ children, dictionaries }: I18nProviderProps) {
-  const [lang, setLangState] = useState<Lang>('en');
+export function I18nProvider({ children, languages, dictionaries }: I18nProviderProps) {
+  const defaultLang = useMemo(
+    () => languages.find((l) => l.isDefault)?.code || languages[0]?.code || 'en',
+    [languages],
+  );
+  const codes = useMemo(() => languages.map((l) => l.code), [languages]);
 
-  // Merge CMS dictionaries over fallback
-  const merged: Record<Lang, Record<string, string>> = {
-    en: { ...FALLBACK_I18N.en, ...dictionaries?.en },
-    sk: { ...FALLBACK_I18N.sk, ...dictionaries?.sk },
-  };
+  const [lang, setLangState] = useState(defaultLang);
 
   useEffect(() => {
-    setLangState(getLang());
-  }, []);
+    setLangState(getLang(codes));
+  }, [codes]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
 
-  const switchLang = useCallback((newLang: Lang) => {
+  const switchLang = useCallback((newLang: string) => {
     setLangState(newLang);
     persistLang(newLang);
   }, []);
 
   const t = useCallback(
-    (key: string) => merged[lang]?.[key] ?? merged.en[key] ?? key,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [lang, dictionaries],
+    (key: string) => dictionaries[lang]?.[key] ?? dictionaries[defaultLang]?.[key] ?? key,
+    [lang, dictionaries, defaultLang],
   );
 
   return (
-    <I18nContext.Provider value={{ lang, switchLang, t }}>
+    <I18nContext.Provider value={{ lang, languages, switchLang, t }}>
       {children}
     </I18nContext.Provider>
   );

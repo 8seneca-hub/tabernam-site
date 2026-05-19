@@ -2,15 +2,15 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useInView } from 'motion/react';
 import { useI18n } from '@/lib/i18n-context';
-import { BUSINESSES as FALLBACK_BUSINESSES, CHINA_DESTINATIONS, SLOVAKIA_COORDS, AUTO_ADVANCE_MS, RING_FADE_MS } from '@/lib/data';
-import type { Business } from '@/lib/data';
+import { ACTIVITIES as FALLBACK_ACTIVITIES, CHINA_DESTINATIONS, SLOVAKIA_COORDS, AUTO_ADVANCE_MS, RING_FADE_MS } from '@/lib/data';
+import type { Activity } from '@/lib/data';
 
 interface Props {
-  businesses?: Business[];
+  activities?: Activity[];
 }
 
-/* Globe.gl is loaded via CDN script tag — declared as global. */
 declare const Globe: (...args: unknown[]) => unknown;
 
 interface GlobeInstance {
@@ -51,8 +51,8 @@ interface GlobeInstance {
   height: (h: number) => GlobeInstance;
 }
 
-export default function ActivitySection({ businesses: businessesProp }: Props) {
-  const BUSINESSES = businessesProp && businessesProp.length > 0 ? businessesProp : FALLBACK_BUSINESSES;
+export default function ActivitySection({ activities: activitiesProp }: Props) {
+  const ACTIVITIES = activitiesProp && activitiesProp.length > 0 ? activitiesProp : FALLBACK_ACTIVITIES;
   const { t } = useI18n();
   const activityRef = useRef<HTMLElement>(null);
   const globeContainerRef = useRef<HTMLDivElement>(null);
@@ -103,7 +103,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
 
   const applyActive = useCallback((i: number) => {
     activeIndexRef.current = i;
-    const b: Business = BUSINESSES[i];
+    const b: Activity = ACTIVITIES[i];
     const globe = globeRef.current;
 
     if (listRef.current) {
@@ -123,12 +123,12 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     if (cardCityRef.current) cardCityRef.current.textContent = b.label || '';
     if (cardTitleRef.current) cardTitleRef.current.textContent = b.title;
     if (cardBodyRef.current) cardBodyRef.current.textContent = b.body;
-    if (cardLinkRef.current) cardLinkRef.current.href = `/business?id=${encodeURIComponent(b.id)}`;
+    if (cardLinkRef.current) cardLinkRef.current.href = `/activities?id=${encodeURIComponent(b.id)}`;
     if (cardRef.current) cardRef.current.setAttribute('aria-hidden', 'false');
     if (cityPanelRef.current) cityPanelRef.current.setAttribute('aria-hidden', 'false');
 
     if (globe && b.coords) {
-      globe.pointsData(BUSINESSES.map((entry, idx) => ({
+      globe.pointsData(ACTIVITIES.map((entry, idx) => ({
         lat: entry.coords.lat,
         lng: entry.coords.lng,
         isActive: idx === i,
@@ -141,7 +141,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     }
 
     startProgress();
-  }, [startProgress]);
+  }, [startProgress, ACTIVITIES]);
 
   const setActive = useCallback((i: number) => {
     if (transitionTimerRef.current) {
@@ -211,14 +211,14 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     autoTimerRef.current = setTimeout(() => {
       if (!autoRunningRef.current) return;
       const next = activeIndexRef.current + 1;
-      if (next >= BUSINESSES.length) {
+      if (next >= ACTIVITIES.length) {
         exitDetailModeRef.current(true);
         return;
       }
       setActive(next);
       scheduleNextRef.current();
     }, AUTO_ADVANCE_MS);
-  }, [setActive]);
+  }, [setActive, ACTIVITIES.length]);
 
   scheduleNextRef.current = scheduleNext;
 
@@ -228,7 +228,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     activity.classList.add('is-detail');
     if (globeRef.current) {
       globeRef.current.arcsData([]);
-      globeRef.current.pointsData(BUSINESSES.map((b, idx) => ({
+      globeRef.current.pointsData(ACTIVITIES.map((b, idx) => ({
         lat: b.coords.lat,
         lng: b.coords.lng,
         isActive: idx === startIndex,
@@ -238,12 +238,12 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     setActive(startIndex);
     scheduleNext();
     autoRunningRef.current = true;
-  }, [setActive, scheduleNext]);
+  }, [setActive, scheduleNext, ACTIVITIES]);
 
   const nextCity = useCallback((delta: number) => {
     const current = activeIndexRef.current < 0 ? 0 : activeIndexRef.current;
     const next = current + delta;
-    if (next < 0 || next >= BUSINESSES.length) {
+    if (next < 0 || next >= ACTIVITIES.length) {
       exitDetailMode(true);
       return;
     }
@@ -256,7 +256,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     }
     applyActive(next);
     scheduleNext();
-  }, [exitDetailMode, applyActive, scheduleNext]);
+  }, [exitDetailMode, applyActive, scheduleNext, ACTIVITIES.length]);
 
   // Initialize globe
   useEffect(() => {
@@ -295,7 +295,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
       .arcDashAnimateTime('dashAnimateTime')
       .arcsTransitionDuration(0)
       .ringsData([])
-      .ringColor(() => (t: number) => `rgba(255, 255, 255, ${1 - t})`)
+      .ringColor(() => (ringT: number) => `rgba(255, 255, 255, ${1 - ringT})`)
       .ringMaxRadius(1.5)
       .ringPropagationSpeed(0.75)
       .ringRepeatPeriod(330)
@@ -341,24 +341,13 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
     };
   }, []);
 
-  // Intersection observer for reveal animation
+  // Reveal animation via motion's useInView
+  const isInView = useInView(activityRef, { once: true, amount: 0.7 });
   useEffect(() => {
-    const activity = activityRef.current;
-    if (!activity) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            activity.classList.add('is-revealed');
-          }
-        });
-      },
-      { threshold: 0.7 },
-    );
-    observer.observe(activity);
-    return () => observer.disconnect();
-  }, []);
+    if (isInView && activityRef.current) {
+      activityRef.current.classList.add('is-revealed');
+    }
+  }, [isInView]);
 
   // Scroll trigger for entering detail mode
   useEffect(() => {
@@ -525,7 +514,6 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
   return (
     <section id="activity" ref={activityRef} className="activity relative min-h-screen pb-[max(60px,calc(660px-50vh))] overflow-x-clip">
       <div className="globe-stage" id="globe-stage">
-        <div className="globe-aura" aria-hidden="true"></div>
         <div className="globe-wrap" id="globe-wrap">
           <div className="globe-3d" ref={globeContainerRef} id="globe-3d"></div>
         </div>
@@ -545,7 +533,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
         <button type="button" className="btn-back self-start bg-transparent border-0 px-5 py-3 text-base font-medium text-black cursor-pointer font-[inherit] rounded-lg transition-colors duration-200 hover:bg-black/5" id="go-back" onClick={() => exitDetailMode()}>
           {t('btn.goBack')}
         </button>
-        <ul ref={listRef} className="business-list" id="business-list" role="tablist" hidden></ul>
+        <ul ref={listRef} className="activity-list" id="activity-list" role="tablist" hidden></ul>
         <div className="flex items-center justify-between gap-2 bg-[#eee] border border-[#c2c2c2] rounded-[20px] px-5 py-2.5" role="tablist" aria-label={t('aria.cities')}>
           <button type="button" className="pill-nav bg-transparent border-0 p-2 inline-flex items-center justify-center text-black cursor-pointer rounded-full transition-[background,opacity] duration-200 hover:bg-black/5" id="city-prev" aria-label={t('aria.prevCity')} onClick={() => nextCity(-1)}>
             <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
@@ -571,7 +559,7 @@ export default function ActivitySection({ businesses: businessesProp }: Props) {
               <p ref={cardBodyRef} className="text-base font-normal leading-normal text-text" id="card-body"></p>
             </div>
           </div>
-          <Link ref={cardLinkRef} className="btn self-start inline-flex items-center justify-center bg-button text-button-text text-base font-medium px-5 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:bg-button-hover hover:-translate-y-px" id="card-link" href="/business">
+          <Link ref={cardLinkRef} className="btn self-start inline-flex items-center justify-center bg-button text-button-text text-base font-medium px-5 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:bg-button-hover hover:-translate-y-px" id="card-link" href="/activities">
             {t('btn.learnMore')}
           </Link>
           <div className="card-progress absolute -left-px -right-px -bottom-px h-1 bg-black/[0.04] overflow-hidden"><span ref={progressRef} id="card-progress-bar"></span></div>

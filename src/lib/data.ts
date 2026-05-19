@@ -3,37 +3,43 @@ export interface HeroSlide {
   alt: string;
 }
 
+export interface Feature {
+  iconSvg: string;
+  text: string;
+}
+
 export interface ContactAddress {
   title_en: string;
   title_sk: string;
   lines: string[];
   portrait_index: number;
+  image: string;
 }
 
-export interface BusinessCoords {
+export interface ActivityCoords {
   lat: number;
   lng: number;
 }
 
-export interface BusinessDot {
+export interface ActivityDot {
   x: number;
   y: number;
 }
 
-export interface BusinessFocus {
+export interface ActivityFocus {
   x: number;
   y: number;
   scale: number;
 }
 
-export interface Business {
+export interface Activity {
   id: string;
   name: string;
   label: string;
-  coords: BusinessCoords;
+  coords: ActivityCoords;
   altitude: number;
-  dot: BusinessDot;
-  focus: BusinessFocus;
+  dot: ActivityDot;
+  focus: ActivityFocus;
   image: string;
   title: string;
   body: string;
@@ -82,10 +88,10 @@ export const SLOVAKIA_COORDS = { lat: 48.1486, lng: 17.1077 };
 export const AUTO_ADVANCE_MS = 3000;
 export const RING_FADE_MS = 2000;
 
-export const BUSINESSES: Business[] = [
+export const ACTIVITIES: Activity[] = [
   {
     id: 'beijing-cbd',
-    name: 'Business',
+    name: 'Activity',
     label: 'Beijing',
     coords: { lat: 39.9087, lng: 116.4581 },
     altitude: 2.1,
@@ -97,7 +103,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'beijing-wangjing',
-    name: 'Business',
+    name: 'Activity',
     label: 'Beijing',
     coords: { lat: 41.8, lng: 118.6 },
     altitude: 1.9,
@@ -109,7 +115,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'beijing-zhongguancun',
-    name: 'Business',
+    name: 'Activity',
     label: 'Beijing',
     coords: { lat: 37.6, lng: 113.7 },
     altitude: 2.4,
@@ -121,7 +127,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'shanghai-pudong',
-    name: 'Business',
+    name: 'Activity',
     label: 'Shanghai',
     coords: { lat: 31.2304, lng: 121.5435 },
     altitude: 1.6,
@@ -133,7 +139,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'shanghai-jingan',
-    name: 'Business',
+    name: 'Activity',
     label: 'Shanghai',
     coords: { lat: 29.5, lng: 119.4 },
     altitude: 1.8,
@@ -145,7 +151,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'shenzhen-futian',
-    name: 'Business',
+    name: 'Activity',
     label: 'Shenzhen',
     coords: { lat: 22.5431, lng: 114.0579 },
     altitude: 1.4,
@@ -157,7 +163,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'guangzhou-tianhe',
-    name: 'Business',
+    name: 'Activity',
     label: 'Guangzhou',
     coords: { lat: 23.13, lng: 113.26 },
     altitude: 1.45,
@@ -169,7 +175,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'chengdu',
-    name: 'Business',
+    name: 'Activity',
     label: 'Chengdu',
     coords: { lat: 30.57, lng: 104.07 },
     altitude: 1.5,
@@ -181,7 +187,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'hangzhou',
-    name: 'Business',
+    name: 'Activity',
     label: 'Hangzhou',
     coords: { lat: 30.27, lng: 120.15 },
     altitude: 1.55,
@@ -193,7 +199,7 @@ export const BUSINESSES: Business[] = [
   },
   {
     id: 'xian',
-    name: 'Business',
+    name: 'Activity',
     label: "Xi'an",
     coords: { lat: 34.34, lng: 108.94 },
     altitude: 1.35,
@@ -229,6 +235,7 @@ export const CONTACT_ADDRESSES: ContactAddress[] = [
       'hello@tabernam.com',
     ],
     portrait_index: 1,
+    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80',
   },
   {
     title_en: 'Beijing — China Practice',
@@ -240,6 +247,8 @@ export const CONTACT_ADDRESSES: ContactAddress[] = [
       'china@tabernam.com',
     ],
     portrait_index: 2,
+    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80',
+
   },
   {
     title_en: 'Shanghai — Partner Network',
@@ -251,6 +260,7 @@ export const CONTACT_ADDRESSES: ContactAddress[] = [
       'shanghai@tabernam.com',
     ],
     portrait_index: 3,
+    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80',
   },
 ]
 

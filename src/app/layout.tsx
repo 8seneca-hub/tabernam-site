@@ -3,7 +3,7 @@ import { Inter, Noto_Sans_SC } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/lib/i18n-context';
 import { ThemeProvider } from '@/lib/theme-context';
-import { getI18nStrings, getSiteSettings } from '@/lib/directus';
+import { getLanguages, getDictionaries, getSiteSettings } from '@/lib/directus';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -23,7 +23,7 @@ const notoSansSC = Noto_Sans_SC({
 
 export const metadata: Metadata = {
   title: 'TABERNAM',
-  description: 'Tabernam — Global business presence',
+  description: 'Tabernam — Global activity presence',
 };
 
 export default async function RootLayout({
@@ -31,8 +31,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [dictionaries, settings] = await Promise.all([
-    getI18nStrings(),
+  const [languages, dictionaries, settings] = await Promise.all([
+    getLanguages(),
+    getDictionaries(),
     getSiteSettings(),
   ]);
 
@@ -56,7 +57,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${notoSansSC.variable}`} style={themeVars}>
       <body className="bg-bg text-text leading-snug">
-        <I18nProvider dictionaries={dictionaries}>
+        <I18nProvider languages={languages} dictionaries={dictionaries}>
           <ThemeProvider settings={settings}>
             <Header />
             {children}

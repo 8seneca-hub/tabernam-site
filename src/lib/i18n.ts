@@ -1,12 +1,21 @@
-export const SUPPORTED_LANGS = ['en', 'sk'] as const;
-export type Lang = (typeof SUPPORTED_LANGS)[number];
+export interface LangInfo {
+  code: string;
+  name: string;
+  flag: string;
+  isDefault: boolean;
+}
 
-export const I18N: Record<Lang, Record<string, string>> = {
+export const FALLBACK_LANGS: LangInfo[] = [
+  { code: 'en', name: 'English', flag: '\u{1F1FA}\u{1F1F8}', isDefault: true },
+  { code: 'sk', name: 'Slovakia', flag: '\u{1F1F8}\u{1F1F0}', isDefault: false },
+];
+
+export const FALLBACK_DICTIONARIES: Record<string, Record<string, string>> = {
   en: {
     'page.title.home': 'TABERNAM',
-    'page.title.about': 'About me — TABERNAM',
-    'page.title.business': 'Business — TABERNAM',
-    'page.title.contact': 'Contact — TABERNAM',
+    'page.title.about': 'About me \u2014 TABERNAM',
+    'page.title.activity': 'Activity \u2014 TABERNAM',
+    'page.title.contact': 'Contact \u2014 TABERNAM',
     'nav.contact': 'Contact',
     'nav.about': 'About me',
     'nav.activity': 'Activity',
@@ -31,9 +40,9 @@ export const I18N: Record<Lang, Record<string, string>> = {
   },
   sk: {
     'page.title.home': 'TABERNAM',
-    'page.title.about': 'O mne — TABERNAM',
-    'page.title.business': 'Biznis — TABERNAM',
-    'page.title.contact': 'Kontakt — TABERNAM',
+    'page.title.about': 'O mne \u2014 TABERNAM',
+    'page.title.activity': 'Aktivita \u2014 TABERNAM',
+    'page.title.contact': 'Kontakt \u2014 TABERNAM',
     'nav.contact': 'Kontakt',
     'nav.about': 'O mne',
     'nav.activity': 'Aktivita',
@@ -58,23 +67,21 @@ export const I18N: Record<Lang, Record<string, string>> = {
   },
 };
 
-export function getLang(): Lang {
-  if (typeof window === 'undefined') return 'en';
+export function getLang(supportedCodes: string[]): string {
+  if (typeof window === 'undefined') return supportedCodes[0] || 'en';
   try {
     const saved = localStorage.getItem('lang');
-    if (saved && SUPPORTED_LANGS.includes(saved as Lang)) return saved as Lang;
+    if (saved && supportedCodes.includes(saved)) return saved;
   } catch {
+    // private mode
   }
-  return 'en';
+  return supportedCodes[0] || 'en';
 }
 
-export function setLang(lang: Lang): void {
+export function setLang(lang: string): void {
   try {
     localStorage.setItem('lang', lang);
   } catch {
+    // private mode
   }
-}
-
-export function t(key: string, lang: Lang): string {
-  return I18N[lang]?.[key] ?? I18N.en[key] ?? key;
 }

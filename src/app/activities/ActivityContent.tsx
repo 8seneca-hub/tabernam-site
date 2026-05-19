@@ -1,20 +1,20 @@
 'use client';
 
 import { useI18n } from '@/lib/i18n-context';
-import ActivityLink from '@/components/ActivityLink';
+import ActivityLink from '@/components/activity/ActivityLink';
 import type { PageTexts } from '@/lib/data';
 
 interface Props {
   texts: PageTexts;
 }
 
-export default function BusinessContent({ texts }: Props) {
+export default function ActivityContent({ texts }: Props) {
   const { t } = useI18n();
 
-  const title = texts.business_title || 'On the ground in China';
-  const body1 = texts.business_body_1 || 'For more than forty years, my work has been rooted in the everyday rhythm of Chinese business — long days spent in factories on the Pearl River Delta, slow conversations over tea in Beijing, and quiet negotiations in Shanghai meeting rooms. The relationships I have built here are not the result of a single trip or a strategic memo. They are the product of showing up, again and again, across the decades.';
-  const body2 = texts.business_body_2 || 'Each city on this map represents a chapter of that work: a partnership that took years to mature, a manufacturer who became a friend, a counterpart whose handshake meant more than any contract. China is not a single market. It is dozens of regional economies, each with its own pace, customs and unwritten rules — and the only way to learn them is to spend time inside them. That is the foundation everything I do today is built on.';
-  const body3 = texts.business_body_3 || 'For European leaders considering their first move into Asia, or for those repositioning after years in the region, the goal is the same: turn experience into clarity. I work with a small number of clients each year, helping them see the picture as it actually is — not as it is described in a presentation — and decide, with both confidence and caution, what to do next.';
+  const title = texts.activity_title || 'Lorem ipsum dolor';
+  const body1 = texts.activity_body_1 || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+  const body2 = texts.activity_body_2 || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+  const body3 = texts.activity_body_3 || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
 
   return (
     <main className="w-[706px] max-w-[calc(100%-80px)] mx-auto pt-[109px] pb-[120px] flex flex-col gap-10">
