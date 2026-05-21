@@ -82,8 +82,8 @@ export default function Header() {
   }, [closeNav]);
 
   return (
-    <header ref={headerRef} className="site-header fixed top-0 left-0 right-0 z-100 bg-header border-b border-border flex items-center justify-between px-[var(--side-padding)] py-2.5">
-      <Link href="/" className="font-medium text-2xl text-black max-md:text-lg">{logoText}</Link>
+    <header ref={headerRef} className="site-header fixed top-0 left-0 right-0 z-100 bg-header flex items-center justify-between px-[var(--side-padding)] py-2.5">
+      <Link href="/" className="font-bold text-2xl text-brand uppercase tracking-tight max-md:text-lg">{logoText}</Link>
       <button
         ref={toggleRef}
         type="button"
@@ -98,9 +98,9 @@ export default function Header() {
         <span className="nav-toggle-bar"></span>
       </button>
       <nav ref={navRef} className="nav flex items-center gap-4.5" id="primary-nav">
-        <Link href="/contact" className="text-base font-normal px-5 py-3.5 text-black transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.contact')}</Link>
-        <Link href="/about" className="text-base font-normal px-5 py-3.5 text-black transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.about')}</Link>
-        <ActivityLink className="text-base font-normal px-5 py-3.5 text-black transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.activity')}</ActivityLink>
+        <Link href="/contact" className="text-base font-semibold px-5 py-3.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.contact')}</Link>
+        <Link href="/about" className="text-base font-semibold px-5 py-3.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.about')}</Link>
+        <ActivityLink className="text-base font-semibold px-5 py-3.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.activity')}</ActivityLink>
         <LangSwitcher />
       </nav>
     </header>

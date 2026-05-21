@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Noto_Sans_SC } from 'next/font/google';
+import { DM_Sans, Noto_Sans_SC } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/lib/i18n-context';
 import { ThemeProvider } from '@/lib/theme-context';
@@ -7,10 +7,10 @@ import { getLanguages, getDictionaries, getSiteSettings } from '@/lib/directus';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
+  variable: '--font-dm-sans',
   display: 'swap',
 });
 
@@ -55,7 +55,7 @@ export default async function RootLayout({
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${inter.variable} ${notoSansSC.variable}`} style={themeVars}>
+    <html lang="en" className={`${dmSans.variable} ${notoSansSC.variable}`} style={themeVars}>
       <body className="bg-bg text-text leading-snug">
         <I18nProvider languages={languages} dictionaries={dictionaries}>
           <ThemeProvider settings={settings}>

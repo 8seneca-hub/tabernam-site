@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="mt-20 px-[var(--side-padding)] pt-20 pb-8 bg-footer-bg border-t border-border text-text max-sm:px-[var(--side-padding)] max-sm:pt-14 max-sm:pb-6">
       <div className="max-w-[var(--max-width)] mx-auto grid grid-cols-[1.6fr_1fr_1fr] gap-16 pb-14 max-sm:grid-cols-1 max-sm:gap-10 max-sm:pb-10">
         <div className="flex flex-col gap-4 max-w-[400px]">
-          <Link href="/" className="font-medium text-[28px] text-black">{logoText}</Link>
+          <Link href="/" className="font-medium text-[28px] text-text">{logoText}</Link>
           <p className="text-[15px] leading-relaxed text-muted">A consulting practice rooted in four decades of foreign trade. Based in Bratislava, working with partners across China and dozens of markets beyond.</p>
         </div>
         <nav className="footer-col" aria-label={t('aria.footerNav')}>
@@ -33,7 +33,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="max-w-[var(--max-width)] mx-auto pt-6 border-t border-[#e5e5e5] text-sm text-muted">
+      <div className="max-w-[var(--max-width)] mx-auto pt-6 border-t border-border text-sm text-muted">
         <p>{t('footer.copyright')}</p>
       </div>
     </footer>

@@ -17,38 +17,36 @@ const fadeUp = {
   }),
 };
 
-export default function HeroSection({ texts = {} }: Props) {
+export default function HeroSection(_props: Props) {
   const { t } = useI18n();
 
-  const heroTitle = texts.hero_title || 'Lorem ipsum dolor sit consectetur adipiscing elit';
-  const heroBody = texts.hero_body || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
-
   return (
-    <section className="hero flex items-start gap-10 px-[var(--side-padding)] pt-[146px] pb-[100px] h-screen min-h-[760px] max-[1100px]:flex-col max-[1100px]:pt-[120px] max-[1100px]:pb-20 max-[1100px]:gap-12 max-md:overflow-x-clip max-md:gap-14 max-sm:pt-[100px] max-sm:pb-16 max-sm:gap-8">
-      <div className="flex-[3_1_0] min-w-0 flex flex-col gap-15 items-start text-left text-text max-[1100px]:w-full max-[1100px]:gap-10 max-sm:gap-8">
-        <div className="hero-headline flex flex-col gap-[30px] w-full max-[1100px]:gap-5 max-sm:gap-4">
+    <section className="hero h-screen px-10 pt-[var(--header-height)] pb-10 max-sm:px-0 max-sm:pb-0">
+      <div className="hero-inner bg-gray-70 rounded-3xl h-full flex flex-col items-center justify-center text-center gap-10 px-10 max-sm:rounded-none max-sm:gap-8 max-sm:py-16">
+        <div className="hero-headline flex flex-col gap-[30px] max-w-[65vw] w-full mx-auto max-[1100px]:max-w-[80vw] max-[1100px]:gap-5 max-sm:max-w-none max-sm:gap-4">
           <motion.h1
-            className="text-5xl font-bold leading-tight text-text max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
+            className="text-[48px] font-extrabold tracking-[-0.04em] leading-tight text-text max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
             custom={0.1}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
           >
-            {heroTitle}
+            Four decades of foreign trade. A trusted bridge between{' '}
+            <span className="text-accent">Slovakia and China.</span>
           </motion.h1>
           <motion.p
-            className="text-xl font-normal leading-snug text-text max-[1100px]:text-lg max-md:text-base max-sm:text-base"
+            className="text-xl font-medium leading-snug text-text max-w-[50vw] w-full mx-auto max-[1100px]:text-lg max-[1100px]:max-w-[70vw] max-md:text-base max-sm:text-base max-sm:max-w-none"
             custom={0.2}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
           >
-            {heroBody}
+            Helping Slovakia leaders enter, scale and reposition in China and beyond, guided by the kind of judgement that only comes from doing the work, year after year.
           </motion.p>
         </div>
         <motion.button
           type="button"
-          className="btn inline-flex items-center justify-center bg-button text-button-text text-base font-medium px-5 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:bg-button-hover hover:-translate-y-px"
+          className="btn inline-flex items-center justify-center bg-brand text-white text-base font-medium px-6 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:bg-dark hover:-translate-y-px"
           custom={0.35}
           initial="hidden"
           animate="visible"
@@ -57,35 +55,6 @@ export default function HeroSection({ texts = {} }: Props) {
           {t('btn.getStarted')}
         </motion.button>
       </div>
-      <motion.div
-        className="hero-grid flex-[4_1_0] min-w-0 flex flex-col gap-5 max-[1100px]:w-full"
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 0.61, 0.36, 1] as [number, number, number, number] }}
-      >
-        <div className="hero-row hero-row-1 grid gap-5">
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata"
-                   poster="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80">
-              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4" />
-            </video>
-          </div>
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=600&h=900&q=80" alt="" />
-          </div>
-        </div>
-        <div className="hero-row hero-row-2 grid gap-5">
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&h=600&q=80" alt="" />
-          </div>
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?auto=format&fit=crop&w=900&h=520&q=80" alt="" />
-          </div>
-        </div>
-      </motion.div>
     </section>
   );
 }

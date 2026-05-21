@@ -55,16 +55,16 @@ const CITIES = [
 
 const PALETTES = {
   surveilling: [
-    'rgba(217,70,8,1)', 'rgba(154,52,18,0.7)', 'rgba(124,45,18,0.55)',
-    'rgba(124,45,18,0.55)', 'rgba(154,52,18,0.7)', 'rgba(217,70,8,1)',
+    'rgba(28,69,130,1)', 'rgba(28,69,130,0.7)', 'rgba(28,69,130,0.55)',
+    'rgba(28,69,130,0.55)', 'rgba(28,69,130,0.7)', 'rgba(28,69,130,1)',
   ],
   providing: [
-    'rgba(5,150,105,1)', 'rgba(4,120,87,0.7)', 'rgba(6,95,70,0.55)',
-    'rgba(6,95,70,0.55)', 'rgba(4,120,87,0.7)', 'rgba(5,150,105,1)',
+    'rgba(178,34,34,1)', 'rgba(178,34,34,0.7)', 'rgba(178,34,34,0.55)',
+    'rgba(178,34,34,0.55)', 'rgba(178,34,34,0.7)', 'rgba(178,34,34,1)',
   ],
   funding: [
-    'rgba(29,78,216,1)', 'rgba(30,64,175,0.7)', 'rgba(30,58,138,0.55)',
-    'rgba(30,58,138,0.55)', 'rgba(30,64,175,0.7)', 'rgba(29,78,216,1)',
+    'rgba(16,24,35,1)', 'rgba(16,24,35,0.7)', 'rgba(16,24,35,0.55)',
+    'rgba(16,24,35,0.55)', 'rgba(16,24,35,0.7)', 'rgba(16,24,35,1)',
   ],
 };
 
@@ -99,7 +99,7 @@ export default function GlobePage() {
 
     const globe = (Globe() as (el: HTMLElement) => GlobeInstance)(container)
       .backgroundColor('rgba(0,0,0,0)')
-      .atmosphereColor('#dfe8f2')
+      .atmosphereColor('#E9EDF1')
       .atmosphereAltitude(0.15)
       .globeImageUrl('/earth-blue-marble.jpg')
       .bumpImageUrl('/globe-topology.png')
@@ -128,7 +128,7 @@ export default function GlobePage() {
   return (
     <>
       <style>{`
-        html, body { margin: 0; height: 100%; background: #e8eef5; overflow: hidden; }
+        html, body { margin: 0; height: 100%; background: #E9EDF1; overflow: hidden; }
         #globe-standalone { width: 100vw; height: 100vh; }
         .site-header, .site-footer { display: none !important; }
       `}</style>
