@@ -98,9 +98,9 @@ export default function Header() {
         <span className="nav-toggle-bar"></span>
       </button>
       <nav ref={navRef} className="nav flex items-center gap-4.5" id="primary-nav">
-        <Link href="/contact" className="text-base font-semibold px-5 py-3.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.contact')}</Link>
-        <Link href="/about" className="text-base font-semibold px-5 py-3.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.about')}</Link>
-        <ActivityLink className="text-base font-semibold px-5 py-3.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.activity')}</ActivityLink>
+        <Link href="/contact" className="text-base font-semibold px-2.5 py-2.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.contact')}</Link>
+        <Link href="/about" className="text-base font-semibold px-2.5 py-2.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.about')}</Link>
+        <ActivityLink className="text-base font-semibold px-2.5 py-2.5 text-text transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.activity')}</ActivityLink>
         <LangSwitcher />
       </nav>
     </header>

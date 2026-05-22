@@ -11,7 +11,11 @@
   html, body { margin: 0; background: #000; color: #cfd6dd;
     font-family: ui-monospace, "SF Mono", Menlo, monospace;
     overflow-x: hidden;
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* Edge/IE */
   }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar { display: none; }   /* Chrome/Safari */
   body { min-height: 130vh; position: relative; }
   body.no-scroll { overflow: hidden; height: 100vh; min-height: 100vh; }
   #stars { position: fixed; inset: 0; z-index: 0; display: block; }

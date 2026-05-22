@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { useI18n } from '@/lib/i18n-context';
 import type { PageTexts } from '@/lib/directus';
 
@@ -19,10 +20,27 @@ const fadeUp = {
 
 export default function HeroSection(_props: Props) {
   const { t } = useI18n();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const sidePadding = useTransform(scrollYProgress, [0, 0.2], ['30px', '0px']);
+  const blockPadding = useTransform(scrollYProgress, [0, 0.2], ['30px', '0px']);
 
   return (
-    <section className="hero h-screen px-10 pt-[var(--header-height)] pb-10 max-sm:px-0 max-sm:pb-0">
-      <div className="hero-inner bg-gray-70 rounded-3xl h-full flex flex-col items-center justify-center text-center gap-10 px-10 max-sm:rounded-none max-sm:gap-8 max-sm:py-16">
+    <motion.section
+      ref={sectionRef}
+      className="hero max-sm:!px-0"
+      style={{
+        height: '95vh',
+        paddingLeft: sidePadding,
+        paddingRight: sidePadding,
+        paddingTop: blockPadding,
+        paddingBottom: blockPadding,
+      }}
+    >
+      <div className="hero-inner bg-gray-70 w-full h-full flex flex-col items-center justify-center text-center gap-10 px-10 max-sm:gap-8 max-sm:py-16">
         <div className="hero-headline flex flex-col gap-[30px] max-w-[65vw] w-full mx-auto max-[1100px]:max-w-[80vw] max-[1100px]:gap-5 max-sm:max-w-none max-sm:gap-4">
           <motion.h1
             className="text-[48px] font-extrabold tracking-[-0.04em] leading-tight text-text max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
@@ -55,6 +73,6 @@ export default function HeroSection(_props: Props) {
           {t('btn.getStarted')}
         </motion.button>
       </div>
-    </section>
+    </motion.section>
   );
 }

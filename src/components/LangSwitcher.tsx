@@ -30,14 +30,14 @@ export default function LangSwitcher() {
     <div ref={ref} className={`lang-switcher relative ml-1${open ? ' is-open' : ''}`} data-lang-switcher>
       <button
         type="button"
-        className="lang-trigger flex items-center gap-2 bg-white border-0 px-5 py-3.5 font-[inherit] text-base text-text cursor-pointer w-[162px] max-sm:w-[140px] max-sm:px-3.5 max-sm:py-2.5 max-sm:text-sm"
+        className="lang-trigger flex items-center gap-2 bg-white border-0 px-5 py-2.5 font-[inherit] text-base text-text cursor-pointer w-max max-sm:px-3.5 max-sm:text-sm"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
       >
-        <span className="flex-1 text-left">{current.name}</span>
+        <span className="text-left">{current.name}</span>
         {current.flag && <span className="text-base leading-none" aria-hidden="true">{current.flag}</span>}
-        <svg className="lang-chevron shrink-0 text-text" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+        <svg className="lang-chevron shrink-0 text-text ml-1" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
           <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </button>
