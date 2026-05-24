@@ -1,3 +1,5 @@
+import { CV_TRANSLATIONS } from './translations-cv';
+
 export interface LangInfo {
   code: string;
   name: string;
@@ -10,7 +12,7 @@ export const FALLBACK_LANGS: LangInfo[] = [
   { code: 'sk', name: 'Slovakia', flag: '\u{1F1F8}\u{1F1F0}', isDefault: false },
 ];
 
-export const FALLBACK_DICTIONARIES: Record<string, Record<string, string>> = {
+const COMMON_DICTIONARIES: Record<string, Record<string, string>> = {
   en: {
     'page.title.home': 'TABERNAM',
     'page.title.about': 'About me \u2014 TABERNAM',
@@ -66,6 +68,13 @@ export const FALLBACK_DICTIONARIES: Record<string, Record<string, string>> = {
     'aria.footerNav': 'Navig\u00e1cia v p\u00e4te str\u00e1nky',
   },
 };
+
+export const FALLBACK_DICTIONARIES: Record<string, Record<string, string>> = Object.fromEntries(
+  Object.keys(COMMON_DICTIONARIES).map((lang) => [
+    lang,
+    { ...COMMON_DICTIONARIES[lang], ...(CV_TRANSLATIONS[lang] ?? {}) },
+  ]),
+);
 
 export function getLang(supportedCodes: string[]): string {
   if (typeof window === 'undefined') return supportedCodes[0] || 'en';

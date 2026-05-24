@@ -1,28 +1,21 @@
-import Script from 'next/script';
-import { getActivities, getHeroSlides, getPageTexts, getFeatures } from '@/lib/directus';
+import { getActivities, getHeroSlides } from '@/lib/directus';
 import HeroSection from '@/components/hero/HeroSection';
 import QuoteSection from '@/components/quote/QuoteSection';
-import ActivitySection from '@/components/activity/ActivitySection';
+import HomeMarquee from '@/components/HomeMarquee';
+import GlobeActivitySection from '@/components/activity/globe';
 
 export default async function HomePage() {
-  const [activities, heroSlides, texts, features] = await Promise.all([
+  const [activities, heroSlides] = await Promise.all([
     getActivities(),
     getHeroSlides(),
-    getPageTexts('home'),
-    getFeatures(),
   ]);
 
   return (
-    <>
-      <Script
-        src="https://cdn.jsdelivr.net/npm/globe.gl@2"
-        strategy="beforeInteractive"
-      />
-      <main>
-        <HeroSection texts={texts} />
-        <QuoteSection texts={texts} features={features} />
-        <ActivitySection activities={activities} />
-      </main>
-    </>
+    <main>
+      <HeroSection slides={heroSlides} />
+      <QuoteSection />
+      <HomeMarquee />
+      <GlobeActivitySection cities={activities} />
+    </main>
   );
 }

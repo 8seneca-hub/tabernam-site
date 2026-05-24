@@ -2,14 +2,15 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { useI18n } from '@/lib/i18n-context';
-import { useTheme } from '@/lib/theme-context';
+import { usePathname } from 'next/navigation';
+import Image from '@/components/ui/Image';
+import { useI18n } from '@/app/hook/useI18n';
 import LangSwitcher from './LangSwitcher';
 import ActivityLink from './activity/ActivityLink';
 
 export default function Header() {
   const { t } = useI18n();
-  const { logoText } = useTheme();
+  const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -81,28 +82,63 @@ export default function Header() {
     };
   }, [closeNav]);
 
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const linkClass = (href: string) =>
+    `relative text-sm font-medium px-2 py-2 transition-colors duration-200 ${isActive(href)
+      ? 'text-brand after:absolute after:left-2 after:right-2 after:-bottom-0.5 after:h-[2px] after:bg-brand after:content-[""]'
+      : 'text-text hover:text-brand'
+    }`;
+
   return (
-    <header ref={headerRef} className="site-header fixed top-0 left-0 right-0 z-100 bg-header border-b border-border flex items-center justify-between px-[var(--side-padding)] py-2.5">
-      <Link href="/" className="font-medium text-2xl text-black max-md:text-lg">{logoText}</Link>
-      <button
-        ref={toggleRef}
-        type="button"
-        className="nav-toggle hidden w-10 h-10 p-0 bg-transparent border-0 cursor-pointer relative"
-        aria-label="Open menu"
-        aria-expanded="false"
-        aria-controls="primary-nav"
-        onClick={toggleNav}
+    <header
+      ref={headerRef}
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-header grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
+    >
+      <div className="flex items-center gap-4">
+        {/* <button
+          ref={toggleRef}
+          type="button"
+          className="nav-toggle flex w-10 h-10 p-0 bg-transparent border-0 cursor-pointer relative items-center justify-center"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="primary-nav"
+          onClick={toggleNav}
+        >
+          <span className="nav-toggle-bar"></span>
+          <span className="nav-toggle-bar"></span>
+          <span className="nav-toggle-bar"></span>
+        </button> */}
+
+        <Link href="/" className="flex items-center" aria-label="Tabernam home">
+          <Image
+            src="/tabernam-logo.png"
+            alt="Tabernam"
+            width={100}
+            height={100}
+            priority
+            className="h-7 max-w-[100px] object-contain max-md:h-6 max-md:max-w-[140px]"
+          />
+        </Link>
+      </div>
+
+      <nav
+        ref={navRef}
+        className="nav flex items-center justify-center gap-8 max-md:gap-0"
+        id="primary-nav"
       >
-        <span className="nav-toggle-bar"></span>
-        <span className="nav-toggle-bar"></span>
-        <span className="nav-toggle-bar"></span>
-      </button>
-      <nav ref={navRef} className="nav flex items-center gap-4.5" id="primary-nav">
-        <Link href="/contact" className="text-base font-normal px-5 py-3.5 text-black transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.contact')}</Link>
-        <Link href="/about" className="text-base font-normal px-5 py-3.5 text-black transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.about')}</Link>
-        <ActivityLink className="text-base font-normal px-5 py-3.5 text-black transition-opacity duration-200 hover:opacity-65" onClick={closeNav}>{t('nav.activity')}</ActivityLink>
-        <LangSwitcher />
+        <Link href="/" className={linkClass('/')} onClick={closeNav}>{t('nav.home')}</Link>
+        <Link href="/about" className={linkClass('/about')} onClick={closeNav}>{t('nav.about')}</Link>
+        {/* <ActivityLink className={linkClass('/activities')} onClick={closeNav}>{t('nav.activity')}</ActivityLink> */}
+        <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>
+
+      <div className="flex items-center justify-end">
+        <LangSwitcher />
+      </div>
     </header>
   );
 }

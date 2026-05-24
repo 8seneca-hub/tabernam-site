@@ -9,6 +9,7 @@ next-env.d.ts
 .env.local
 .env*.local
 
-# Directus runtime data (uploads/extensions are runtime, DB is committed)
-uploads/
+# Directus runtime data
+# `database/data.db` + `uploads/` are committed so `docker compose up`
+# restores the full state on a fresh clone. `extensions/` stays runtime-only.
 extensions/

@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
-import { Inter, Noto_Sans_SC } from 'next/font/google';
+import { DM_Sans, Noto_Sans_SC } from 'next/font/google';
 import './globals.css';
-import { I18nProvider } from '@/lib/i18n-context';
+import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
 import { getLanguages, getDictionaries, getSiteSettings } from '@/lib/directus';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
+  variable: '--font-dm-sans',
   display: 'swap',
 });
 
@@ -22,8 +22,19 @@ const notoSansSC = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: 'TABERNAM',
+  title: 'Tabernam - Global activity presence',
   description: 'Tabernam — Global activity presence',
+  openGraph: {
+    title: 'Tabernam - Global activity presence',
+    description: 'Tabernam — Global activity presence',
+    images: [{ url: '/tabernam-logo.png', width: 928, height: 164, alt: 'TaberNam' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Tabernam - Global activity presence',
+    description: 'Tabernam — Global activity presence',
+    images: ['/tabernam-logo.png'],
+  },
 };
 
 export default async function RootLayout({
@@ -55,7 +66,7 @@ export default async function RootLayout({
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${inter.variable} ${notoSansSC.variable}`} style={themeVars}>
+    <html lang="en" className={`${dmSans.variable} ${notoSansSC.variable}`} style={themeVars}>
       <body className="bg-bg text-text leading-snug">
         <I18nProvider languages={languages} dictionaries={dictionaries}>
           <ThemeProvider settings={settings}>

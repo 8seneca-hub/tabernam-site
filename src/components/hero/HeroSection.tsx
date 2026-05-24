@@ -1,11 +1,13 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { useI18n } from '@/lib/i18n-context';
-import type { PageTexts } from '@/lib/directus';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useI18n } from '@/app/hook/useI18n';
+import Button from '@/components/ui/Button';
+import type { HeroSlide } from '@/lib/directus';
 
 interface Props {
-  texts?: PageTexts;
+  slides?: HeroSlide[];
 }
 
 const fadeUp = {
@@ -17,75 +19,88 @@ const fadeUp = {
   }),
 };
 
-export default function HeroSection({ texts = {} }: Props) {
-  const { t } = useI18n();
+const SLIDE_HOLD_MS = 5000;
+const CROSSFADE_S = 1.4;
 
-  const heroTitle = texts.hero_title || 'Lorem ipsum dolor sit consectetur adipiscing elit';
-  const heroBody = texts.hero_body || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
+export default function HeroSection({ slides = [] }: Props) {
+  const { t } = useI18n();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const sidePadding = useTransform(scrollYProgress, [0, 0.2], ['30px', '0px']);
+  const blockPadding = useTransform(scrollYProgress, [0, 0.2], ['30px', '0px']);
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const id = window.setInterval(() => {
+      setActiveIdx((i) => (i + 1) % slides.length);
+    }, SLIDE_HOLD_MS);
+    return () => window.clearInterval(id);
+  }, [slides.length]);
 
   return (
-    <section className="hero flex items-start gap-10 px-[var(--side-padding)] pt-[146px] pb-[100px] h-screen min-h-[760px] max-[1100px]:flex-col max-[1100px]:pt-[120px] max-[1100px]:pb-20 max-[1100px]:gap-12 max-md:overflow-x-clip max-md:gap-14 max-sm:pt-[100px] max-sm:pb-16 max-sm:gap-8">
-      <div className="flex-[3_1_0] min-w-0 flex flex-col gap-15 items-start text-left text-text max-[1100px]:w-full max-[1100px]:gap-10 max-sm:gap-8">
-        <div className="hero-headline flex flex-col gap-[30px] w-full max-[1100px]:gap-5 max-sm:gap-4">
+    <motion.section
+      ref={sectionRef}
+      className="hero max-sm:!px-0"
+      style={{
+        height: '95vh',
+        paddingLeft: sidePadding,
+        paddingRight: sidePadding,
+        paddingTop: blockPadding,
+        paddingBottom: blockPadding,
+      }}
+    >
+      <div className="hero-inner relative overflow-hidden w-full h-full flex flex-col items-center justify-center text-center gap-10 px-10 max-sm:gap-8 max-sm:py-16 bg-gray-70">
+        <div className="absolute inset-0 z-0" aria-hidden="true">
+          {slides.map((slide, i) => (
+            <motion.img
+              key={slide.image || i}
+              src={slide.image}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={false}
+              animate={{ opacity: i === activeIdx ? 1 : 0 }}
+              transition={{ duration: CROSSFADE_S, ease: 'easeInOut' }}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black/65" />
+        </div>
+
+        <div className="relative z-10 hero-headline flex flex-col gap-[30px] max-w-[65vw] w-full mx-auto max-[1100px]:max-w-[80vw] max-[1100px]:gap-5 max-sm:max-w-none max-sm:gap-4">
           <motion.h1
-            className="text-5xl font-bold leading-tight text-text max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
+            className="text-[48px] font-extrabold tracking-[-0.04em] leading-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
             custom={0.1}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
           >
-            {heroTitle}
+            {t('hero.title')} <span className="text-brand">{t('hero.titleAccent')}</span>
           </motion.h1>
           <motion.p
-            className="text-xl font-normal leading-snug text-text max-[1100px]:text-lg max-md:text-base max-sm:text-base"
+            className="text-xl font-medium leading-snug text-white/90 max-w-[50vw] w-full mx-auto drop-shadow-[0_1px_12px_rgba(0,0,0,0.4)] max-[1100px]:text-lg max-[1100px]:max-w-[70vw] max-md:text-base max-sm:text-base max-sm:max-w-none"
             custom={0.2}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
           >
-            {heroBody}
+            {t('hero.body')}
           </motion.p>
         </div>
-        <motion.button
-          type="button"
-          className="btn inline-flex items-center justify-center bg-button text-button-text text-base font-medium px-5 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:bg-button-hover hover:-translate-y-px"
+        <motion.div
+          className="relative z-10"
           custom={0.35}
           initial="hidden"
           animate="visible"
           variants={fadeUp}
         >
-          {t('btn.getStarted')}
-        </motion.button>
+          <Button variant="primary" size="md" className="w-max hover:bg-dark hover:-translate-y-px transition-[background,transform]">
+            {t('btn.getStarted')}
+          </Button>
+        </motion.div>
       </div>
-      <motion.div
-        className="hero-grid flex-[4_1_0] min-w-0 flex flex-col gap-5 max-[1100px]:w-full"
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 0.61, 0.36, 1] as [number, number, number, number] }}
-      >
-        <div className="hero-row hero-row-1 grid gap-5">
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata"
-                   poster="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80">
-              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4" />
-            </video>
-          </div>
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=600&h=900&q=80" alt="" />
-          </div>
-        </div>
-        <div className="hero-row hero-row-2 grid gap-5">
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&h=600&q=80" alt="" />
-          </div>
-          <div className="hero-cell bg-[#f5f5f5] rounded-lg overflow-hidden relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?auto=format&fit=crop&w=900&h=520&q=80" alt="" />
-          </div>
-        </div>
-      </motion.div>
-    </section>
+    </motion.section>
   );
 }
