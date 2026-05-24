@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { DM_Sans, Noto_Sans_SC } from 'next/font/google';
 import './globals.css';
-import { I18nProvider } from '@/lib/i18n-context';
+import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
 import { getLanguages, getDictionaries, getSiteSettings } from '@/lib/directus';
 import Header from '@/components/Header';

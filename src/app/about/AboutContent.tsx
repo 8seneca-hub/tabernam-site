@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import type { PageTexts } from '@/lib/directus';
+import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
 import AboutSection from './AboutSection';
 import ExperienceStoriesSection from './ExperienceStoriesSection';
 import PhilanthropySection from './PhilanthropySection';
@@ -9,14 +9,15 @@ import LeadershipSection from './LeadershipSection';
 import ClosingQuote from './ClosingQuote';
 import HeroHeader from './HeroHeader';
 import Button from '@/components/ui/Button';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 
 interface Props {
-  texts: PageTexts;
+  texts: PageTextsBundle;
 }
 
-export default function AboutContent({ texts }: Props) {
-  const { t } = useI18n();
+export default function AboutContent({ texts: bundle }: Props) {
+  const { lang, t } = useI18n();
+  const texts = pickPageTexts(bundle, lang);
 
   return (
     <main className="cv-page pt-[var(--header-height)] pb-24">

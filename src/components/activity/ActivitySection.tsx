@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useInView } from 'motion/react';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 import { ACTIVITIES as FALLBACK_ACTIVITIES, CHINA_DESTINATIONS, SLOVAKIA_COORDS } from '@/lib/data';
 import type { Activity } from '@/lib/data';
 import Button from '@/components/ui/Button';

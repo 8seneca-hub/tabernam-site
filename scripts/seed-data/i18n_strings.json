@@ -1,0 +1,492 @@
+[
+  {
+    "key": "page.title.home",
+    "lang": "en",
+    "value": "TABERNAM"
+  },
+  {
+    "key": "page.title.home",
+    "lang": "sk",
+    "value": "TABERNAM"
+  },
+  {
+    "key": "page.title.about",
+    "lang": "en",
+    "value": "About me — TABERNAM"
+  },
+  {
+    "key": "page.title.about",
+    "lang": "sk",
+    "value": "O mne — TABERNAM"
+  },
+  {
+    "key": "page.title.business",
+    "lang": "en",
+    "value": "Business — TABERNAM"
+  },
+  {
+    "key": "page.title.business",
+    "lang": "sk",
+    "value": "Biznis — TABERNAM"
+  },
+  {
+    "key": "page.title.contact",
+    "lang": "en",
+    "value": "Contact — TABERNAM"
+  },
+  {
+    "key": "page.title.contact",
+    "lang": "sk",
+    "value": "Kontakt — TABERNAM"
+  },
+  {
+    "key": "nav.contact",
+    "lang": "en",
+    "value": "Contact"
+  },
+  {
+    "key": "nav.contact",
+    "lang": "sk",
+    "value": "Kontakt"
+  },
+  {
+    "key": "nav.about",
+    "lang": "en",
+    "value": "About me"
+  },
+  {
+    "key": "nav.about",
+    "lang": "sk",
+    "value": "O mne"
+  },
+  {
+    "key": "nav.activity",
+    "lang": "en",
+    "value": "Activity"
+  },
+  {
+    "key": "nav.activity",
+    "lang": "sk",
+    "value": "Aktivita"
+  },
+  {
+    "key": "nav.home",
+    "lang": "en",
+    "value": "Home"
+  },
+  {
+    "key": "nav.home",
+    "lang": "sk",
+    "value": "Domov"
+  },
+  {
+    "key": "btn.getStarted",
+    "lang": "en",
+    "value": "Get started"
+  },
+  {
+    "key": "btn.getStarted",
+    "lang": "sk",
+    "value": "Začať"
+  },
+  {
+    "key": "btn.viewCities",
+    "lang": "en",
+    "value": "View cities"
+  },
+  {
+    "key": "btn.viewCities",
+    "lang": "sk",
+    "value": "Zobraziť mestá"
+  },
+  {
+    "key": "btn.goBack",
+    "lang": "en",
+    "value": "Go back"
+  },
+  {
+    "key": "btn.goBack",
+    "lang": "sk",
+    "value": "Späť"
+  },
+  {
+    "key": "btn.learnMore",
+    "lang": "en",
+    "value": "Learn more"
+  },
+  {
+    "key": "btn.learnMore",
+    "lang": "sk",
+    "value": "Zistiť viac"
+  },
+  {
+    "key": "btn.viewCV",
+    "lang": "en",
+    "value": "View my CV"
+  },
+  {
+    "key": "btn.viewCV",
+    "lang": "sk",
+    "value": "Zobraziť životopis"
+  },
+  {
+    "key": "heading.aboutMe",
+    "lang": "en",
+    "value": "About me"
+  },
+  {
+    "key": "heading.aboutMe",
+    "lang": "sk",
+    "value": "O mne"
+  },
+  {
+    "key": "heading.contact",
+    "lang": "en",
+    "value": "Contact"
+  },
+  {
+    "key": "heading.contact",
+    "lang": "sk",
+    "value": "Kontakt"
+  },
+  {
+    "key": "footer.navigation",
+    "lang": "en",
+    "value": "Navigation"
+  },
+  {
+    "key": "footer.navigation",
+    "lang": "sk",
+    "value": "Navigácia"
+  },
+  {
+    "key": "footer.contact",
+    "lang": "en",
+    "value": "Contact"
+  },
+  {
+    "key": "footer.contact",
+    "lang": "sk",
+    "value": "Kontakt"
+  },
+  {
+    "key": "footer.copyright",
+    "lang": "en",
+    "value": "© 2026 Tabernam. All rights reserved."
+  },
+  {
+    "key": "footer.copyright",
+    "lang": "sk",
+    "value": "© 2026 Tabernam. Všetky práva vyhradené."
+  },
+  {
+    "key": "contact.address1",
+    "lang": "en",
+    "value": "Address 1"
+  },
+  {
+    "key": "contact.address1",
+    "lang": "sk",
+    "value": "Adresa 1"
+  },
+  {
+    "key": "contact.address2",
+    "lang": "en",
+    "value": "Address 2"
+  },
+  {
+    "key": "contact.address2",
+    "lang": "sk",
+    "value": "Adresa 2"
+  },
+  {
+    "key": "contact.address3",
+    "lang": "en",
+    "value": "Address 3"
+  },
+  {
+    "key": "contact.address3",
+    "lang": "sk",
+    "value": "Adresa 3"
+  },
+  {
+    "key": "aria.prevCity",
+    "lang": "en",
+    "value": "Previous city"
+  },
+  {
+    "key": "aria.prevCity",
+    "lang": "sk",
+    "value": "Predchádzajúce mesto"
+  },
+  {
+    "key": "aria.nextCity",
+    "lang": "en",
+    "value": "Next city"
+  },
+  {
+    "key": "aria.nextCity",
+    "lang": "sk",
+    "value": "Ďalšie mesto"
+  },
+  {
+    "key": "aria.cities",
+    "lang": "en",
+    "value": "Cities"
+  },
+  {
+    "key": "aria.cities",
+    "lang": "sk",
+    "value": "Mestá"
+  },
+  {
+    "key": "aria.footerNav",
+    "lang": "en",
+    "value": "Footer navigation"
+  },
+  {
+    "key": "aria.footerNav",
+    "lang": "sk",
+    "value": "Navigácia v päte stránky"
+  },
+  {
+    "key": "hero.title",
+    "lang": "en",
+    "value": "Four decades of foreign trade. A trusted bridge between"
+  },
+  {
+    "key": "hero.titleAccent",
+    "lang": "en",
+    "value": "Slovakia and China."
+  },
+  {
+    "key": "hero.body",
+    "lang": "en",
+    "value": "Helping Slovak leaders enter, scale and reposition in China and beyond, guided by the kind of judgement that only comes from doing the work, year after year."
+  },
+  {
+    "key": "hero.title",
+    "lang": "sk",
+    "value": "Štyri desaťročia zahraničného obchodu. Dôveryhodný most medzi"
+  },
+  {
+    "key": "hero.titleAccent",
+    "lang": "sk",
+    "value": "Slovenskom a Čínou."
+  },
+  {
+    "key": "hero.body",
+    "lang": "sk",
+    "value": "Pomáham slovenským lídrom vstúpiť, rozrásť sa a prepozicovať v Číne aj inde, s rozvahou, ktorá sa rodí iba rokmi praxe."
+  },
+  {
+    "key": "quote.primary",
+    "lang": "en",
+    "value": "Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed."
+  },
+  {
+    "key": "quote.primary",
+    "lang": "sk",
+    "value": "Obchod nie je transakcia. Je to vzťah — budovaný desaťročia, udržiavaný dôverou a meraný tým, čo pretrvá dlho po podpise zmluvy."
+  },
+  {
+    "key": "quote.secondary",
+    "lang": "en",
+    "value": "贸易不是一笔交易。它是一种关系——跨越数十年建立，通过信任维持，并以合同签署后仍然持续的事物来衡量。"
+  },
+  {
+    "key": "quote.secondary",
+    "lang": "sk",
+    "value": "贸易不是一笔交易。它是一种关系——跨越数十年建立，通过信任维持，并以合同签署后仍然持续的事物来衡量。"
+  },
+  {
+    "key": "globeIntro.heading",
+    "lang": "en",
+    "value": "A career mapped across continents."
+  },
+  {
+    "key": "globeIntro.heading",
+    "lang": "sk",
+    "value": "Kariéra mapovaná naprieč kontinentmi."
+  },
+  {
+    "key": "globeIntro.body",
+    "lang": "en",
+    "value": "Each pin marks years of work — negotiations, factories, partnerships and the people behind them. Explore the cities that have shaped four decades of foreign trade, with a focus on the relationships built across China."
+  },
+  {
+    "key": "globeIntro.body",
+    "lang": "sk",
+    "value": "Každá značka predstavuje roky práce — rokovania, továrne, partnerstvá a ľudí za nimi. Preskúmajte mestá, ktoré formovali štyri desaťročia zahraničného obchodu, s dôrazom na vzťahy budované naprieč Čínou."
+  },
+  {
+    "key": "panel.viewDetails",
+    "lang": "en",
+    "value": "View Details"
+  },
+  {
+    "key": "panel.viewDetails",
+    "lang": "sk",
+    "value": "Zobraziť detaily"
+  },
+  {
+    "key": "aria.close",
+    "lang": "en",
+    "value": "Close"
+  },
+  {
+    "key": "aria.close",
+    "lang": "sk",
+    "value": "Zatvoriť"
+  },
+  {
+    "key": "footer.tagline",
+    "lang": "en",
+    "value": "Consulting for international trade and investments, bridging connections between Slovakia and the Asian market. Stately, Diplomatic, and Precision-Oriented Expertise."
+  },
+  {
+    "key": "footer.tagline",
+    "lang": "sk",
+    "value": "Poradenstvo v oblasti medzinárodného obchodu a investícií, prepájame Slovensko a ázijský trh. Štátnická, diplomatická a precízna expertíza."
+  },
+  {
+    "key": "footer.exploreHeading",
+    "lang": "en",
+    "value": "Explore"
+  },
+  {
+    "key": "footer.exploreHeading",
+    "lang": "sk",
+    "value": "Preskúmať"
+  },
+  {
+    "key": "footer.connectHeading",
+    "lang": "en",
+    "value": "Connect"
+  },
+  {
+    "key": "footer.connectHeading",
+    "lang": "sk",
+    "value": "Spojenie"
+  },
+  {
+    "key": "footer.presenceHeading",
+    "lang": "en",
+    "value": "Presence"
+  },
+  {
+    "key": "footer.presenceHeading",
+    "lang": "sk",
+    "value": "Prítomnosť"
+  },
+  {
+    "key": "footer.globalOffices",
+    "lang": "en",
+    "value": "Global Offices"
+  },
+  {
+    "key": "footer.globalOffices",
+    "lang": "sk",
+    "value": "Globálne kancelárie"
+  },
+  {
+    "key": "footer.privacy",
+    "lang": "en",
+    "value": "Privacy Policy"
+  },
+  {
+    "key": "footer.privacy",
+    "lang": "sk",
+    "value": "Zásady ochrany osobných údajov"
+  },
+  {
+    "key": "footer.terms",
+    "lang": "en",
+    "value": "Terms of Service"
+  },
+  {
+    "key": "footer.terms",
+    "lang": "sk",
+    "value": "Podmienky služby"
+  },
+  {
+    "key": "footer.location",
+    "lang": "en",
+    "value": "Bratislava, Slovakia"
+  },
+  {
+    "key": "footer.location",
+    "lang": "sk",
+    "value": "Bratislava, Slovensko"
+  },
+  {
+    "key": "footer.established",
+    "lang": "en",
+    "value": "Established 1984"
+  },
+  {
+    "key": "footer.established",
+    "lang": "sk",
+    "value": "Založené v roku 1984"
+  },
+  {
+    "key": "aria.tabernamHome",
+    "lang": "en",
+    "value": "Tabernam home"
+  },
+  {
+    "key": "aria.tabernamHome",
+    "lang": "sk",
+    "value": "Tabernam – domov"
+  },
+  {
+    "key": "contact.addressLabel",
+    "lang": "en",
+    "value": "Address"
+  },
+  {
+    "key": "contact.addressLabel",
+    "lang": "sk",
+    "value": "Adresa"
+  },
+  {
+    "key": "contact.identifiersLabel",
+    "lang": "en",
+    "value": "Identifiers"
+  },
+  {
+    "key": "contact.identifiersLabel",
+    "lang": "sk",
+    "value": "Identifikátory"
+  },
+  {
+    "key": "contact.corporateIdsLabel",
+    "lang": "en",
+    "value": "Corporate IDs"
+  },
+  {
+    "key": "contact.corporateIdsLabel",
+    "lang": "sk",
+    "value": "Firemné identifikátory"
+  },
+  {
+    "key": "contact.directCommunication",
+    "lang": "en",
+    "value": "Direct Communication"
+  },
+  {
+    "key": "contact.directCommunication",
+    "lang": "sk",
+    "value": "Priama komunikácia"
+  },
+  {
+    "key": "contact.bankCredentials",
+    "lang": "en",
+    "value": "Bank Credentials"
+  },
+  {
+    "key": "contact.bankCredentials",
+    "lang": "sk",
+    "value": "Bankové údaje"
+  }
+]

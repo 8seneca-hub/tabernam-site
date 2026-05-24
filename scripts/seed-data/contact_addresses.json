@@ -1,0 +1,26 @@
+[
+  {
+    "title_en": "Bratislava — Head Office",
+    "title_sk": "Bratislava — hlavná kancelária",
+    "lines": "Tabernam Consulting\nBratislava, Slovakia\nBy appointment only.\nhello@tabernam.com",
+    "portrait_index": 1,
+    "sort": 1,
+    "image": null
+  },
+  {
+    "title_en": "Beijing — China Practice",
+    "title_sk": "Peking — Čínska prax",
+    "lines": "Tabernam China Practice\nBeijing, China\nMeetings arranged in advance via our Bratislava office.\nchina@tabernam.com",
+    "portrait_index": 2,
+    "sort": 2,
+    "image": null
+  },
+  {
+    "title_en": "Shanghai — Partner Network",
+    "title_sk": "Šanghaj — partnerská sieť",
+    "lines": "Tabernam Partner Network\nShanghai, China\nAvailable for delegations and site visits on request.\nshanghai@tabernam.com",
+    "portrait_index": 3,
+    "sort": 3,
+    "image": null
+  }
+]

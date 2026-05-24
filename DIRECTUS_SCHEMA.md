@@ -2,28 +2,47 @@
 
 Create these collections in your Directus instance at `http://localhost:8055`.
 
-## 1. `businesses`
+## 1. `activities` (+ `activities_translations`, `activities_files`)
 
-Globe city/office entries shown in the Activity section.
+City/office pins shown on the globe. Each city owns its own photo set and has
+one row per language in the translations table.
 
-| Field         | Type    | Notes                                      |
-|---------------|---------|--------------------------------------------|
-| `id`          | integer | Auto-increment (primary key)               |
-| `slug`        | string  | Unique identifier (e.g. `beijing-cbd`)     |
-| `name`        | string  | Display name (e.g. `Business`)             |
-| `label`       | string  | City name (e.g. `Beijing`)                 |
-| `lat`         | float   | Latitude                                   |
-| `lng`         | float   | Longitude                                  |
-| `altitude`    | float   | Globe camera altitude (default `1.55`)     |
-| `dot_x`       | float   | SVG dot X position                         |
-| `dot_y`       | float   | SVG dot Y position                         |
-| `focus_x`     | float   | Focus offset X (default `0`)               |
-| `focus_y`     | float   | Focus offset Y (default `0`)               |
-| `focus_scale`  | float   | Focus scale (default `1.2`)                |
-| `image`       | string  | Image URL for the detail card              |
-| `title`       | string  | Card title                                 |
-| `body`        | text    | Card body text                             |
-| `sort`        | integer | Sort order                                 |
+### `activities`
+
+| Field      | Type    | Notes                                            |
+|------------|---------|--------------------------------------------------|
+| `id`       | integer | Auto-increment (primary key)                     |
+| `sort`     | integer | Sort order                                       |
+| `slug`     | string  | Unique identifier (e.g. `beijing`, `hong-kong`)  |
+| `lat`      | float   | Latitude                                         |
+| `lng`      | float   | Longitude                                        |
+| `altitude` | float   | Camera altitude when focused (smaller = closer; default `1.7`) |
+
+Two alias fields are exposed in the UI:
+- `translations` — O2M into `activities_translations`
+- `photos` — M2M into `directus_files` via `activities_files`
+
+### `activities_translations`
+
+One row per (activity × language).
+
+| Field           | Type    | Notes                                  |
+|-----------------|---------|----------------------------------------|
+| `id`            | integer | Auto-increment (primary key)           |
+| `activities_id` | integer | FK → `activities.id` (cascade delete)  |
+| `language`      | string  | Language code (`en`, `sk`, `zh`, …)    |
+| `name`          | string  | City / region label (e.g. `Beijing`)   |
+| `business`      | string  | Office title shown big in the panel    |
+| `description`   | text    | Card body paragraph                    |
+
+### `activities_files` (junction)
+
+| Field               | Type    | Notes                                    |
+|---------------------|---------|------------------------------------------|
+| `id`                | integer | Auto-increment (primary key)             |
+| `activities_id`     | integer | FK → `activities.id` (cascade delete)    |
+| `directus_files_id` | uuid    | FK → `directus_files.id`                 |
+| `sort`              | integer | Order within the city's photo carousel   |
 
 ## 2. `hero_slides`
 
@@ -38,22 +57,26 @@ Images for the hero carousel on the home page.
 
 ## 3. `page_texts`
 
-Per-page text content. Each row is a section of text on a page.
+Per-page text content. One row per (page × section × language).
 
 | Field     | Type    | Notes                                          |
 |-----------|---------|-------------------------------------------------|
 | `id`      | integer | Auto-increment (primary key)                   |
-| `page`    | string  | Page identifier: `home`, `about`, `business`, `contact` |
+| `page`    | string  | Page identifier: `home`, `about`, `activity`, `contact`, … |
 | `section` | string  | Section key (see below)                        |
-| `content` | text    | The text content                               |
+| `lang`    | string  | Language code (`en`, `sk`, …). Default `en`.    |
+| `content` | text    | The text/asset content                         |
+
+**Language fallback:** The fetcher returns all languages bundled; the client
+picks the active language and falls back to `en` for sections that have no
+translation yet. That means **asset rows** (file UUIDs, video URLs, email,
+phone, proper names) only need a single `en` row — they're shared across all
+languages automatically.
 
 ### Section keys by page
 
 **home:**
-- `hero_title` — Hero heading
-- `hero_body` — Hero paragraph
-- `quote_en` — English quote text
-- `quote_zh` — Chinese quote text
+- _(none — all HomePage text lives in `i18n_strings` so it translates via the language switcher; see the section below for the key list.)_
 
 **about:**
 - `about_body` — About page intro paragraph
@@ -85,14 +108,29 @@ Address cards on the contact page.
 
 ## 5. `i18n_strings`
 
-UI translation strings (buttons, nav items, labels).
+UI + per-page translation strings. One row per (key × language) — adding a
+new language is just inserting more rows, no schema change.
 
-| Field | Type    | Notes                                    |
-|-------|---------|------------------------------------------|
-| `id`  | integer | Auto-increment (primary key)             |
-| `key` | string  | Translation key (e.g. `nav.contact`)     |
-| `en`  | string  | English value                            |
-| `sk`  | string  | Slovak value                             |
+| Field   | Type    | Notes                                            |
+|---------|---------|--------------------------------------------------|
+| `id`    | integer | Auto-increment (primary key)                     |
+| `key`   | string  | Translation key (e.g. `nav.contact`, `hero.title`) |
+| `lang`  | string  | Language code (`en`, `sk`, `zh`, …)              |
+| `value` | text    | Translated string                                |
+
+### HomePage keys
+
+| Key                  | Where it appears                                    |
+|----------------------|-----------------------------------------------------|
+| `hero.title`         | Hero heading (main portion)                         |
+| `hero.titleAccent`   | Hero heading (trailing accent-coloured portion)     |
+| `hero.body`          | Hero paragraph                                      |
+| `quote.primary`      | Top line of the QuoteSection                        |
+| `quote.secondary`    | Bottom line of the QuoteSection (Chinese by default)|
+| `globeIntro.heading` | Heading shown over the globe before the panel opens |
+| `globeIntro.body`    | Paragraph shown over the globe before opening       |
+| `panel.viewDetails`  | "View Details" button inside the city detail panel  |
+| `aria.close`         | aria-label for the close (×) button on the panel    |
 
 ### Keys to populate
 

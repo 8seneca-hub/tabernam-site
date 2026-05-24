@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
 import EntryRow from '@/components/activity/component/EntryRow';

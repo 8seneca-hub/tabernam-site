@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 import Button from '@/components/ui/Button';
 
 interface Props {

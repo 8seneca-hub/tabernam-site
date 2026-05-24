@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
-import { getLang, setLang as persistLang, type LangInfo } from './i18n';
+import { getLang, setLang as persistLang, type LangInfo } from '../../lib/i18n';
 
 interface I18nContextValue {
   lang: string;
@@ -13,7 +13,7 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue>({
   lang: 'en',
   languages: [],
-  switchLang: () => {},
+  switchLang: () => { },
   t: (key) => key,
 });
 

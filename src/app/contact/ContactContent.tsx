@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { useI18n } from '@/lib/i18n-context';
-import type { PageTexts, ContactAddress, ContactOffice } from '@/lib/directus';
+import { useI18n } from '@/app/hook/useI18n';
+import { pickPageTexts, type PageTextsBundle, type ContactOffice } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
 import Image from '@/components/ui/Image';
 import Button from '@/components/ui/Button';
 
 interface Props {
-  texts: PageTexts;
-  addresses?: ContactAddress[];
+  texts: PageTextsBundle;
   offices: ContactOffice[];
 }
 
@@ -56,13 +55,13 @@ const MailIcon = () => (
   </svg>
 );
 
-export default function ContactContent({ texts, addresses, offices }: Props) {
-  const { t } = useI18n();
+export default function ContactContent({ texts: bundle, offices }: Props) {
+  const { lang, t } = useI18n();
+  const texts = pickPageTexts(bundle, lang);
   const initialId = offices[0]?.slug ?? '';
   const [activeId, setActiveId] = useState<string>(initialId);
   const active = offices.find((o) => o.slug === activeId) ?? offices[0];
 
-  const portraitSrc = addresses?.[0]?.image || '/tibor_image.png';
 
   const eyebrow = texts.eyebrow;
   const intro = texts.intro;
@@ -87,7 +86,6 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
 
   return (
     <main className="contact-page pt-[calc(var(--header-height)+40px)] pb-20">
-      {/* ── Hero split ─────────────────────────────────── */}
       <section className="w-[80%] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
         <FadeIn delay={0.05} className="flex flex-col gap-7 pt-8">
           {eyebrow && (
@@ -109,7 +107,7 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
               <div className="flex gap-5 items-start">
                 <div className="w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-gray-70 relative">
                   <Image
-                    src={portraitSrc}
+                    src={texts.portrait_image_1 || '/tibor_image.png'}
                     alt="Tibor Buček"
                     fill
                     sizes="64px"
@@ -149,7 +147,7 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
         <FadeIn delay={0.15} className="lg:sticky lg:top-[calc(var(--header-height)+40px)]">
           <div className="relative w-full aspect-[519/495] rounded-2xl overflow-hidden bg-gray-70 shadow-xl">
             <Image
-              src={portraitSrc}
+              src={texts.portrait_image_2 || '/tibor_image.png'}
               alt="Tibor Buček Professional Portrait"
               fill
               priority
@@ -160,7 +158,6 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
         </FadeIn>
       </section>
 
-      {/* ── Office category tabs ────────────────────────── */}
       <section className="w-[80%] mx-auto mt-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8 border-b border-border">
           {offices.map((office) => {
@@ -233,7 +230,7 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
                   {active.addressLines.length > 0 && (
                     <div className="flex flex-col gap-1.5">
                       <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                        Address
+                        {t('contact.addressLabel')}
                       </span>
                       {active.addressLines.map((line, i) => (
                         <span key={i} className="text-base text-text leading-snug">
@@ -245,7 +242,7 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
                   {active.corporateIds.length > 0 && (
                     <div className="flex flex-col gap-1.5">
                       <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                        {active.slug === 'china' ? 'Identifiers' : 'Corporate IDs'}
+                        {active.slug === 'china' ? t('contact.identifiersLabel') : t('contact.corporateIdsLabel')}
                       </span>
                       {active.corporateIds.map((row, i) => (
                         <span key={i} className="text-base text-text leading-snug">
@@ -262,7 +259,7 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
               {(active.phone || active.email) && (
                 <div className="flex flex-col gap-4">
                   <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                    Direct Communication
+                    {t('contact.directCommunication')}
                   </span>
                   <div className="flex flex-col gap-3">
                     {active.phone && (
@@ -294,7 +291,7 @@ export default function ContactContent({ texts, addresses, offices }: Props) {
               {active.bankCredentials.length > 0 && (
                 <div className="flex flex-col gap-3 pt-5 border-t border-border">
                   <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                    Bank Credentials
+                    {t('contact.bankCredentials')}
                   </span>
                   <div className="rounded-lg bg-white border border-border p-4 font-mono text-xs text-text flex flex-col gap-1.5">
                     {active.bankCredentials.map((row, i) => (

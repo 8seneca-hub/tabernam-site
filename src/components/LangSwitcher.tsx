@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 
 export default function LangSwitcher() {
   const { lang, languages, switchLang } = useI18n();

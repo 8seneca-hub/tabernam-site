@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from '@/components/ui/Image';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 import LangSwitcher from './LangSwitcher';
 import ActivityLink from './activity/ActivityLink';
 
@@ -132,7 +132,7 @@ export default function Header() {
       >
         <Link href="/" className={linkClass('/')} onClick={closeNav}>{t('nav.home')}</Link>
         <Link href="/about" className={linkClass('/about')} onClick={closeNav}>{t('nav.about')}</Link>
-        <ActivityLink className={linkClass('/activities')} onClick={closeNav}>{t('nav.activity')}</ActivityLink>
+        {/* <ActivityLink className={linkClass('/activities')} onClick={closeNav}>{t('nav.activity')}</ActivityLink> */}
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>
 

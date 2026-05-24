@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useI18n } from '@/lib/i18n-context';
+import { useI18n } from '@/app/hook/useI18n';
 import Button from '@/components/ui/Button';
 import InfoRow from '@/components/ui/Card';
 import { Mail, MapPin, MessageCircleCheck, Phone } from 'lucide-react';
