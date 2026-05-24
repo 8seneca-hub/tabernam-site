@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useI18n } from '@/lib/i18n-context';
 import type { PageTexts } from '@/lib/directus';
+import Button from '@/components/ui/Button';
 
 interface Props {
   texts?: PageTexts;
@@ -62,16 +63,16 @@ export default function HeroSection(_props: Props) {
             Helping Slovakia leaders enter, scale and reposition in China and beyond, guided by the kind of judgement that only comes from doing the work, year after year.
           </motion.p>
         </div>
-        <motion.button
-          type="button"
-          className="btn inline-flex items-center justify-center bg-brand text-white text-base font-medium px-6 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:bg-dark hover:-translate-y-px"
+        <motion.div
           custom={0.35}
           initial="hidden"
           animate="visible"
           variants={fadeUp}
         >
-          {t('btn.getStarted')}
-        </motion.button>
+          <Button variant="primary" size="md" className="w-max hover:bg-dark hover:-translate-y-px transition-[background,transform]">
+            {t('btn.getStarted')}
+          </Button>
+        </motion.div>
       </div>
     </motion.section>
   );

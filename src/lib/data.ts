@@ -16,6 +16,27 @@ export interface ContactAddress {
   image: string;
 }
 
+export interface LabeledRow {
+  label: string;
+  value: string;
+}
+
+export interface ContactOffice {
+  slug: string;
+  region: string;
+  label: string;
+  icon: string;
+  orgName: string;
+  zone: string;
+  roleLabel: string;
+  roleName: string;
+  addressLines: string[];
+  corporateIds: LabeledRow[];
+  phone: string;
+  email: string;
+  bankCredentials: LabeledRow[];
+}
+
 export interface ActivityCoords {
   lat: number;
   lng: number;

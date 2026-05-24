@@ -45,6 +45,24 @@ export interface CMSContactAddress {
   sort: number;
 }
 
+export interface CMSContactOffice {
+  id: number;
+  sort: number;
+  slug: string;
+  region: string;
+  label: string;
+  icon: 'pin' | 'globe' | 'group' | string;
+  org_name: string;
+  zone: string;
+  role_label: string;
+  role_name: string;
+  address: string;            // newline-separated lines
+  corporate_ids: string;      // "Label: Value" per line
+  phone: string;
+  email: string;
+  bank_credentials: string;   // "Label: Value" per line
+}
+
 export interface CMSI18nString {
   id: number;
   key: string;
@@ -73,6 +91,7 @@ export interface CMSSchema {
   hero_slides: CMSHeroSlide[];
   page_texts: CMSPageText[];
   contact_addresses: CMSContactAddress[];
+  contact_offices: CMSContactOffice[];
   i18n_strings: CMSI18nString[];
   features: CMSFeature[];
   languages: CMSLanguage[];
@@ -127,8 +146,8 @@ import {
   HERO_SLIDES as FALLBACK_HERO_SLIDES
 } from './data';
 import { FALLBACK_DICTIONARIES, FALLBACK_LANGS, type LangInfo } from './i18n';
-import type { Activity, HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature } from './data';
-export type { Activity, HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature };
+import type { Activity, HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature, ContactOffice, LabeledRow } from './data';
+export type { Activity, HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature, ContactOffice, LabeledRow };
 export type { LangInfo };
 
 export async function getActivities(): Promise<Activity[]> {
@@ -201,17 +220,58 @@ export async function getPageTexts(page: string): Promise<PageTexts> {
         limit: -1,
       })
     );
-    const IMAGE_SECTIONS = ['hero_image_1', 'hero_image_2', 'portrait_image'];
+    const IMAGE_SECTIONS = new Set(['hero_image_1', 'hero_image_2', 'portrait_image']);
+    const isImageSection = (s: string) =>
+      IMAGE_SECTIONS.has(s) || /^leadership_body_\d+_image$/.test(s);
     const texts: PageTexts = {};
     items.forEach((t) => {
-      texts[t.section] = IMAGE_SECTIONS.includes(t.section)
-        ? assetUrl(t.content)
-        : t.content;
+      texts[t.section] = isImageSection(t.section) ? assetUrl(t.content) : t.content;
     });
     return texts;
   } catch (e) {
     console.warn(`Directus fetch failed for page_texts (${page}), using empty:`, e);
     return {};
+  }
+}
+
+function splitLines(value: string | null | undefined): string[] {
+  return (value || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function parseLabeledRows(value: string | null | undefined): LabeledRow[] {
+  return splitLines(value).map((line) => {
+    const idx = line.indexOf(':');
+    if (idx === -1) return { label: '', value: line };
+    return { label: line.slice(0, idx).trim(), value: line.slice(idx + 1).trim() };
+  });
+}
+
+export async function getContactOffices(): Promise<ContactOffice[]> {
+  try {
+    const items = await directus.request(
+      readItems('contact_offices', { sort: ['sort'], limit: -1 }),
+    );
+    return items.map((o) => ({
+      slug: o.slug,
+      region: o.region,
+      label: o.label,
+      icon: o.icon,
+      orgName: o.org_name,
+      zone: o.zone,
+      roleLabel: o.role_label,
+      roleName: o.role_name,
+      addressLines: splitLines(o.address),
+      corporateIds: parseLabeledRows(o.corporate_ids),
+      phone: o.phone,
+      email: o.email,
+      bankCredentials: parseLabeledRows(o.bank_credentials),
+    }));
+  } catch (e) {
+    console.warn('Directus fetch failed for contact_offices, using fallback:', e);
+    return [];
   }
 }
 

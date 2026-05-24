@@ -119,12 +119,74 @@ post page_texts '[
   {"page":"home","section":"hero_body","content":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."},
   {"page":"home","section":"quote_en","content":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."},
   {"page":"home","section":"quote_zh","content":"罗马假名痛苦坐在这里，构成了一个精致的学术界。为了工作和痛苦的巨大利益，进行了一些临时的工作。为了最小化请求，谁也不想进行不必要的劳动，除非是为了获得某种便利。"},
-  {"page":"about","section":"about_body","content":"Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac."},
+  {"page":"about","section":"about_body_1","content":"Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac."},
+  {"page":"about","section":"about_eyebrow","content":"Diplomacy & Innovation"},
+  {"page":"about","section":"hero_name","content":"Tibor Buček"},
+  {"page":"about","section":"hero_email","content":"tiborbucek@gmail.com"},
+  {"page":"about","section":"hero_phone","content":"+421 910 828 305"},
+  {"page":"about","section":"hero_wechat","content":"liu-sario11"},
+  {"page":"about","section":"experience_title","content":"Experience & Success Stories"},
+  {"page":"about","section":"experience_body","content":"Based on experience in the corporate production environment and also my experience at the Ministry of Economy, many success stories were realized."},
+  {"page":"about","section":"experience_eyebrow","content":"Success Story Highlight"},
+  {"page":"about","section":"experience_video_title","content":"Innovation in Foreign Trade: Success Stories in Slovakia"},
+  {"page":"about","section":"experience_video_url","content":""},
+  {"page":"about","section":"leadership_title","content":"International Leadership"},
+  {"page":"about","section":"leadership_body_1","content":"As a member of the GMT (Global Membership Team) responsible for all the countries of Central and Eastern Europe, I personally participated in the creation of an international activity for the development of world charity under the auspices of LCIF."},
+  {"page":"about","section":"leadership_body_1_image","content":""},
+  {"page":"about","section":"closing_quote","content":"Yes, charity work is part of my activities for those who are in great need. Those who have more have a moral obligation to help those in need."},
+  {"page":"about","section":"closing_quote_author","content":"Tibor Buček"},
+  {"page":"about","section":"closing_cta","content":"Get in Touch"},
+  {"page":"about","section":"philanthropy_title","content":"Philanthropy & Social Responsibility"},
+  {"page":"about","section":"philanthropy_body","content":"International activity for the development of world charity under the auspices of LCIF and other humanitarian organizations."},
+  {"page":"about","section":"philanthropy_story_1_title","content":"Hospital Construction in Kenya"},
+  {"page":"about","section":"philanthropy_story_1_desc","content":"A cornerstone of global charity project initiatives providing modern healthcare facilities."},
+  {"page":"about","section":"philanthropy_story_1_video_url","content":""},
+  {"page":"about","section":"philanthropy_story_2_title","content":"The Trip to Lourdes"},
+  {"page":"about","section":"philanthropy_story_2_desc","content":"Documenting the spiritual journey and humanitarian mission in France."},
+  {"page":"about","section":"philanthropy_story_2_video_url","content":""},
   {"page":"business","section":"business_title","content":"Lorem ipsum dolor"},
   {"page":"business","section":"business_body_1","content":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."},
   {"page":"business","section":"business_body_2","content":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."},
   {"page":"business","section":"business_body_3","content":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."},
-  {"page":"contact","section":"contact_body","content":"Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac."}
+  {"page":"contact","section":"contact_body","content":"Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non mi porta gravida at eget metus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Morbi leo risus, porta ac consectetur ac."},
+  {"page":"contact","section":"eyebrow","content":"Get in touch"},
+  {"page":"contact","section":"intro","content":"If you are entering, scaling or repositioning your business between Europe and China — or simply want a candid second opinion before the next step — I welcome the conversation."},
+  {"page":"contact","section":"ceo_label","content":"CEO Message"},
+  {"page":"contact","section":"ceo_quote","content":"Diplomacy and expertise are the foundations of successful cross-border ventures. We ensure your transition is seamless."},
+  {"page":"contact","section":"ceo_cta","content":"China Desk"},
+  {"page":"contact","section":"ceo_cta_target","content":"china"}
+]'
+
+# ── 6. contact_offices ──────────────────────────────────────────
+echo "==> Seeding contact_offices..."
+post contact_offices '[
+  {
+    "sort":1,"slug":"slovakia","region":"SLOVAKIA","label":"Corporate Headquarters","icon":"pin",
+    "org_name":"Tabernam s.r.o.","zone":"CENTRAL EUROPE",
+    "role_label":"CEO / Managing Director","role_name":"Tibor Buček",
+    "address":"Mons. Vagnera 899/22\n949 11 Nitra, Slovakia",
+    "corporate_ids":"IČO: 54 011 230\nVAT: SK2121 554 996",
+    "phone":"+421 910 828 305","email":"tiborbucek@tabernam.org",
+    "bank_credentials":"IBAN: SK15 1100 0000 0029 4911 4126\nSWIFT: TATRSKBX"
+  },
+  {
+    "sort":2,"slug":"china","region":"CHINA DESK","label":"Greater China Advisory","icon":"globe",
+    "org_name":"Tabernam — 中国业务","zone":"GREATER CHINA",
+    "role_label":"Founder · Innovation Diplomat","role_name":"Tibor Buček / 迪波尔。布切克",
+    "address":"Mons. Vagnera 22, 949 01 Nitra, Slovakia",
+    "corporate_ids":"WeChat ID: liu-sario11",
+    "phone":"+421 910 828 305","email":"tiborbucek@tabernam.org",
+    "bank_credentials":""
+  },
+  {
+    "sort":3,"slug":"lions","region":"GLOBAL AFFILIATION","label":"Lions Club Network","icon":"group",
+    "org_name":"Lions Club International","zone":"INTERNATIONAL",
+    "role_label":"Past District Governor · D-122","role_name":"Tibor Buček",
+    "address":"LCIF · Lions Hospital st. Cyril and Method",
+    "corporate_ids":"",
+    "phone":"+421 910 828 305","email":"tiborbucek@gmail.com",
+    "bank_credentials":""
+  }
 ]'
 
 echo ""

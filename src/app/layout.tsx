@@ -22,8 +22,19 @@ const notoSansSC = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: 'TABERNAM',
+  title: 'Tabernam - Global activity presence',
   description: 'Tabernam — Global activity presence',
+  openGraph: {
+    title: 'Tabernam - Global activity presence',
+    description: 'Tabernam — Global activity presence',
+    images: [{ url: '/tabernam-logo.png', width: 928, height: 164, alt: 'TaberNam' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Tabernam - Global activity presence',
+    description: 'Tabernam — Global activity presence',
+    images: ['/tabernam-logo.png'],
+  },
 };
 
 export default async function RootLayout({

@@ -6,6 +6,7 @@ import { useInView } from 'motion/react';
 import { useI18n } from '@/lib/i18n-context';
 import { ACTIVITIES as FALLBACK_ACTIVITIES, CHINA_DESTINATIONS, SLOVAKIA_COORDS } from '@/lib/data';
 import type { Activity } from '@/lib/data';
+import Button from '@/components/ui/Button';
 
 interface Props {
   activities?: Activity[];
@@ -351,15 +352,15 @@ export default function ActivitySection({ activities: activitiesProp }: Props) {
           <h2 className="text-4xl font-medium leading-tight text-text max-sm:text-[28px]">A career mapped across continents.</h2>
           <p className="text-base font-normal leading-normal text-text">Each pin marks years of work — negotiations, factories, partnerships and the people behind them. Explore the cities that have shaped four decades of foreign trade, with a focus on the relationships built across China.</p>
         </div>
-        <button type="button" className="btn-outline bg-white/10 backdrop-blur-sm border border-border rounded-lg px-10 py-5 text-xl font-medium text-text font-[inherit] cursor-pointer transition-[background,border-color] duration-200 hover:bg-white/50 hover:border-gray-90" id="view-cities" onClick={() => enterDetailMode(0)}>
+        <Button variant="outline" size="lg" id="view-cities" onClick={() => enterDetailMode(0)}>
           {t('btn.viewCities')}
-        </button>
+        </Button>
       </div>
 
       <aside className="city-panel flex flex-col gap-3" id="city-panel" aria-hidden={!isDetail}>
-        <button type="button" className="btn-back self-start bg-transparent border-0 px-5 py-3 text-base font-medium text-white cursor-pointer font-[inherit] rounded-lg transition-colors duration-200 hover:bg-white/10" id="go-back" onClick={() => exitDetailMode()}>
+        <Button variant="ghost" size="md" id="go-back" onClick={() => exitDetailMode()} className="self-start text-white hover:bg-white/10 hover:text-white">
           {t('btn.goBack')}
-        </button>
+        </Button>
         <ul className="activity-list list-none flex flex-col gap-3 overflow-y-auto pr-1" role="list">
           {ACTIVITIES.map((a, i) => {
             const isOpen = i === activeIndex;
@@ -384,12 +385,15 @@ export default function ActivitySection({ activities: activitiesProp }: Props) {
                   >
                     <div className="overflow-hidden px-5">
                       <p className="text-sm font-normal leading-normal text-gray-80 mb-4">{a.body}</p>
-                      <Link
+                      <Button
+                        as={Link}
                         href={`/activities?id=${encodeURIComponent(a.id)}`}
-                        className="inline-flex items-center justify-center bg-brand text-white text-sm font-medium px-4 py-2 rounded-md transition-[background,transform] duration-200 hover:bg-dark hover:-translate-y-px"
+                        variant="primary"
+                        size="sm"
+                        className="hover:bg-dark hover:-translate-y-px transition-[background,transform]"
                       >
                         {t('btn.learnMore')}
-                      </Link>
+                      </Button>
                     </div>
                   </div>
                 </article>

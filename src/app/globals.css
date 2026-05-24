@@ -49,14 +49,13 @@
 /* ─────────── Base resets ─────────── */
 html {
   scroll-behavior: auto;
-  /* Hide the vertical scrollbar gutter so the dark sections fill edge-to-edge.
-     Wheel / trackpad / keyboard scrolling still works. */
-  scrollbar-width: none;          /* Firefox */
-  -ms-overflow-style: none;       /* legacy Edge / IE */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  display: none;                  /* Chromium / Safari */
+  display: none;
 }
 
 body {
@@ -282,13 +281,23 @@ a {
 }
 
 @keyframes marquee-scroll-left {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(calc(-50% - 10px), 0, 0); }
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-50% - 10px), 0, 0);
+  }
 }
 
 @keyframes marquee-scroll-right {
-  from { transform: translate3d(calc(-50% - 10px), 0, 0); }
-  to { transform: translate3d(0, 0, 0); }
+  from {
+    transform: translate3d(calc(-50% - 10px), 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 /* ─────────── Language switcher: chevron rotation ─────────── */
