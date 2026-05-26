@@ -59,6 +59,7 @@ export default async function RootLayout({
     '--color-header': settings.colorHeader,
     '--color-border': settings.colorBorder,
     '--color-footer-bg': settings.colorFooterBg,
+    '--color-brand': settings.colorBrand,
     '--max-width': settings.maxWidth,
     '--side-padding': settings.sidePadding,
     '--header-height': settings.headerHeight,

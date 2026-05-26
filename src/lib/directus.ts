@@ -126,6 +126,7 @@ export interface CMSSiteSettings {
   color_header: string | null;
   color_border: string | null;
   color_footer_bg: string | null;
+  color_brand: string | null;
   font_family: string | null;
   logo_text: string | null;
   max_width: string | null;
@@ -354,6 +355,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     const s = await directus.request(readSingleton('site_settings'));
     return {
       colorBg: s.color_bg || DEFAULT_SETTINGS.colorBg,
+      colorBrand: s.color_brand || DEFAULT_SETTINGS.colorBrand,
       colorText: s.color_text || DEFAULT_SETTINGS.colorText,
       colorMuted: s.color_muted || DEFAULT_SETTINGS.colorMuted,
       colorSurface: s.color_surface || DEFAULT_SETTINGS.colorSurface,
