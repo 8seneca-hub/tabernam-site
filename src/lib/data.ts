@@ -68,6 +68,7 @@ export interface Activity {
 
 export interface SiteSettings {
   colorBg: string;
+  colorBrand: string;
   colorText: string;
   colorMuted: string;
   colorSurface: string;
@@ -287,6 +288,7 @@ export const CONTACT_ADDRESSES: ContactAddress[] = [
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   colorBg: '#FFFFFF',
+  colorBrand: '#1C4582',
   colorText: '#101823',
   colorMuted: '#5A6B83',
   colorSurface: '#C2CBD7',
