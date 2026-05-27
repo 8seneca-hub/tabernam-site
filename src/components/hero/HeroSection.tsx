@@ -44,16 +44,15 @@ export default function HeroSection({ slides = [] }: Props) {
   return (
     <motion.section
       ref={sectionRef}
-      className="hero max-sm:!px-0"
       style={{
-        height: '95vh',
+        height: '70vh',
         paddingLeft: sidePadding,
         paddingRight: sidePadding,
         paddingTop: blockPadding,
         paddingBottom: blockPadding,
       }}
     >
-      <div className="hero-inner relative overflow-hidden w-full h-full flex flex-col items-center justify-center text-center gap-10 px-10 max-sm:gap-8 max-sm:py-16 bg-gray-70">
+      <div className="hero-inner relative overflow-hidden p-40 flex flex-col items-center justify-center text-center gap-10 max-sm:gap-8 max-sm:py-16 bg-gray-70">
         <div className="absolute inset-0 z-0" aria-hidden="true">
           {slides.map((slide, i) => (
             <motion.img

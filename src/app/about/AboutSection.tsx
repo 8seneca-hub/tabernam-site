@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useI18n } from '@/app/hook/useI18n';
-import type { PageTexts } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
+import { PageTexts } from '@/lib/data';
 
 interface Props {
   texts: PageTexts;
@@ -26,7 +26,7 @@ export default function AboutSection({ texts }: Props) {
 
   return (
     <>
-      <section className="w-full min-h-[80vh] flex flex-col items-center justify-center px-[var(--side-padding)] py-10 gap-10">
+      <section className="w-full min-h-[40vh] flex flex-col items-center justify-center px-[var(--side-padding)] py-10 gap-10">
         <FadeIn delay={0.05} className="flex flex-col gap-4 items-center text-center">
           {eyebrow && (
             <span className="block text-xs font-semibold text-brand uppercase tracking-[0.2em]">

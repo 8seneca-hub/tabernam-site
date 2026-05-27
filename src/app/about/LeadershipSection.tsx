@@ -2,8 +2,7 @@
 
 import Image from '@/components/ui/Image';
 import FadeIn from '@/animations/FadeIn';
-import type { PageTexts } from '@/lib/directus';
-import { Globe } from 'lucide-react';
+import { PageTexts } from '@/lib/data';
 
 interface Props {
   texts: PageTexts;
@@ -37,31 +36,27 @@ export default function LeadershipSection({ texts }: Props) {
           </p>
         )}
         {items.length > 0 && (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 pt-2">
             {items.map((item, i) => (
-              <FadeIn key={i} delay={0.1 + i * 0.05} className="flex gap-6 items-center">
-                <div className="w-16 h-16 shrink-0 bg-brand/10 rounded-xl flex items-center justify-center text-brand">
-                  <Globe className='h-8 w-8' />
-                </div>
-                <p className="max-w-lg text-lg font-normal text-text leading-relaxed">
-                  {item.body}
-                </p>
+              <FadeIn key={i} delay={0.1 + i * 0.05} className="flex gap-6 pt-2 items-center">
                 {item.image && (
-                  <div className="hidden md:block ml-auto w-30 h-30 relative shrink-0">
+                  <div className="relative w-16 h-16 shrink-0 rounded-xl">
                     <Image
                       src={item.image}
                       alt=""
                       fill
-                      sizes="120px"
                       className="object-contain"
                     />
                   </div>
                 )}
+                <p className="max-w-lg text-lg font-normal text-text leading-relaxed">
+                  {item.body}
+                </p>
               </FadeIn>
             ))}
           </div>
         )}
       </div>
-    </section>
+    </section >
   );
 }

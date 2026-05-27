@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, type ReactNode } from 'react';
-import type { SiteSettings } from './directus';
+import { SiteSettings } from './data';
 
 const defaults: SiteSettings = {
   colorBg: '#FFFFFF',
@@ -16,6 +16,7 @@ const defaults: SiteSettings = {
   colorFooterBg: '#E9EDF1',
   colorBrand: '#1C4582',
   fontFamily: '',
+  logoImage: '/tabernam-logo.png',
   logoText: 'Tabernam',
   maxWidth: '1512px',
   sidePadding: '40px',

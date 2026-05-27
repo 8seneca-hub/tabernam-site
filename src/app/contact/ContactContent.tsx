@@ -1,311 +1,221 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useI18n } from '@/app/hook/useI18n';
-import { pickPageTexts, type PageTextsBundle, type ContactOffice } from '@/lib/directus';
+import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
 import Image from '@/components/ui/Image';
-import Button from '@/components/ui/Button';
+import { ChevronLeft, ChevronRight, Globe, Mail, MapPin, Phone } from 'lucide-react';
+import { ContactOffice } from '@/lib/data';
 
 interface Props {
   texts: PageTextsBundle;
-  offices: ContactOffice[];
+  office: ContactOffice | null;
 }
 
-const PinIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-    <path d="M12 21s-7-6-7-12a7 7 0 1 1 14 0c0 6-7 12-7 12z" />
-    <circle cx="12" cy="9" r="2.5" />
-  </svg>
-);
+const MAP_VISIBLE = 2;
 
-const GlobeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-    <circle cx="12" cy="12" r="9" />
-    <path d="M3 12h18" />
-    <path d="M12 3a14 14 0 0 1 4 9 14 14 0 0 1-4 9 14 14 0 0 1-4-9 14 14 0 0 1 4-9z" />
-  </svg>
-);
-
-const GroupIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-    <circle cx="9" cy="9" r="3" />
-    <circle cx="17" cy="11" r="2.5" />
-    <path d="M3 19c0-3 3-5 6-5s6 2 6 5" />
-    <path d="M14 19c0-2 2-3.5 5-3.5" />
-  </svg>
-);
-
-const ICONS: Record<string, ReactNode> = {
-  pin: <PinIcon />,
-  globe: <GlobeIcon />,
-  group: <GroupIcon />,
-};
-
-const PhoneIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92z" />
-  </svg>
-);
-
-const MailIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="w-5 h-5">
-    <rect x="3" y="5" width="18" height="14" rx="2" />
-    <path d="m3 7 9 7 9-7" />
-  </svg>
-);
-
-export default function ContactContent({ texts: bundle, offices }: Props) {
+export default function ContactContent({ texts: bundle, office: active }: Props) {
   const { lang, t } = useI18n();
   const texts = pickPageTexts(bundle, lang);
-  const initialId = offices[0]?.slug ?? '';
-  const [activeId, setActiveId] = useState<string>(initialId);
-  const active = offices.find((o) => o.slug === activeId) ?? offices[0];
-
-
-  const eyebrow = texts.eyebrow;
-  const intro = texts.intro;
-  const ceoLabel = texts.ceo_label;
-  const ceoQuote = texts.ceo_quote;
-  const ceoCtaLabel = texts.ceo_cta;
-  const ceoCtaTarget = texts.ceo_cta_target;
+  const [mapIndex, setMapIndex] = useState(0);
 
   if (!active) {
     return (
       <main className="contact-page pt-[calc(var(--header-height)+40px)] pb-20">
         <section className="w-[80%] mx-auto">
           <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
-          {intro && <p className="mt-6 text-base text-muted leading-relaxed">{intro}</p>}
         </section>
       </main>
     );
   }
 
   const phoneHref = `tel:${active.phone.replace(/\s+/g, '')}`;
-  const mailHref = `mailto:${active.email}`;
+  const workMailHref = active.workEmail ? `mailto:${active.workEmail}` : '';
+  const personalMailHref = active.personalEmail ? `mailto:${active.personalEmail}` : '';
+  const websiteUrl = active.websiteUrl || "www.tabernam.at";
+
+  const headingTitle = texts.contact_heading_title || 'Get in touch';
+  const subheadingTitle =
+    texts.contact_subheading
+    || 'If you are entering, scaling, or repositioning your business between Europle and China - or simply want a candid second opinion before the next step - I welcome the conversation. Reach me through whichever channel below fits your context.'
+  const addressLabel = t('contact.addressLabel');
+  const websiteLabel = t('contact.websiteLabel')
+  const workEmailLabel = t('contact.emailLabel');
+  const phoneLabel = t('contact.phoneLabel');
 
   return (
-    <main className="contact-page pt-[calc(var(--header-height)+40px)] pb-20">
-      <section className="w-[80%] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-        <FadeIn delay={0.05} className="flex flex-col gap-7 pt-8">
-          {eyebrow && (
-            <span className="text-xs font-semibold text-muted uppercase tracking-[0.25em]">
-              {eyebrow}
-            </span>
-          )}
-          <h1 className="text-5xl md:text-6xl font-semibold text-text tracking-tight leading-none">
-            {t('heading.contact')}
-          </h1>
-          {intro && (
-            <p className="text-base font-normal text-muted leading-relaxed max-w-prose">
-              {intro}
-            </p>
-          )}
-
-          {(ceoQuote || ceoLabel) && (
-            <div className="rounded-2xl border border-border bg-white shadow-sm p-6 flex flex-col gap-5 mt-2">
-              <div className="flex gap-5 items-start">
-                <div className="w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-gray-70 relative">
-                  <Image
-                    src={texts.portrait_image_1 || '/tibor_image.png'}
-                    alt="Tibor Buček"
-                    fill
-                    sizes="64px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex flex-col gap-2 flex-1">
-                  {ceoLabel && (
-                    <span className="text-[10px] font-semibold text-brand uppercase tracking-[0.25em]">
-                      {ceoLabel}
-                    </span>
-                  )}
-                  {ceoQuote && (
-                    <p className="text-sm italic text-text leading-relaxed">
-                      &ldquo;{ceoQuote}&rdquo;
-                    </p>
-                  )}
-                </div>
-              </div>
-              {ceoCtaLabel && ceoCtaTarget && offices.some((o) => o.slug === ceoCtaTarget) && (
-                <div className="flex justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    shape="pill"
-                    onClick={() => setActiveId(ceoCtaTarget)}
-                    className="text-xs font-semibold"
-                  >
-                    {ceoCtaLabel}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </FadeIn>
-
-        <FadeIn delay={0.15} className="lg:sticky lg:top-[calc(var(--header-height)+40px)]">
-          <div className="relative w-full aspect-[519/495] rounded-2xl overflow-hidden bg-gray-70 shadow-xl">
-            <Image
-              src={texts.portrait_image_2 || '/tibor_image.png'}
-              alt="Tibor Buček Professional Portrait"
-              fill
-              priority
-              sizes="(min-width: 1024px) 40vw, 90vw"
-              className="object-cover"
-            />
-          </div>
-        </FadeIn>
-      </section>
-
-      <section className="w-[80%] mx-auto mt-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8 border-b border-border">
-          {offices.map((office) => {
-            const isActive = office.slug === activeId;
-            return (
-              <Button
-                key={office.slug}
-                type="button"
-                onClick={() => setActiveId(office.slug)}
-                className={`flex items-center gap-4 rounded-xl border p-5 text-left transition-colors 
-                  ${isActive
-                    ? 'border-brand bg-white shadow-sm hover:bg-white/60'
-                    : 'border-transparent bg-transparent hover:bg-white/60'
-                  }`}
-                aria-pressed={isActive}
-              >
-                <span
-                  className={`w-11 h-11 shrink-0 rounded-lg flex items-center justify-center ${isActive ? 'bg-brand text-white' : 'bg-gray-70 text-muted'
-                    }`}
-                >
-                  {ICONS[office.icon] ?? <PinIcon />}
+    <main className="contact-page pt-[calc(var(--header-height)+40px)] pb-0">
+      <h1 className="text-[3.25rem] text-brand font-semibold text-center mb-6">
+        {headingTitle}
+      </h1>
+      <p className="text-lg text-text text-center mb-6 max-w-4xl mx-auto">
+        {subheadingTitle}
+      </p>
+      <section className="w-[80%] max-w-[1100px] mx-auto grid grid-cols-[1fr_auto] gap-12 pt-8 pb-16">
+        <FadeIn delay={0.15} className="flex flex-col self-center ml-auto">
+          <div className="flex flex-col gap-8 mb-12">
+            {active.workEmail && active.personalEmail && (
+              <div className="flex items-start gap-5">
+                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                  <Mail size={20} />
                 </span>
-                <span className="flex flex-col gap-0.5">
-                  <span className="text-xs font-semibold text-text uppercase tracking-[0.15em]">
-                    {office.region}
-                  </span>
-                  <span className="text-sm text-muted">
-                    {office.label}
-                  </span>
-                </span>
-              </Button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ── Detail card (changes with active tab) ───────── */}
-      <section className="w-[80%] mx-auto mt-8">
-        <FadeIn key={active.slug} delay={0.05}>
-          <div className="rounded-2xl bg-white shadow-md grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] overflow-hidden border border-border">
-            <div className="p-8 md:p-10 flex flex-col gap-8">
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                {active.orgName && (
-                  <h2 className="text-2xl md:text-3xl font-semibold italic text-text leading-tight">
-                    {active.orgName}
-                  </h2>
-                )}
-                {active.zone && (
-                  <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                    {active.zone}
-                  </span>
-                )}
-              </div>
-
-              {(active.roleLabel || active.roleName) && (
                 <div className="flex flex-col gap-1.5">
-                  {active.roleLabel && (
-                    <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                      {active.roleLabel}
-                    </span>
-                  )}
-                  {active.roleName && (
-                    <span className="text-xl font-medium text-text">{active.roleName}</span>
-                  )}
-                </div>
-              )}
-
-              {(active.addressLines.length > 0 || active.corporateIds.length > 0) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  {active.addressLines.length > 0 && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                        {t('contact.addressLabel')}
-                      </span>
-                      {active.addressLines.map((line, i) => (
-                        <span key={i} className="text-base text-text leading-snug">
-                          {line}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  {active.corporateIds.length > 0 && (
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                        {active.slug === 'china' ? t('contact.identifiersLabel') : t('contact.corporateIdsLabel')}
-                      </span>
-                      {active.corporateIds.map((row, i) => (
-                        <span key={i} className="text-base text-text leading-snug">
-                          {row.label && <span className="font-medium">{row.label}:</span>} {row.value}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="bg-gray-70/60 border-t lg:border-t-0 lg:border-l border-border p-8 md:p-10 flex flex-col gap-7">
-              {(active.phone || active.email) && (
-                <div className="flex flex-col gap-4">
-                  <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                    {t('contact.directCommunication')}
+                  <span className="text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
+                    {workEmailLabel}
                   </span>
-                  <div className="flex flex-col gap-3">
-                    {active.phone && (
-                      <a
-                        href={phoneHref}
-                        className="flex items-center gap-3 text-base text-text hover:text-brand transition-colors"
-                      >
-                        <span className="w-9 h-9 rounded-lg bg-white border border-border flex items-center justify-center text-text shrink-0">
-                          <PhoneIcon />
-                        </span>
-                        <span className="font-medium">{active.phone}</span>
-                      </a>
-                    )}
-                    {active.email && (
-                      <a
-                        href={mailHref}
-                        className="flex items-center gap-3 text-base text-text hover:text-brand transition-colors break-all"
-                      >
-                        <span className="w-9 h-9 rounded-lg bg-white border border-border flex items-center justify-center text-text shrink-0">
-                          <MailIcon />
-                        </span>
-                        <span className="font-medium">{active.email}</span>
-                      </a>
-                    )}
-                  </div>
+                  <a
+                    href={workMailHref}
+                    className="text-base text-text hover:text-brand transition-colors break-all"
+                  >
+                    {active.workEmail}
+                  </a>
+                  <a
+                    href={personalMailHref}
+                    className="text-base text-text hover:text-brand transition-colors break-all"
+                  >
+                    {active.personalEmail}
+                  </a>
                 </div>
-              )}
-
-              {active.bankCredentials.length > 0 && (
-                <div className="flex flex-col gap-3 pt-5 border-t border-border">
-                  <span className="text-[11px] font-semibold text-muted uppercase tracking-[0.2em]">
-                    {t('contact.bankCredentials')}
+              </div>
+            )}
+            {active.phone && (
+              <div className="flex items-start gap-5">
+                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                  <Phone size={20} />
+                </span>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
+                    {phoneLabel}
                   </span>
-                  <div className="rounded-lg bg-white border border-border p-4 font-mono text-xs text-text flex flex-col gap-1.5">
-                    {active.bankCredentials.map((row, i) => (
-                      <div key={i}>
-                        {row.label && <span className="text-muted">{row.label}:</span>} {row.value}
-                      </div>
+                  <a
+                    href={phoneHref}
+                    className="text-base text-text hover:text-brand transition-colors"
+                  >
+                    {active.phone}
+                  </a>
+                </div>
+              </div>
+            )}
+            {active.addressLines.length > 0 && (
+              <div className="flex items-start gap-5">
+                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                  <MapPin size={20} />
+                </span>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
+                    {addressLabel}
+                  </span>
+                  <div className="flex flex-col">
+                    {active.addressLines.map((line, i) => (
+                      <span key={i} className="text-base text-text leading-snug">
+                        {line}
+                      </span>
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
+            {active.websiteUrl && (
+              <div className="flex items-start gap-5">
+                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                  <Globe size={20} />
+                </span>
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
+                    {websiteLabel}
+                  </span>
+                  <div className="flex flex-col">
+                    <a href={websiteUrl} className="text-base text-text hover:text-brand transition-colors">
+                      {websiteUrl}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </FadeIn>
+
+        <FadeIn delay={0.15} className="sticky top-[calc(var(--header-height)+40px)]">
+          <div className="w-[480px] h-[600px] overflow-hidden">
+            <Image
+              src={texts.portrait_image || '/tibor_image.png'}
+              alt="Tibor Buček Professional Portrait"
+              width={480}
+              height={600}
+              className="w-[480px] h-[600px] object-cover"
+            />
+          </div>
+          <figure className="mt-6 pl-5">
+            <blockquote className="text-lg italic text-text leading-relaxed">
+              “{texts.contact_quote_text || 'Be diligent in your work, honest in your heart, and kind to people.'}”
+            </blockquote>
+            <figcaption className="mt-2 text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
+              — {texts.contact_quote_author || 'Confucius'}
+            </figcaption>
+          </figure>
+        </FadeIn>
       </section>
-    </main>
+
+      {active.mapImages.length > 0 && (
+        <section className="w-[80%] max-w-[1100px] mx-auto pb-20">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-text">
+              {texts.contact_maps_title || 'Travel routes'}
+            </h2>
+            {active.mapImages.length > MAP_VISIBLE && (
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMapIndex((i) => Math.max(0, i - 1))}
+                  disabled={mapIndex === 0}
+                  aria-label="Previous maps"
+                  className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-text hover:text-brand hover:border-brand transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMapIndex((i) =>
+                      Math.min(active.mapImages.length - MAP_VISIBLE, i + 1),
+                    )
+                  }
+                  disabled={mapIndex >= active.mapImages.length - MAP_VISIBLE}
+                  aria-label="Next maps"
+                  className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-text hover:text-brand hover:border-brand transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="overflow-hidden">
+            <div
+              className="flex gap-6 transition-transform duration-500 ease-out"
+              style={{
+                transform: `translateX(calc(${-mapIndex} * (100% / ${MAP_VISIBLE} + ${24 / MAP_VISIBLE}px)))`,
+              }}
+            >
+              {active.mapImages.map((src, i) => (
+                <div
+                  key={i}
+                  className="shrink-0 overflow-hidden rounded-lg"
+                  style={{ width: `calc((100% - ${(MAP_VISIBLE - 1) * 24}px) / ${MAP_VISIBLE})` }}
+                >
+                  <Image
+                    src={src}
+                    alt={`Travel map ${i + 1}`}
+                    width={500}
+                    height={350}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </main >
   );
 }

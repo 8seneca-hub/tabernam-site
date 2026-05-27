@@ -89,7 +89,7 @@ patch_singleton site_settings
 # Activities last — they POST with nested translations + photos so the
 # junction rows get created in the same call.
 echo "==> Seeding collections..."
-for coll in i18n_strings page_texts hero_slides contact_addresses contact_offices activities; do
+for coll in hero_slides contact_offices activities; do
   post_file "$coll"
 done
 

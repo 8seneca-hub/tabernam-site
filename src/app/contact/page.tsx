@@ -1,10 +1,10 @@
-import { getPageTexts, getContactOffices } from '@/lib/directus';
+import { getPageTexts, getContactOffice } from '@/lib/directus';
 import ContactContent from './ContactContent';
 
 export default async function ContactPage() {
-  const [texts, offices] = await Promise.all([
+  const [texts, office] = await Promise.all([
     getPageTexts('contact'),
-    getContactOffices(),
+    getContactOffice(),
   ]);
-  return <ContactContent texts={texts} offices={offices} />;
+  return <ContactContent texts={texts} office={office} />;
 }

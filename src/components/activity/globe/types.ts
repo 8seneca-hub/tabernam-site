@@ -1,30 +1,3 @@
-export interface City {
-  /** Stable identifier used in URLs. */
-  slug: string;
-  /** Region label shown above the title (the small uppercase eyebrow). */
-  name: string;
-  /** Latitude — where the pin and camera-focus point sit. */
-  lat: number;
-  /** Longitude. */
-  lng: number;
-  /** Business / office name shown as the big title. */
-  business: string;
-  /** Short narrative paragraph that opens the card body. */
-  desc: string;
-  /** Camera altitude when this city is focused. Smaller = closer/zoomed in. */
-  altitude: number;
-  /** Resolved asset URLs for this city's photo carousel. */
-  photos: string[];
-}
-
-export interface MarkerDatum {
-  idx: number;
-  lat: number;
-  lng: number;
-  name: string;
-  isActive: boolean;
-}
-
 export interface GlobeInstance {
   backgroundColor: (c: string) => GlobeInstance;
   atmosphereColor: (c: string) => GlobeInstance;
@@ -47,6 +20,20 @@ export interface GlobeInstance {
   height: (h: number) => GlobeInstance;
 }
 
-export type GlobeControls = ReturnType<GlobeInstance['controls']>;
+export interface MarkerDatum {
+  idx: number;
+  lat: number;
+  lng: number;
+  name: string;
+  isActive: boolean;
+}
 
-export const SLOVAKIA = { lat: 48.1486, lng: 17.1077 };
+export interface City {
+  slug: string;
+  name: string;
+  lat: number;
+  lng: number;
+  desc: string;
+  altitude: number;
+  photos?: string[];
+}

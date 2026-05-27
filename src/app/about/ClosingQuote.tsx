@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useRef, useState } from 'react';
 import FadeIn from '@/animations/FadeIn';
-import Button from '@/components/ui/Button';
 import type { PageTexts } from '@/lib/directus';
 
 const QuoteIcon = () => (
@@ -19,11 +18,36 @@ export default function ClosingQuote({ texts }: Props) {
   const quote = texts.closing_quote;
   const author = texts.closing_quote_author;
   const cta = texts.closing_cta;
+  const backgroundImage = texts.closing_background || '/carousel/photo-12.jpg';
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const [pos, setPos] = useState<{ x: number; y: number }>({ x: -1000, y: -1000 });
 
   if (!quote && !cta) return null;
 
   return (
-    <section className="relative bg-dark text-white overflow-hidden py-24 md:py-32">
+    <section
+      ref={sectionRef}
+      onMouseMove={(e) => {
+        const rect = sectionRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      }}
+      onMouseLeave={() => setPos({ x: -1000, y: -1000 })}
+      className="relative text-white overflow-hidden py-32 md:py-44 bg-fit bg-center"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+      }}
+    >
+      {/* Dark overlay with a spotlight cut-out that follows the cursor */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle 280px at ${pos.x}px ${pos.y}px, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.92) 80%)`,
+        }}
+        aria-hidden="true"
+      />
+
       <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-brand/15 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-[var(--side-padding)] text-center flex flex-col items-center gap-10">

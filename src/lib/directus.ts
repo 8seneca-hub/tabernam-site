@@ -1,167 +1,37 @@
 import { createDirectus, rest, staticToken, readItems, readSingleton } from '@directus/sdk';
 import {
+  ContactOffice,
   DEFAULT_SETTINGS,
+  HeroSlide,
+  LabeledRow,
+  PageTexts,
+  SiteSettings,
 } from './data';
 import { FALLBACK_DICTIONARIES, FALLBACK_LANGS, type LangInfo } from './i18n';
-import type { HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature, ContactOffice, LabeledRow } from './data';
-export type { HeroSlide, ContactAddress, SiteSettings, PageTexts, Feature, ContactOffice, LabeledRow };
+import { CMSSchema, GlobeCity, GlobeCityTranslation } from './type';
+
+export type {
+  HeroSlide, ContactOffice, LabeledRow, PageTexts, SiteSettings,
+} from './data';
+export type { GlobeCity, GlobeCityTranslation } from './type';
 export type { LangInfo };
 
-export interface CMSActivity {
-  id: number;
-  sort: number;
-  slug: string;
-  lat: number;
-  lng: number;
-  altitude: number;
-  translations: CMSActivityTranslation[];
-  photos: CMSActivityFile[];
-}
-
-export interface CMSActivityTranslation {
-  id: number;
-  activities_id: number;
-  language: string;
-  name: string;
-  business: string;
-  description: string;
-}
-
-export interface CMSActivityFile {
-  id: number;
-  activities_id: number;
-  directus_files_id: string;
-  sort: number | null;
-}
-
-export interface CMSHeroSlide {
-  id: number;
-  image: string;
-  alt: string;
-  sort: number;
-}
-
-export interface CMSPageText {
-  id: number;
-  page: string;       // 'home' | 'about' | 'activity' | 'contact'
-  section: string;    // e.g. 'about_body_1', 'leadership_title'
-  lang: string;       // 'en' | 'sk' | …
-  content: string;
-}
-
-export interface CMSContactAddress {
-  id: number;
-  title_en: string;
-  title_sk: string;
-  lines: string;      // newline-separated address lines
-  portrait_index: number;
-  image: string | null;
-  sort: number;
-}
-
-export interface CMSContactOffice {
-  id: number;
-  sort: number;
-  slug: string;
-  region: string;
-  label: string;
-  icon: 'pin' | 'globe' | 'group' | string;
-  org_name: string;
-  zone: string;
-  role_label: string;
-  role_name: string;
-  address: string;            // newline-separated lines
-  corporate_ids: string;      // "Label: Value" per line
-  phone: string;
-  email: string;
-  bank_credentials: string;   // "Label: Value" per line
-}
-
-export interface CMSI18nString {
-  id: number;
-  key: string;
-  lang: string;
-  value: string;
-}
-
-export interface CMSLanguage {
-  id: number;
-  code: string;
-  name: string;
-  flag: string | null;
-  is_default: boolean;
-  sort: number | null;
-}
-
-export interface CMSFeature {
-  id: number;
-  icon_svg: string | null;
-  text: string;
-  sort: number | null;
-}
-
-export interface CMSSchema {
-  activities: CMSActivity[];
-  activities_translations: CMSActivityTranslation[];
-  activities_files: CMSActivityFile[];
-  hero_slides: CMSHeroSlide[];
-  page_texts: CMSPageText[];
-  contact_addresses: CMSContactAddress[];
-  contact_offices: CMSContactOffice[];
-  i18n_strings: CMSI18nString[];
-  features: CMSFeature[];
-  languages: CMSLanguage[];
-  site_settings: CMSSiteSettings;
-}
-
-export interface CMSSiteSettings {
-  id: number;
-  color_bg: string | null;
-  color_text: string | null;
-  color_muted: string | null;
-  color_surface: string | null;
-  color_button: string | null;
-  color_button_text: string | null;
-  color_button_hover: string | null;
-  color_header: string | null;
-  color_border: string | null;
-  color_footer_bg: string | null;
-  color_brand: string | null;
-  font_family: string | null;
-  logo_text: string | null;
-  max_width: string | null;
-  side_padding: string | null;
-  header_height: string | null;
-}
-
-export interface GlobeCityTranslation {
-  language: string;
-  name: string;
-  business: string;
-  description: string;
-}
-
-export interface GlobeCity {
-  slug: string;
-  lat: number;
-  lng: number;
-  altitude: number;
-  translations: GlobeCityTranslation[];
-  photos: string[];
-}
 
 const directusUrl = process.env.DIRECTUS_URL || 'http://localhost:8055';
 const directusToken = process.env.DIRECTUS_TOKEN || '';
 
 const directus = createDirectus<CMSSchema>(directusUrl)
   .with(staticToken(directusToken))
-  .with(rest());
+  .with(rest({
+    onRequest: (options) => ({ ...options, cache: 'no-store' as RequestCache }),
+  }));
 
 export default directus;
 
 function assetUrl(value: string | null | undefined): string {
   if (!value) return '';
   if (value.startsWith('http://') || value.startsWith('https://')) return value;
+  if (value.startsWith('/')) return value;
   return `${directusUrl}/assets/${value}`;
 }
 
@@ -189,7 +59,7 @@ export async function getActivities(): Promise<GlobeCity[]> {
           'lat',
           'lng',
           'altitude',
-          { translations: ['language', 'name', 'business', 'description'] },
+          { translations: ['name', 'business', 'description', { language: ['code'] }] },
           { photos: ['directus_files_id'] },
         ],
       }),
@@ -199,12 +69,18 @@ export async function getActivities(): Promise<GlobeCity[]> {
       lat: a.lat,
       lng: a.lng,
       altitude: a.altitude,
-      translations: (a.translations || []).map((t) => ({
-        language: t.language,
-        name: t.name,
-        business: t.business,
-        description: t.description,
-      })),
+      translations: (a.translations || [])
+        .map((t) => {
+          const code = typeof t.language === 'object' && t.language ? t.language.code : null;
+          if (!code) return null;
+          return {
+            language: code,
+            name: t.name,
+            business: t.business,
+            description: t.description,
+          };
+        })
+        .filter((t): t is GlobeCityTranslation => t !== null),
       photos: (a.photos || [])
         .map((p) => p.directus_files_id)
         .filter((id): id is string => !!id)
@@ -234,24 +110,6 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
   }
 }
 
-export async function getFeatures(): Promise<Feature[]> {
-  try {
-    const items = await directus.request(
-      readItems('features', {
-        sort: ['sort'],
-        limit: -1,
-      })
-    );
-    return items.map((f) => ({
-      iconSvg: f.icon_svg || '',
-      text: f.text,
-    }));
-  } catch (e) {
-    console.warn('Directus fetch failed for features, using fallback:', e);
-    return [];
-  }
-}
-
 export type PageTextsBundle = Record<string, PageTexts>;
 
 export function pickPageTexts(bundle: PageTextsBundle, lang: string): PageTexts {
@@ -261,29 +119,32 @@ export function pickPageTexts(bundle: PageTextsBundle, lang: string): PageTexts 
 export async function getPageTexts(page: string): Promise<PageTextsBundle> {
   try {
     const items = await directus.request(
-      readItems('page_texts', {
+      readItems('page_text_keys', {
         filter: { page: { _eq: page } },
         limit: -1,
+        fields: ['section', { translations: ['content', { language: ['code'] }] }],
       })
     );
     const IMAGE_SECTIONS = new Set([
       'hero_image_1',
       'hero_image_2',
       'portrait_image',
-      'portrait_image_1',
-      'portrait_image_2',
+      'closing_background',
     ]);
     const isImageSection = (s: string) =>
       IMAGE_SECTIONS.has(s) || /^leadership_body_\d+_image$/.test(s);
     const bundle: PageTextsBundle = {};
-    items.forEach((t) => {
-      const lang = t.lang || 'en';
-      if (!bundle[lang]) bundle[lang] = {};
-      bundle[lang][t.section] = isImageSection(t.section) ? assetUrl(t.content) : t.content;
+    items.forEach((k) => {
+      (k.translations || []).forEach((t) => {
+        const code = typeof t.language === 'object' && t.language ? t.language.code : null;
+        if (!code) return;
+        if (!bundle[code]) bundle[code] = {};
+        bundle[code][k.section] = isImageSection(k.section) ? assetUrl(t.content) : t.content;
+      });
     });
     return bundle;
   } catch (e) {
-    console.warn(`Directus fetch failed for page_texts (${page}), using empty:`, e);
+    console.warn(`Directus fetch failed for page_text_keys (${page}), using empty:`, e);
     return {};
   }
 }
@@ -303,12 +164,13 @@ function parseLabeledRows(value: string | null | undefined): LabeledRow[] {
   });
 }
 
-export async function getContactOffices(): Promise<ContactOffice[]> {
+export async function getContactOffice(): Promise<ContactOffice | null> {
   try {
-    const items = await directus.request(
-      readItems('contact_offices', { sort: ['sort'], limit: -1 }),
-    );
-    return items.map((o) => ({
+    const o = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('contact_offices', { fields: ['*', { map: ['directus_files_id'] }] } as any),
+    )) as unknown as CMSSchema['contact_offices'];
+    return {
       slug: o.slug,
       region: o.region,
       label: o.label,
@@ -320,33 +182,18 @@ export async function getContactOffices(): Promise<ContactOffice[]> {
       addressLines: splitLines(o.address),
       corporateIds: parseLabeledRows(o.corporate_ids),
       phone: o.phone,
-      email: o.email,
+      websiteUrl: o.website_url,
+      workEmail: o.work_email,
+      personalEmail: o.personal_email,
       bankCredentials: parseLabeledRows(o.bank_credentials),
-    }));
+      mapImages: (o.map || [])
+        .map((m) => m.directus_files_id)
+        .filter((id): id is string => !!id)
+        .map((id) => assetUrl(id)),
+    };
   } catch (e) {
     console.warn('Directus fetch failed for contact_offices, using fallback:', e);
-    return [];
-  }
-}
-
-export async function getContactAddresses(): Promise<ContactAddress[]> {
-  try {
-    const items = await directus.request(
-      readItems('contact_addresses', {
-        sort: ['sort'],
-        limit: -1,
-      })
-    );
-    return items.map((a) => ({
-      title_en: a.title_en,
-      title_sk: a.title_sk,
-      lines: a.lines.split('\n').filter(Boolean),
-      portrait_index: a.portrait_index,
-      image: assetUrl(a.image),
-    }));
-  } catch (e) {
-    console.warn('Directus fetch failed for contact_addresses, using fallback:', e);
-    return [];
+    return null;
   }
 }
 
@@ -366,6 +213,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       colorBorder: s.color_border || DEFAULT_SETTINGS.colorBorder,
       colorFooterBg: s.color_footer_bg || DEFAULT_SETTINGS.colorFooterBg,
       fontFamily: s.font_family || DEFAULT_SETTINGS.fontFamily,
+      logoImage: s.logo_image ? assetUrl(s.logo_image) : DEFAULT_SETTINGS.logoImage,
       logoText: s.logo_text || DEFAULT_SETTINGS.logoText,
       maxWidth: s.max_width || DEFAULT_SETTINGS.maxWidth,
       sidePadding: s.side_padding || DEFAULT_SETTINGS.sidePadding,
@@ -397,19 +245,26 @@ export async function getLanguages(): Promise<LangInfo[]> {
 export async function getDictionaries(): Promise<Record<string, Record<string, string>>> {
   try {
     const items = await directus.request(
-      readItems('i18n_strings', { limit: -1 })
+      readItems('translation_keys', {
+        limit: -1,
+        fields: ['key', { translations: ['value', { language: ['code'] }] }],
+      })
     );
     const result: Record<string, Record<string, string>> = {};
-    items.forEach((s) => {
-      if (!result[s.lang]) result[s.lang] = {};
-      result[s.lang][s.key] = s.value;
+    items.forEach((k) => {
+      (k.translations || []).forEach((t) => {
+        const code = typeof t.language === 'object' && t.language ? t.language.code : null;
+        if (!code) return;
+        if (!result[code]) result[code] = {};
+        result[code][k.key] = t.value;
+      });
     });
     for (const [lang, dict] of Object.entries(FALLBACK_DICTIONARIES)) {
       result[lang] = { ...dict, ...result[lang] };
     }
     return result;
   } catch (e) {
-    console.warn('Directus fetch failed for i18n_strings, using fallback:', e);
+    console.warn('Directus fetch failed for translation_keys, using fallback:', e);
     return FALLBACK_DICTIONARIES;
   }
 }

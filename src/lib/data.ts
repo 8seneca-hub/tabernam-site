@@ -3,19 +3,6 @@ export interface HeroSlide {
   alt: string;
 }
 
-export interface Feature {
-  iconSvg: string;
-  text: string;
-}
-
-export interface ContactAddress {
-  title_en: string;
-  title_sk: string;
-  lines: string[];
-  portrait_index: number;
-  image: string;
-}
-
 export interface LabeledRow {
   label: string;
   value: string;
@@ -33,8 +20,11 @@ export interface ContactOffice {
   addressLines: string[];
   corporateIds: LabeledRow[];
   phone: string;
-  email: string;
+  websiteUrl: string;
+  workEmail: string;
+  personalEmail: string;
   bankCredentials: LabeledRow[];
+  mapImages: string[];
 }
 
 export interface ActivityCoords {
@@ -79,6 +69,7 @@ export interface SiteSettings {
   colorBorder: string;
   colorFooterBg: string;
   fontFamily: string;
+  logoImage: string;
   logoText: string;
   maxWidth: string;
   sidePadding: string;
@@ -246,46 +237,6 @@ export const CHINA_DESTINATIONS = [
   { lat: 22.3193, lng: 114.1694 }, { lat: 24.4798, lng: 118.0894 },
 ];
 
-export const CONTACT_ADDRESSES: ContactAddress[] = [
-  {
-    title_en: 'Bratislava — Head Office',
-    title_sk: 'Bratislava — hlavná kancelária',
-    lines: [
-      'Tabernam Consulting',
-      'Bratislava, Slovakia',
-      'By appointment only.',
-      'hello@tabernam.com',
-    ],
-    portrait_index: 1,
-    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    title_en: 'Beijing — China Practice',
-    title_sk: 'Peking — Čínska prax',
-    lines: [
-      'Tabernam China Practice',
-      'Beijing, China',
-      'Meetings arranged in advance via our Bratislava office.',
-      'china@tabernam.com',
-    ],
-    portrait_index: 2,
-    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80',
-
-  },
-  {
-    title_en: 'Shanghai — Partner Network',
-    title_sk: 'Šanghaj — partnerská sieť',
-    lines: [
-      'Tabernam Partner Network',
-      'Shanghai, China',
-      'Available for delegations and site visits on request.',
-      'shanghai@tabernam.com',
-    ],
-    portrait_index: 3,
-    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=900&q=80',
-  },
-]
-
 export const DEFAULT_SETTINGS: SiteSettings = {
   colorBg: '#FFFFFF',
   colorBrand: '#1C4582',
@@ -299,6 +250,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   colorBorder: '#C2CBD7',
   colorFooterBg: '#E9EDF1',
   fontFamily: '',
+  logoImage: '/tabernam-logo.png',
   logoText: 'Tabernam',
   maxWidth: '1512px',
   sidePadding: '40px',

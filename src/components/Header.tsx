@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from '@/components/ui/Image';
 import { useI18n } from '@/app/hook/useI18n';
+import { useTheme } from '@/lib/theme-context';
 import LangSwitcher from './LangSwitcher';
-import ActivityLink from './activity/ActivityLink';
 
 export default function Header() {
   const { t } = useI18n();
+  const { logoImage, logoText } = useTheme();
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -115,12 +116,12 @@ export default function Header() {
 
         <Link href="/" className="flex items-center" aria-label="Tabernam home">
           <Image
-            src="/tabernam-logo.png"
-            alt="Tabernam"
+            src={logoImage}
+            alt={logoText}
             width={100}
             height={100}
             priority
-            className="h-7 max-w-[100px] object-contain max-md:h-6 max-md:max-w-[140px]"
+            className="max-w-[100px] object-contain"
           />
         </Link>
       </div>

@@ -28,48 +28,6 @@ export default function ContactInfoCard({ email, phone, wechat, address, classNa
       <p className="mt-2 text-sm text-muted leading-relaxed">
         {t('cv.contact.intro')}
       </p>
-
-      <ul className="mt-6 flex flex-col gap-3">
-        {email && (
-          <li>
-            <Card
-              icon={<Mail />}
-              label={t('cv.contact.email')}
-              value={email}
-              href={mailHref}
-            />
-          </li>
-        )}
-        {phone && (
-          <li>
-            <Card
-              icon={<Phone />}
-              label={t('cv.contact.phone')}
-              value={phone}
-              href={phoneHref}
-            />
-          </li>
-        )}
-        {wechat && (
-          <li>
-            <Card
-              icon={<MessageCircleCheck />}
-              label={t('cv.hero.wechat.label')}
-              value={wechat}
-            />
-          </li>
-        )}
-        {address && (
-          <li>
-            <Card
-              icon={<MapPin />}
-              label={t('cv.contact.address')}
-              value={address}
-            />
-          </li>
-        )}
-      </ul>
-
       <div className="flex items-center justify-end mt-6">
         <Button
           as={Link}

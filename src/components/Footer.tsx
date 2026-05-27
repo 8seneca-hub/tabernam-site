@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from '@/components/ui/Image';
 import { useI18n } from '@/app/hook/useI18n';
+import { useTheme } from '@/lib/theme-context';
+import type { ContactOffice } from '@/lib/data';
 import ActivityLink from './activity/ActivityLink';
 import { Earth, Globe, Mail, MapPin } from 'lucide-react';
 
@@ -10,8 +12,18 @@ import { Earth, Globe, Mail, MapPin } from 'lucide-react';
 const colHeaderClass = 'text-[11px] font-semibold uppercase tracking-[0.25em] text-text mb-5';
 const linkClass = 'text-sm text-text hover:text-brand transition-colors';
 
-export default function Footer() {
+interface Props {
+  office: ContactOffice | null;
+}
+
+export default function Footer({ office }: Props) {
   const { t } = useI18n();
+  const { logoImage, logoText } = useTheme();
+  const email = office?.workEmail || 'hello@tabernam.com';
+  const mailHref = `mailto:${email}`;
+  const location = office?.addressLines && office.addressLines.length > 0
+    ? office.addressLines.join(', ')
+    : t('footer.location');
 
   return (
     <footer className="mt-20 px-[var(--side-padding)] pt-16 pb-6 bg-footer-bg border-t border-border text-text">
@@ -20,11 +32,11 @@ export default function Footer() {
         <div className="flex flex-col gap-5 max-w-[360px]">
           <Link href="/" className="inline-flex" aria-label={t('aria.tabernamHome')}>
             <Image
-              src="/tabernam-logo.png"
-              alt="Tabernam"
-              width={928}
+              src={logoImage}
+              alt={logoText}
+              width={164}
               height={164}
-              className="h-8 w-auto max-w-[200px] object-contain"
+              className="h-8 w-auto object-contain"
             />
           </Link>
           <p className="text-sm leading-relaxed text-muted">
@@ -68,13 +80,13 @@ export default function Footer() {
               <span className="w-7 h-7 flex items-center justify-center text-text shrink-0" aria-hidden>
                 <Mail />
               </span>
-              <a href="mailto:hello@tabernam.com" className={linkClass}>hello@tabernam.com</a>
+              <a href={mailHref} className={linkClass}>{email}</a>
             </li>
             <li className="flex items-center gap-3">
               <span className="w-7 h-7 flex items-center justify-center text-text shrink-0" aria-hidden>
                 <MapPin />
               </span>
-              <span className="text-sm text-text">{t('footer.location')}</span>
+              <span className="text-sm text-text">{location}</span>
             </li>
           </ul>
           <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-muted mt-6">

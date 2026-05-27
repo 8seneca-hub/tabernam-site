@@ -3,7 +3,7 @@ import { DM_Sans, Noto_Sans_SC } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
-import { getLanguages, getDictionaries, getSiteSettings } from '@/lib/directus';
+import { getLanguages, getDictionaries, getSiteSettings, getContactOffice } from '@/lib/directus';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -42,10 +42,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [languages, dictionaries, settings] = await Promise.all([
+  const [languages, dictionaries, settings, office] = await Promise.all([
     getLanguages(),
     getDictionaries(),
     getSiteSettings(),
+    getContactOffice(),
   ]);
 
   const themeVars = {
@@ -68,12 +69,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${dmSans.variable} ${notoSansSC.variable}`} style={themeVars}>
-      <body className="bg-bg text-text leading-snug">
+      <body className="bg-bg text-text leading-snug min-h-screen flex flex-col">
         <I18nProvider languages={languages} dictionaries={dictionaries}>
           <ThemeProvider settings={settings}>
             <Header />
-            {children}
-            <Footer />
+            <main className="flex-1">{children}</main>
+            <Footer office={office} />
           </ThemeProvider>
         </I18nProvider>
       </body>

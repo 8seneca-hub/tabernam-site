@@ -4,8 +4,8 @@ services:
         ports:
             - 8055:8055
         volumes:
-            - ./database:/directus/database
-            - ./uploads:/directus/uploads
+            - ./src/database:/directus/database
+            - ./src/uploads:/directus/uploads
             - ./extensions:/directus/extensions
         environment:
             SECRET: "replace-with-random-value"
@@ -13,5 +13,5 @@ services:
             DB_FILENAME: "/directus/database/data.db"
             WEBSOCKETS_ENABLED: "true"
             ADMIN_EMAIL: "[EMAIL_ADDRESS]"
-            ADMIN_PASSWORD: "[PASSWORD]"
+            ADMIN_PASSWORD: "tabernam-admin"
             ADMIN_TOKEN: "tabernam-admin-token"
