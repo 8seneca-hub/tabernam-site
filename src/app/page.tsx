@@ -12,7 +12,9 @@ export default async function HomePage() {
   ]);
 
   const quoteEn = dicts.en?.['quote.primary'] ?? '';
-  const quoteZh = dicts.zh?.['quote.secondary'] ?? '';
+  // quote.secondary stores the Chinese line; prod has no zh language, so it
+  // lives in the en row (matches schema's "Chinese by default" convention).
+  const quoteZh = dicts.en?.['quote.secondary'] ?? '';
 
   return (
     <main>
