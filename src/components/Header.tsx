@@ -7,6 +7,7 @@ import Image from '@/components/ui/Image';
 import { useI18n } from '@/app/hook/useI18n';
 import { useTheme } from '@/lib/theme-context';
 import LangSwitcher from './LangSwitcher';
+import ActivityLink from './activity/ActivityLink';
 
 export default function Header() {
   const { t } = useI18n();
@@ -131,9 +132,8 @@ export default function Header() {
         className="nav flex items-center justify-center gap-8 max-md:gap-0"
         id="primary-nav"
       >
-        <Link href="/" className={linkClass('/')} onClick={closeNav}>{t('nav.home')}</Link>
+        <ActivityLink className={linkClass('/activities')} onClick={closeNav}>{t('nav.activity')}</ActivityLink>
         <Link href="/about" className={linkClass('/about')} onClick={closeNav}>{t('nav.about')}</Link>
-        {/* <ActivityLink className={linkClass('/activities')} onClick={closeNav}>{t('nav.activity')}</ActivityLink> */}
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>
 

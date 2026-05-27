@@ -1,42 +1,63 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { useI18n } from '@/app/hook/useI18n';
-import ActivityLink from '@/components/activity/ActivityLink';
-import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
+import { pickTranslation } from '@/lib/directus';
+import type { GlobeCity } from '@/lib/type';
 
 interface Props {
-  texts: PageTextsBundle;
+  cities: GlobeCity[];
 }
 
-export default function ActivityContent({ texts: bundle }: Props) {
-  const { lang, t } = useI18n();
-  const texts = pickPageTexts(bundle, lang);
+export default function ActivityContent({ cities }: Props) {
+  const { lang } = useI18n();
+  const params = useSearchParams();
+  const id = params?.get('id') ?? '';
+  const city = cities.find((c) => c.slug === id);
 
-  const title = texts.activity_title || 'Lorem ipsum dolor';
-  const body1 = texts.activity_body_1 || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
-  const body2 = texts.activity_body_2 || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
-  const body3 = texts.activity_body_3 || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+  if (!city) {
+    return (
+      <main className="w-[706px] max-w-[calc(100%-80px)] mx-auto pt-[109px] pb-[120px] flex flex-col gap-10">
+        <h1 className="text-5xl font-medium text-text">City not found</h1>
+        <p className="text-base leading-normal text-text">
+          We couldn&apos;t find a city for <code>?id={id || '(empty)'}</code>. Try selecting one from the globe.
+        </p>
+      </main>
+    );
+  }
+
+  const tr = pickTranslation(city, lang);
+  const name = tr.name || city.slug;
+  const desc = tr.description || '';
+  const photos = city.photos ?? [];
+  const secondary = photos[0];
+  const gallery = photos.slice(1);
 
   return (
-    <main className="w-[706px] max-w-[calc(100%-80px)] mx-auto pt-[109px] pb-[120px] flex flex-col gap-10">
-      <ActivityLink className="self-start no-underline inline-flex items-center bg-transparent border-0 px-5 py-3 text-base font-medium text-text cursor-pointer font-[inherit] rounded-lg transition-colors duration-200 hover:bg-dark/5">
-        {t('btn.goBack')}
-      </ActivityLink>
-
-      <div className="w-full h-[374px] rounded-xl overflow-hidden bg-gray-70">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="w-full h-full object-cover" src={texts.hero_image_1 || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80'} alt="" />
-      </div>
-
-      <article className="flex flex-col gap-4">
-        <h1 className="text-5xl font-medium text-text">{title}</h1>
-        <p className="text-base leading-normal text-text">{body1}</p>
-        <p className="text-base leading-normal text-text">{body2}</p>
-        <div className="w-full h-[377px] rounded-xl overflow-hidden bg-gray-70">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="w-full h-full object-cover" src={texts.hero_image_2 || 'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2?auto=format&fit=crop&w=1600&q=80'} alt="" />
+    <main className="pt-[109px] pb-[120px] flex flex-col gap-10">
+      {secondary && (
+        <div className="w-full max-w-[1200px] mx-auto px-[var(--side-padding)]">
+          <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-gray-70">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="w-full h-full object-cover" src={secondary} alt={name} />
+          </div>
         </div>
-        <p className="text-base leading-normal text-text">{body3}</p>
+      )}
+
+      <article className="w-[706px] max-w-[calc(100%-80px)] mx-auto flex flex-col gap-4">
+        <h1 className="text-5xl font-medium text-text">{name}</h1>
+        <p className="text-base leading-normal text-text">{desc}</p>
+
+        {gallery.length > 0 && (
+          <div className="mt-6 grid grid-cols-2 gap-4 max-md:grid-cols-1">
+            {gallery.map((src) => (
+              <div key={src} className="w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-70">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="w-full h-full object-cover" src={src} alt={name} />
+              </div>
+            ))}
+          </div>
+        )}
       </article>
     </main>
   );

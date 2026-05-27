@@ -1,0 +1,473 @@
+.ga-section {
+  position: relative;
+  width: 100%;
+  height: 130vh;
+  margin-top: 128px;
+  background: #ffffff;
+  color: #1a1a1a;
+  overflow: hidden;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+.ga-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: none;
+  pointer-events: none;
+}
+.ga-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.ga-backdrop.visible {
+  opacity: 1;
+}
+.ga-globe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  transform: translateY(30%) scale(1);
+  transform-origin: center center;
+  transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1);
+  background: transparent;
+}
+.ga-globe.shifted {
+  position: fixed;
+  transform: translate(0, 0) scale(1);
+}
+/* Mapbox renders into a child canvas; ensure full coverage. */
+.ga-globe .mapboxgl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.ga-globe .mapboxgl-ctrl-attrib,
+.ga-globe .mapboxgl-ctrl-logo {
+  display: none !important;
+}
+.ga-token-warn {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  max-width: 520px;
+  padding: 12px 18px;
+  background: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffe69c;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+.ga-token-warn a {
+  color: #664d03;
+  text-decoration: underline;
+}
+.ga-token-warn code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.ga-intro {
+  position: absolute;
+  top: 8vh;
+  left: 50%;
+  width: 90%;
+  max-width: 720px;
+  text-align: center;
+  color: #1a1a1a;
+  z-index: 10;
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  opacity: 1;
+  transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1),
+    opacity 0.7s ease;
+}
+.ga-intro.out {
+  transform: translate(-50%, -140%);
+  opacity: 0;
+}
+.ga-intro h2 {
+  margin: 0 0 16px;
+  font-size: clamp(24px, 2.6vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.ga-intro p {
+  margin: 0 auto;
+  max-width: 620px;
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.6;
+  font-weight: 400;
+  color: #4a5560;
+}
+.ga-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--brand);
+  border: 0;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+.ga-cta:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.ga-cta:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ga-panel {
+  position: fixed;
+  top: 50%;
+  right: 48px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  z-index: 11;
+  color: #ffffff;
+  background: transparent;
+  transform: translate(120%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.9s cubic-bezier(0.65, 0.05, 0.36, 1),
+    opacity 0.5s ease;
+}
+.ga-panel.in {
+  transform: translate(0, -50%);
+  opacity: 1;
+  pointer-events: auto;
+}
+.ga-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  color: #1a1a1a;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+}
+.ga-progress {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  pointer-events: none;
+}
+.ga-progress-seg {
+  width: 30px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  transition: background 0.3s ease;
+}
+.ga-progress-seg.active {
+  background: rgba(255, 255, 255, 0.85);
+}
+.ga-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #111111;
+}
+.ga-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.ga-thumb-img.active {
+  opacity: 1;
+}
+.ga-card-body {
+  padding: 24px 28px 28px;
+  display: flex;
+  flex-direction: column;
+}
+.ga-name {
+  margin: 0 0 6px;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.ga-location {
+  align-self: flex-start;
+  margin: 0 0 18px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2563eb;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.ga-location:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.ga-eyebrow {
+  margin: 0 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #34d399;
+}
+.ga-desc {
+  margin: 0 0 24px;
+  padding: 0;
+  color: #4a5560;
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+}
+.ga-button {
+  margin: 0;
+  align-self: flex-start;
+  padding: 10px 24px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  transition: background 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.ga-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+.ga-zoom {
+  position: fixed;
+  top: 50%;
+  left: 28px;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease 0.3s;
+}
+.ga-zoom.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ga-zoom-btn {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  padding: 0;
+  transition: background 0.18s ease;
+}
+.ga-zoom-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.ga-zoom-btn + .ga-zoom-btn {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+.ga-zoom-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.ga-hints {
+  position: fixed;
+  bottom: 28px;
+  /* Align the left edge with the zoom button stack (left: 28px). */
+  left: 28px;
+  z-index: 200;
+  display: flex;
+  gap: 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease 0.3s;
+}
+.ga-hints.visible {
+  opacity: 1;
+}
+.ga-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1a1a1a;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.ga-hint span {
+  /* Preserve newlines from translation values for 2-line hint layout. */
+  white-space: pre-line;
+}
+.ga-hint svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #1a1a1a;
+}
+@media (max-width: 720px) {
+  .ga-hints {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .ga-hint {
+    font-size: 11px;
+  }
+}
+.ga-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  color: #1a1a1a;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.ga-close:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+.ga-close svg {
+  width: 16px;
+  height: 16px;
+}
+.globe-marker {
+  /* Do NOT set position here — Mapbox applies position:absolute and a
+     translate() transform on the marker element to place it at the marker's
+     lng/lat. Overriding position breaks placement. */
+  cursor: pointer;
+  pointer-events: auto;
+  padding: 4px;
+}
+.globe-marker.is-active {
+  z-index: 5;
+}
+.globe-marker-shape {
+  width: 18px;
+  height: 22.5px;
+  display: block;
+  color: #1a1a1a;
+  /* Do NOT add will-change/translateZ here — it lifts the shape into its own
+     GPU layer and makes it lag the parent's transform updates during Mapbox's
+     zoom/pan animations (pins appear to drift). */
+  transition: color 0.2s ease;
+}
+.globe-marker-shape svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.globe-marker.is-active .globe-marker-shape {
+  color: #ef4444;
+  transform: scale(1.55);
+}
+.globe-marker-preview {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 4;
+}
+.globe-marker-preview img {
+  /* 4:3 landscape, ~doubled from the previous 96×60. */
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+  background: #e5e7eb;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.22),
+    0 2px 6px rgba(15, 23, 42, 0.10);
+}
+.globe-marker-name {
+  margin-top: 0;
+  padding: 8px 18px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: left;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+.globe-marker.is-hover:not(.is-active) .globe-marker-preview {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}

@@ -30,7 +30,7 @@ export default function LangSwitcher() {
     <div ref={ref} className={`lang-switcher relative ml-1${open ? ' is-open' : ''}`} data-lang-switcher>
       <button
         type="button"
-        className="lang-trigger flex items-center gap-2 bg-transparent border border-border border-brand px-4 py-2 font-[inherit] text-sm font-semibold uppercase tracking-wider text-text cursor-pointer w-max hover:bg-gray-70/40 transition-colors max-sm:px-3 max-sm:text-xs"
+        className="lang-trigger flex items-center gap-2 bg-transparent px-4 py-2 font-[inherit] text-sm font-semibold uppercase tracking-wider text-text cursor-pointer w-max hover:bg-gray-70/40 transition-colors max-sm:px-3 max-sm:text-xs"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
