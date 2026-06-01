@@ -3,22 +3,13 @@
 import Link from 'next/link';
 import { useI18n } from '@/app/hook/useI18n';
 import Button from '@/components/ui/Button';
-import InfoRow from '@/components/ui/Card';
-import { Mail, MapPin, MessageCircleCheck, Phone } from 'lucide-react';
-import Card from '@/components/ui/Card';
 
 interface Props {
-  email?: string;
-  phone?: string;
-  wechat?: string;
-  address?: string;
   className?: string;
 }
 
-export default function ContactInfoCard({ email, phone, wechat, address, className = '' }: Props) {
+export default function ContactInfoCard({ className = '' }: Props) {
   const { t } = useI18n();
-  const phoneHref = phone ? `tel:${phone.replace(/\s+/g, '')}` : undefined;
-  const mailHref = email ? `mailto:${email}` : undefined;
 
   return (
     <div

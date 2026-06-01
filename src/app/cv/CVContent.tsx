@@ -15,7 +15,7 @@ export default function CVContent({ texts: bundle }: Props) {
   return (
     <main className="cv-page pt-[var(--header-height)] pb-24">
       <HeroHeader texts={texts} />
-      <CVSection backHref="/about" texts={texts} />
+      <CVSection backHref="/about" />
     </main>
   );
 }

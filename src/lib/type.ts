@@ -32,23 +32,26 @@ export interface CMSHeroSlide {
     sort: number;
 }
 
-export interface CMSPageTextKey {
+// Page singletons — one row per page. The translatable fields live on the
+// matching `<page>_translations` O2M; assets/operational data live as flat
+// fields on the singleton itself. The TypeScript index signatures let us
+// read any of the runtime-defined fields without re-declaring each one;
+// the canonical list of fields lives in src/lib/page-keys.json.
+export interface CMSPageSingleton {
     id: number;
-    page: string;
-    section: string;
-    translations: CMSPageTextTranslation[];
+    translations: CMSPageTranslation[];
+    [key: string]: unknown;
 }
 
-export interface CMSPageTextTranslation {
+export interface CMSPageTranslation {
     id: number;
-    page_text_keys_id: number;
-    language: number | CMSLanguage | null;
-    content: string;
+    language: number | CMSLanguage | { code: string } | null;
+    [key: string]: unknown;
 }
 
-export interface CMSContactOffice {
-    id: number;
-    sort: number;
+// `contact` extends the basic shape with the operational fields formerly
+// stored on `contact_offices` plus the `maps` M2M alias to `contact_files`.
+export interface CMSContact extends CMSPageSingleton {
     slug: string;
     region: string;
     label: string;
@@ -57,33 +60,22 @@ export interface CMSContactOffice {
     zone: string;
     role_label: string;
     role_name: string;
-    address: string;            // newline-separated lines
-    corporate_ids: string;      // "Label: Value" per line
+    address: string;
+    corporate_ids: string;
     phone: string;
     website_url: string;
     work_email: string;
     personal_email: string;
-    bank_credentials: string;   // "Label: Value" per line
-    map: CMSContactOfficeFile[];
+    bank_credentials: string;
+    portrait_image: string | null;
+    maps?: CMSContactFile[];
 }
 
-export interface CMSContactOfficeFile {
+export interface CMSContactFile {
     id: number;
-    contact_offices_id: number;
+    contact_id: number;
     directus_files_id: string;
-}
-
-export interface CMSTranslationKey {
-    id: number;
-    key: string;
-    translations: CMSTranslationRow[];
-}
-
-export interface CMSTranslationRow {
-    id: number;
-    translation_keys_id: number;
-    language: number | CMSLanguage | null;
-    value: string;
+    sort?: number;
 }
 
 export interface CMSLanguage {
@@ -100,11 +92,15 @@ export interface CMSSchema {
     activities_translations: CMSActivityTranslation[];
     activities_files: CMSActivityFile[];
     hero_slides: CMSHeroSlide[];
-    page_text_keys: CMSPageTextKey[];
-    page_text_translations: CMSPageTextTranslation[];
-    contact_offices: CMSContactOffice;
-    translation_keys: CMSTranslationKey[];
-    translation_table: CMSTranslationRow[];
+    home: CMSPageSingleton;
+    home_translations: CMSPageTranslation[];
+    about: CMSPageSingleton;
+    about_translations: CMSPageTranslation[];
+    contact: CMSContact;
+    contact_translations: CMSPageTranslation[];
+    contact_files: CMSContactFile[];
+    cv: CMSPageSingleton;
+    cv_translations: CMSPageTranslation[];
     languages: CMSLanguage[];
     site_settings: CMSSiteSettings;
 }

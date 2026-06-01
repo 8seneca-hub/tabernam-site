@@ -77,28 +77,8 @@ export default function HeroSection({ slides }: Props) {
             variants={fadeUp}
           >
             {t('hero.title')}{' '}
-            <span className="text-white">{t('hero.titleAccent')}</span>
           </motion.h1>
-          <motion.p
-            className="text-xl font-medium leading-snug text-white max-w-[50vw] w-full mx-auto max-[1100px]:text-lg max-[1100px]:max-w-[70vw] max-md:text-base max-sm:text-base max-sm:max-w-none"
-            custom={0.2}
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-          >
-            {t('hero.body')}
-          </motion.p>
         </div>
-        <motion.button
-          type="button"
-          className="btn relative z-10 inline-flex items-center justify-center bg-brand text-white text-base font-medium px-6 py-3 rounded-lg border-0 w-max cursor-pointer font-[inherit] transition-[background,transform] duration-200 hover:brightness-110 hover:-translate-y-px"
-          custom={0.35}
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-        >
-          {t('btn.exploreNow')}
-        </motion.button>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
           {items.map((_, idx) => (
@@ -107,9 +87,8 @@ export default function HeroSection({ slides }: Props) {
               type="button"
               aria-label={`Go to slide ${idx + 1}`}
               onClick={() => setActiveIndex(idx)}
-              className={`h-1 rounded-full bg-white transition-all duration-300 ${
-                idx === activeIndex ? 'w-10 opacity-100' : 'w-5 opacity-60'
-              }`}
+              className={`h-1 rounded-full bg-white transition-all duration-300 ${idx === activeIndex ? 'w-10 opacity-100' : 'w-5 opacity-60'
+                }`}
             />
           ))}
         </div>

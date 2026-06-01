@@ -4,11 +4,9 @@ import { useEffect, useMemo } from 'react';
 import { motion, animate, useMotionValue, useTransform, type MotionValue } from 'motion/react';
 
 const FALLBACK_EN = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
-const FALLBACK_ZH = '贸易不是一笔交易。它是一种关系——跨越数十年建立，通过信任维持，并以合同签署后仍然持续的事物来衡量。';
 
 interface Props {
   en?: string;
-  zh?: string;
 }
 
 const SWEEP_DURATION_S = 8;
@@ -33,19 +31,15 @@ function RevealChar({
   return <motion.span style={{ color }}>{children}</motion.span>;
 }
 
-export default function QuoteSection({ en, zh }: Props) {
+export default function QuoteSection({ en }: Props) {
   const progress = useMotionValue(0);
 
   const enText = en && en.trim() ? en : FALLBACK_EN;
-  const zhText = zh && zh.trim() ? zh : FALLBACK_ZH;
 
   const enChars = useMemo(() => [...enText], [enText]);
-  const zhChars = useMemo(() => [...zhText], [zhText]);
 
-  const enLen = enChars.length;
-  const zhLen = zhChars.length;
   const overlap = 6;
-  const totalSlots = enLen + zhLen + overlap;
+  const totalSlots = enChars.length + overlap;
 
   useEffect(() => {
     let cancelled = false;
@@ -78,21 +72,6 @@ export default function QuoteSection({ en, zh }: Props) {
               progress={progress}
               start={i / totalSlots}
               end={(i + overlap) / totalSlots}
-            >
-              {ch}
-            </RevealChar>
-          ))}
-        </p>
-        <p
-          className="text-[24px] font-light leading-relaxed max-[1100px]:text-[20px]"
-          style={{ fontFamily: 'var(--font-dm-sans), var(--font-noto-sc), sans-serif' }}
-        >
-          {zhChars.map((ch, i) => (
-            <RevealChar
-              key={`zh-${i}`}
-              progress={progress}
-              start={(enLen + i) / totalSlots}
-              end={(enLen + i + overlap) / totalSlots}
             >
               {ch}
             </RevealChar>

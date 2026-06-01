@@ -9,7 +9,6 @@ import EntryRow from '@/components/activity/component/EntryRow';
 import LanguageBar from '@/components/activity/component/LanguageBar';
 import RequestCvModal from './RequestCvModal';
 import ContactInfoCard from '../contact/ContactInfoCard';
-import type { PageTexts } from '@/lib/directus';
 
 const EDUCATION_COUNT = 6;
 const EXPERIENCE_COUNT = 9;
@@ -28,18 +27,11 @@ const LANGUAGE_META: { level: string; bars: number }[] = [
 
 interface Props {
   backHref?: string;
-  texts?: PageTexts;
 }
 
-export default function CVSection({ backHref, texts }: Props) {
+export default function CVSection({ backHref }: Props) {
   const { t } = useI18n();
   const [requestOpen, setRequestOpen] = useState(false);
-
-  const contactEmail = texts?.hero_email;
-  const contactPhone = texts?.hero_phone;
-  const contactWechat = texts?.hero_wechat;
-  const addressTranslation = t('cv.hero.address');
-  const contactAddress = addressTranslation === 'cv.hero.address' ? undefined : addressTranslation;
 
   const optional = (key: string): string | undefined => {
     const value = t(key);
@@ -162,13 +154,7 @@ export default function CVSection({ backHref, texts }: Props) {
             </Section>
           </div>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <ContactInfoCard
-              className="pointer-events-auto"
-              email={contactEmail}
-              phone={contactPhone}
-              wechat={contactWechat}
-              address={contactAddress}
-            />
+            <ContactInfoCard className="pointer-events-auto" />
           </div>
         </div>
       </div>

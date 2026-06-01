@@ -9,6 +9,7 @@ import {
 } from './data';
 import { FALLBACK_DICTIONARIES, FALLBACK_LANGS, type LangInfo } from './i18n';
 import { CMSSchema, GlobeCity, GlobeCityTranslation } from './type';
+import pageKeysConfig from './page-keys.json';
 
 export type {
   HeroSlide, ContactOffice, LabeledRow, PageTexts, SiteSettings,
@@ -110,41 +111,147 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Page singletons (home/about/contact/cv) are now the source of truth for
+// translated text. The legacy `page_text_keys` / `translation_keys` tables
+// were removed — see scripts/build-page-models-local.mjs and
+// scripts/extend-page-models-local.mjs.
+//
+// The page singleton row holds language-agnostic fields (e.g.
+// portrait_image, operational contact fields). Its `<page>_translations`
+// O2M holds one row per language with all translatable text fields.
+// `src/lib/page-keys.json` maps every i18n key and page-text section to its
+// (page singleton, field name) location.
+// ---------------------------------------------------------------------------
+
+type DictEntry = { page: string; field: string };
+const RAW_DICTIONARY = pageKeysConfig.dictionary as unknown as Record<string, DictEntry>;
+const DYNAMIC_DICTIONARY = pageKeysConfig.dictionaryDynamic as unknown as Record<string, DictEntry & { range: number }>;
+
+const DICTIONARY: Record<string, DictEntry> = (() => {
+  const out: Record<string, DictEntry> = {};
+  for (const [k, v] of Object.entries(RAW_DICTIONARY)) {
+    if (k.startsWith('_')) continue;
+    out[k] = { page: v.page, field: v.field };
+  }
+  for (const [pattern, def] of Object.entries(DYNAMIC_DICTIONARY)) {
+    if (pattern.startsWith('_')) continue;
+    for (let i = 0; i < def.range; i++) {
+      out[pattern.replace('{i}', String(i))] = {
+        page: def.page,
+        field: def.field.replace('{i}', String(i)),
+      };
+    }
+  }
+  return out;
+})();
+
+// Group dictionary entries by page → array of (key, field) pairs.
+const DICT_BY_PAGE: Record<string, Array<{ key: string; field: string }>> = (() => {
+  const grouped: Record<string, Array<{ key: string; field: string }>> = {};
+  for (const [key, { page, field }] of Object.entries(DICTIONARY)) {
+    (grouped[page] ||= []).push({ key, field });
+  }
+  return grouped;
+})();
+
+// All translatable field names per page (dict fields + page-text fields).
+function allTextFieldsFor(page: 'home' | 'about' | 'contact' | 'cv'): string[] {
+  const dictFields = (DICT_BY_PAGE[page] || []).map((x) => x.field);
+  const pageTextConfig = (pageKeysConfig.pageTexts as Record<string, { text?: string[] }>)[page];
+  const extra = pageTextConfig?.text ?? [];
+  return Array.from(new Set([...dictFields, ...extra]));
+}
+
+interface SingletonReadShape {
+  // Asset fields (URLs after resolution)
+  assets: Record<string, string>;
+  // For each language code, a map of field → value
+  byLang: Record<string, Record<string, string>>;
+}
+
+// Read a page singleton with all its translations and asset fields.
+async function readPageSingleton(
+  page: 'home' | 'about' | 'contact' | 'cv',
+  textFields: string[],
+  assetFields: string[],
+  extraSingletonFields: string[] = [],
+): Promise<SingletonReadShape> {
+  const fields: unknown[] = [
+    ...assetFields,
+    ...extraSingletonFields,
+    { translations: [...textFields, { language: ['code'] }] },
+  ];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row = (await directus.request(readSingleton(page, { fields } as any))) as Record<string, unknown>;
+  const assets: Record<string, string> = {};
+  for (const f of assetFields) {
+    const v = row[f];
+    assets[f] = typeof v === 'string' ? assetUrl(v) : '';
+  }
+  const byLang: Record<string, Record<string, string>> = {};
+  const translations = (row.translations as Array<Record<string, unknown>>) ?? [];
+  for (const t of translations) {
+    const langObj = t.language as { code?: string } | null;
+    const code = langObj && typeof langObj === 'object' ? langObj.code : null;
+    if (!code) continue;
+    byLang[code] = {};
+    for (const f of textFields) {
+      const v = t[f];
+      if (typeof v === 'string') byLang[code][f] = v;
+    }
+  }
+  return { assets, byLang };
+}
+
 export type PageTextsBundle = Record<string, PageTexts>;
 
 export function pickPageTexts(bundle: PageTextsBundle, lang: string): PageTexts {
   return { ...(bundle['en'] ?? {}), ...(bundle[lang] ?? {}) };
 }
 
+// Compose a PageTextsBundle for the given page that the legacy frontend
+// code consumes via `texts.<section>` and `pickPageTexts(bundle, lang)`.
 export async function getPageTexts(page: string): Promise<PageTextsBundle> {
+  if (page !== 'about' && page !== 'contact') return {};
+  const cfg = (pageKeysConfig.pageTexts as Record<string, { text?: string[]; assets?: string[]; _fieldRename?: Record<string, string> }>)[page];
+  if (!cfg) return {};
+
+  const textFields = allTextFieldsFor(page as 'about' | 'contact');
+  const assetFields = cfg.assets ?? [];
+  const fieldRename = cfg._fieldRename ?? {};
+
   try {
-    const items = await directus.request(
-      readItems('page_text_keys', {
-        filter: { page: { _eq: page } },
-        limit: -1,
-        fields: ['section', { translations: ['content', { language: ['code'] }] }],
-      })
+    const { assets, byLang } = await readPageSingleton(
+      page as 'about' | 'contact',
+      // For contact, the singleton fields are stored under renamed names
+      // (heading_title, not contact_heading_title). Translate when querying.
+      textFields.map((f) => fieldRename[f] ?? f),
+      assetFields,
     );
-    const IMAGE_SECTIONS = new Set([
-      'hero_image_1',
-      'hero_image_2',
-      'portrait_image',
-      'closing_background',
-    ]);
-    const isImageSection = (s: string) =>
-      IMAGE_SECTIONS.has(s) || /^leadership_body_\d+_image$/.test(s);
+
     const bundle: PageTextsBundle = {};
-    items.forEach((k) => {
-      (k.translations || []).forEach((t) => {
-        const code = typeof t.language === 'object' && t.language ? t.language.code : null;
-        if (!code) return;
-        if (!bundle[code]) bundle[code] = {};
-        bundle[code][k.section] = isImageSection(k.section) ? assetUrl(t.content) : t.content;
-      });
-    });
+    const reverseRename: Record<string, string> = {};
+    for (const [original, renamed] of Object.entries(fieldRename)) {
+      reverseRename[renamed] = original;
+    }
+
+    for (const [lang, fields] of Object.entries(byLang)) {
+      const entry: PageTexts = {};
+      for (const [storedField, value] of Object.entries(fields)) {
+        const outKey = reverseRename[storedField] ?? storedField;
+        if (value) entry[outKey] = value;
+      }
+      // Asset URLs aren't language-specific — repeat them under each lang
+      // so the existing pickPageTexts/texts.X access pattern keeps working.
+      for (const [f, v] of Object.entries(assets)) {
+        if (v) entry[f] = v;
+      }
+      bundle[lang] = entry;
+    }
     return bundle;
   } catch (e) {
-    console.warn(`Directus fetch failed for page_text_keys (${page}), using empty:`, e);
+    console.warn(`Directus fetch failed for ${page} singleton, using empty:`, e);
     return {};
   }
 }
@@ -164,12 +271,23 @@ function parseLabeledRows(value: string | null | undefined): LabeledRow[] {
   });
 }
 
+// Operational contact data is now stored as singleton-level fields on the
+// `contact` collection (formerly `contact_offices`). Map images live in the
+// `contact_files` junction.
 export async function getContactOffice(): Promise<ContactOffice | null> {
   try {
     const o = (await directus.request(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      readSingleton('contact_offices', { fields: ['*', { map: ['directus_files_id'] }] } as any),
-    )) as unknown as CMSSchema['contact_offices'];
+      readSingleton('contact', { fields: ['*', { maps: ['directus_files_id'] }] } as any),
+    )) as unknown as {
+      slug: string; region: string; label: string; icon: string;
+      org_name: string; zone: string; role_label: string; role_name: string;
+      address: string; corporate_ids: string;
+      phone: string; website_url: string;
+      work_email: string; personal_email: string;
+      bank_credentials: string;
+      maps?: Array<{ directus_files_id: string }>;
+    };
     return {
       slug: o.slug,
       region: o.region,
@@ -186,13 +304,13 @@ export async function getContactOffice(): Promise<ContactOffice | null> {
       workEmail: o.work_email,
       personalEmail: o.personal_email,
       bankCredentials: parseLabeledRows(o.bank_credentials),
-      mapImages: (o.map || [])
+      mapImages: (o.maps || [])
         .map((m) => m.directus_files_id)
         .filter((id): id is string => !!id)
         .map((id) => assetUrl(id)),
     };
   } catch (e) {
-    console.warn('Directus fetch failed for contact_offices, using fallback:', e);
+    console.warn('Directus fetch failed for contact singleton, using fallback:', e);
     return null;
   }
 }
@@ -242,29 +360,34 @@ export async function getLanguages(): Promise<LangInfo[]> {
   }
 }
 
+// Build the global i18n dictionary from all four page singletons. Each
+// dictionary entry from page-keys.json points at one (page, field); we
+// query that page's translations and emit `{ [code]: { [key]: value } }`.
 export async function getDictionaries(): Promise<Record<string, Record<string, string>>> {
   try {
-    const items = await directus.request(
-      readItems('translation_keys', {
-        limit: -1,
-        fields: ['key', { translations: ['value', { language: ['code'] }] }],
-      })
-    );
+    const pages: Array<'home' | 'about' | 'contact' | 'cv'> = ['home', 'about', 'contact', 'cv'];
     const result: Record<string, Record<string, string>> = {};
-    items.forEach((k) => {
-      (k.translations || []).forEach((t) => {
-        const code = typeof t.language === 'object' && t.language ? t.language.code : null;
-        if (!code) return;
+
+    for (const page of pages) {
+      const entries = DICT_BY_PAGE[page] || [];
+      if (entries.length === 0) continue;
+      const fields = entries.map((e) => e.field);
+      const { byLang } = await readPageSingleton(page, fields, []);
+      for (const [code, fieldValues] of Object.entries(byLang)) {
         if (!result[code]) result[code] = {};
-        result[code][k.key] = t.value;
-      });
-    });
+        for (const { key, field } of entries) {
+          const v = fieldValues[field];
+          if (v != null && v !== '') result[code][key] = v;
+        }
+      }
+    }
+    // Merge with hardcoded fallbacks so any missing key still resolves.
     for (const [lang, dict] of Object.entries(FALLBACK_DICTIONARIES)) {
-      result[lang] = { ...dict, ...result[lang] };
+      result[lang] = { ...dict, ...(result[lang] ?? {}) };
     }
     return result;
   } catch (e) {
-    console.warn('Directus fetch failed for translation_keys, using fallback:', e);
+    console.warn('Directus fetch failed for dictionaries, using fallback:', e);
     return FALLBACK_DICTIONARIES;
   }
 }
