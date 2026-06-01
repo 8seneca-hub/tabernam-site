@@ -15,11 +15,11 @@
     },
     "globeIntro.heading": {
       "page": "home",
-      "field": "globeIntro_heading"
+      "field": "globe_intro_heading"
     },
     "globeIntro.body": {
       "page": "home",
-      "field": "globeIntro_body"
+      "field": "globe_intro_body"
     },
     "panel.viewDetails": {
       "page": "home",
@@ -145,17 +145,9 @@
       "page": "home",
       "field": "aria_zoomOut"
     },
-    "globe.hint.text": {
-      "page": "home",
-      "field": "globe_hint_text"
-    },
     "globe.intro.cta": {
       "page": "home",
       "field": "globe_intro_cta"
-    },
-    "globe.intro.description": {
-      "page": "home",
-      "field": "globe_intro_description"
     },
     "globe.intro.heading": {
       "page": "home",
@@ -176,18 +168,6 @@
     "globe.zoom.out": {
       "page": "home",
       "field": "globe_zoom_out"
-    },
-    "globeHint.click": {
-      "page": "home",
-      "field": "globeHint_click"
-    },
-    "globeHint.drag": {
-      "page": "home",
-      "field": "globeHint_drag"
-    },
-    "globeHint.zoom": {
-      "page": "home",
-      "field": "globeHint_zoom"
     },
     "page.title.home": {
       "page": "home",
@@ -451,11 +431,14 @@
         "about_body_3",
         "about_body_4"
       ],
-      "assets": ["quote_image"]
+      "assets": [
+        "quote_image"
+      ]
     },
     "about": {
       "text": [
         "hero_name",
+        "about_eyebrow",
         "about_paragraph_body",
         "leadership_title",
         "leadership_description",

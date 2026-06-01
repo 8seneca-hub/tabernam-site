@@ -85,7 +85,6 @@ function CvButton({ label }: { label: string }) {
 
 function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: string) {
   const parts = text.split(TOKEN_RE);
-  // Strip surrounding `( )` around YouTube URLs in adjacent text segments.
   for (let i = 1; i < parts.length; i += 2) {
     if (!YT_RE.test(parts[i])) continue;
     if (i - 1 >= 0) parts[i - 1] = parts[i - 1].replace(/\(\s*$/, '');
@@ -109,6 +108,8 @@ function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: s
 export default function AboutParagraph({ texts }: Props) {
   const { t } = useI18n();
   const body = texts.about_paragraph_body;
+  const eyebrow = texts.about_eyebrow;
+
   if (!body) return null;
 
   const titleMap = buildTitleMap(texts);
@@ -121,6 +122,16 @@ export default function AboutParagraph({ texts }: Props) {
   return (
     <section className="py-16 md:py-20">
       <div className="w-[80%] max-w-3xl mx-auto flex flex-col gap-5">
+        <FadeIn delay={0.05} className="flex flex-col gap-4 items-center text-center">
+          {eyebrow && (
+            <span className="block text-xs font-semibold text-brand uppercase tracking-[0.2em]">
+              {eyebrow}
+            </span>
+          )}
+          <h1 className="text-5xl md:text-6xl font-bold text-text tracking-tight leading-tight max-md:text-4xl">
+            {t('heading.aboutMe')}
+          </h1>
+        </FadeIn>
         {paragraphs.map((p, i) => (
           <FadeIn key={i} delay={0.03 + i * 0.02}>
             <div className="text-lg font-normal text-text leading-relaxed whitespace-pre-line">

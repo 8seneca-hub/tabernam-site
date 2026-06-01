@@ -454,28 +454,6 @@ export default function GlobeSection({ cities = [] }: Props) {
         </button>
       </div>
 
-      <div className={`ga-hints${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
-        <div className="ga-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3v18M3 12h18M7 7l-4 5 4 5M17 7l4 5-4 5M7 7l5-4 5 4M7 17l5 4 5-4" />
-          </svg>
-          <span>{t('globeHint.drag')}</span>
-        </div>
-        <div className="ga-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-4.3-4.3M8 11h6M11 8v6" />
-          </svg>
-          <span>{t('globeHint.zoom')}</span>
-        </div>
-        <div className="ga-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 21s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12z" />
-            <circle cx="12" cy="9" r="2.5" />
-          </svg>
-          <span>{t('globeHint.click')}</span>
-        </div>
-      </div>
     </section>
   );
 }

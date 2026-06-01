@@ -28,9 +28,6 @@ export default function IntroOverlay({ isOpen, disabled, onOpen }: Props) {
       <h2 className="mb-4 text-[clamp(24px,2.6vw,34px)] font-bold tracking-[-0.01em] leading-[1.15]">
         {t('globe.intro.heading')}
       </h2>
-      <p className="mx-auto max-w-[620px] text-[clamp(13px,1.05vw,15px)] leading-relaxed font-normal text-muted">
-        {t('globe.intro.description')}
-      </p>
       <button
         type="button"
         disabled={disabled}
