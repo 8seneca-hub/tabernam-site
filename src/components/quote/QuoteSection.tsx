@@ -3,11 +3,11 @@
 import { useEffect, useMemo } from 'react';
 import { motion, animate, useMotionValue, useTransform, type MotionValue } from 'motion/react';
 import Image from '@/components/ui/Image';
+import { useI18n } from '@/app/hook/useI18n';
 
 const FALLBACK_EN = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
 
 interface Props {
-  en?: string;
   imageUrl?: string;
 }
 
@@ -33,15 +33,20 @@ function RevealChar({
   return <motion.span style={{ color }}>{children}</motion.span>;
 }
 
-export default function QuoteSection({ en, imageUrl }: Props) {
+export default function QuoteSection({ imageUrl }: Props) {
+  const { t } = useI18n();
   const progress = useMotionValue(0);
 
-  const enText = en && en.trim() ? en : FALLBACK_EN;
+  const translated = t('quote.primary');
+  const text =
+    translated && translated.trim() && translated !== 'quote.primary'
+      ? translated
+      : FALLBACK_EN;
 
-  const enChars = useMemo(() => [...enText], [enText]);
+  const chars = useMemo(() => [...text], [text]);
 
   const overlap = 6;
-  const totalSlots = enChars.length + overlap;
+  const totalSlots = chars.length + overlap;
 
   useEffect(() => {
     let cancelled = false;
@@ -69,9 +74,9 @@ export default function QuoteSection({ en, imageUrl }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full max-w-[1200px] mx-auto">
         <div className="flex flex-col gap-[30px] text-left">
           <p className="text-[36px] font-medium leading-snug max-[1100px]:text-[28px]">
-            {enChars.map((ch, i) => (
+            {chars.map((ch, i) => (
               <RevealChar
-                key={`en-${i}`}
+                key={`q-${i}`}
                 progress={progress}
                 start={i / totalSlots}
                 end={(i + overlap) / totalSlots}
