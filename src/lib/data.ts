@@ -21,6 +21,7 @@ export interface ContactOffice {
   corporateIds: LabeledRow[];
   phone: string;
   websiteUrl: string;
+  whatsapp: string;
   workEmail: string;
   personalEmail: string;
   bankCredentials: LabeledRow[];

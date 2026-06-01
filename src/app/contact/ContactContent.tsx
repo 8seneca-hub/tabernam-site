@@ -5,7 +5,7 @@ import { useI18n } from '@/app/hook/useI18n';
 import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
 import Image from '@/components/ui/Image';
-import { ChevronLeft, ChevronRight, Globe, Mail, MapPin, Phone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Globe, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { ContactOffice } from '@/lib/data';
 
 interface Props {
@@ -94,6 +94,14 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
                   >
                     {active.phone}
                   </a>
+                  {active.whatsapp && (
+                    <a
+                      href={active.whatsapp}
+                      className="text-base text-text hover:text-brand transition-colors"
+                    >
+                      {active.whatsapp}
+                    </a>
+                  )}
                 </div>
               </div>
             )}
@@ -137,17 +145,15 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
         </FadeIn>
 
         <FadeIn delay={0.15} className="sticky top-[calc(var(--header-height)+40px)]">
-          <div className="w-[480px] h-[600px] overflow-hidden">
-            <Image
-              src={texts.portrait_image || '/tibor_image.png'}
-              alt="Tibor Buček Professional Portrait"
-              width={480}
-              height={600}
-              className="w-[480px] h-[600px] object-cover"
-            />
-          </div>
+          <Image
+            src={texts.portrait_image || '/tibor_image.png'}
+            alt="Tibor Buček Professional Portrait"
+            width={300}
+            height={300}
+            className="w-[300px] h-[300px] mx-auto"
+          />
           <figure className="mt-6 pl-5">
-            <blockquote className="text-lg italic text-text leading-relaxed">
+            <blockquote className="text-md italic text-text leading-relaxed">
               “{texts.contact_quote_text || 'Be diligent in your work, honest in your heart, and kind to people.'}”
             </blockquote>
             <figcaption className="mt-2 text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">

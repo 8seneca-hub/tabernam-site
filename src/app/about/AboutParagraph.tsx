@@ -109,7 +109,6 @@ export default function AboutParagraph({ texts }: Props) {
   const { t } = useI18n();
   const body = texts.about_paragraph_body;
   const eyebrow = texts.about_eyebrow;
-
   if (!body) return null;
 
   const titleMap = buildTitleMap(texts);
