@@ -101,6 +101,10 @@ export interface CMSSchema {
     contact_files: CMSContactFile[];
     cv: CMSPageSingleton;
     cv_translations: CMSPageTranslation[];
+    nav: CMSPageSingleton;
+    nav_translations: CMSPageTranslation[];
+    footer: CMSPageSingleton;
+    footer_translations: CMSPageTranslation[];
     languages: CMSLanguage[];
     site_settings: CMSSiteSettings;
 }

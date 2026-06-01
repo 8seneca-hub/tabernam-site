@@ -172,7 +172,7 @@ interface SingletonReadShape {
 
 // Read a page singleton with all its translations and asset fields.
 async function readPageSingleton(
-  page: 'home' | 'about' | 'contact' | 'cv',
+  page: 'home' | 'about' | 'contact' | 'cv' | 'nav' | 'footer',
   textFields: string[],
   assetFields: string[],
   extraSingletonFields: string[] = [],
@@ -365,7 +365,7 @@ export async function getLanguages(): Promise<LangInfo[]> {
 // query that page's translations and emit `{ [code]: { [key]: value } }`.
 export async function getDictionaries(): Promise<Record<string, Record<string, string>>> {
   try {
-    const pages: Array<'home' | 'about' | 'contact' | 'cv'> = ['home', 'about', 'contact', 'cv'];
+    const pages = ['home', 'about', 'contact', 'cv', 'nav', 'footer'] as const;
     const result: Record<string, Record<string, string>> = {};
 
     for (const page of pages) {
