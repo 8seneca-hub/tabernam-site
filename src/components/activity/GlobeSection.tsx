@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './globe-activity-section.css';
+import './globe-section.css';
 import { useI18n } from '@/app/hook/useI18n';
 import { pickTranslation } from '@/lib/directus';
 import type { GlobeCity } from '@/lib/type';
@@ -24,7 +24,7 @@ interface Props {
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-export default function GlobeActivitySection({ cities = [] }: Props) {
+export default function GlobeSection({ cities = [] }: Props) {
   const { t, lang } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
   const starsRef = useRef<HTMLCanvasElement>(null);
@@ -32,9 +32,6 @@ export default function GlobeActivitySection({ cities = [] }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const spinRef = useRef(true);
-  // True while the camera is moving (user drag/zoom, flyTo, or auto-spin). Used
-  // to gate marker hover so markers can't be "auto-hovered" by sliding under a
-  // stationary cursor.
   const isCameraMovingRef = useRef(false);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -93,9 +90,6 @@ export default function GlobeActivitySection({ cities = [] }: Props) {
     });
 
     map.on('style.load', () => {
-      // Fog is a runtime-only API (not editable in Mapbox Studio). White
-      // "space" matches the section background so the globe appears to float.
-      // horizon-blend at 0.01 keeps the colored rim tight to the globe edge.
       map.setFog({
         color: 'rgb(255, 255, 255)',
         'high-color': 'rgb(190, 210, 240)',
@@ -104,16 +98,11 @@ export default function GlobeActivitySection({ cities = [] }: Props) {
         'star-intensity': 0,
       });
 
-      // Hide Mapbox Standard's built-in place labels — our city markers name
-      // each city, so basemap labels are redundant clutter.
       try {
         map.setConfigProperty('basemap', 'showPlaceLabels', false);
       } catch {
-        /* setConfigProperty only exists on Standard-based styles. */
       }
 
-      // 3D terrain — runtime-only for classic styles. Subtle exaggeration so
-      // mountainous regions read as raised when flying into cities near them.
       if (!map.getSource('mapbox-dem')) {
         map.addSource('mapbox-dem', {
           type: 'raster-dem',

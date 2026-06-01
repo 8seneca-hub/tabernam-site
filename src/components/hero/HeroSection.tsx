@@ -70,7 +70,7 @@ export default function HeroSection({ slides }: Props) {
 
         <div className="hero-headline relative z-10 flex flex-col gap-[30px] max-w-[65vw] w-full mx-auto max-[1100px]:max-w-[80vw] max-[1100px]:gap-5 max-sm:max-w-none max-sm:gap-4">
           <motion.h1
-            className="text-[64px] font-bold tracking-[-0.04em] leading-[72px] text-white max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
+            className="text-[45px] font-bold tracking-[-0.04em] leading-[72px] text-white max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
             custom={0.1}
             initial="hidden"
             animate="visible"

@@ -1,155 +1,515 @@
 {
   "_comment": "Source-of-truth for which Directus page singleton owns each i18n key, page-text field, and asset. The schema-apply/migrate scripts AND the runtime directus.ts both read from this file. To add a new key, add it here and re-run scripts/build-page-models-local.mjs (idempotent).",
-
   "dictionary": {
-    "hero.title":              { "page": "home", "field": "hero_title" },
-    "hero.body":               { "page": "home", "field": "hero_body" },
-    "quote.primary":           { "page": "home", "field": "quote_primary" },
-    "globeIntro.heading":      { "page": "home", "field": "globeIntro_heading" },
-    "globeIntro.body":         { "page": "home", "field": "globeIntro_body" },
-    "panel.viewDetails":       { "page": "home", "field": "panel_viewDetails" },
-    "panel.goToLocation":      { "page": "home", "field": "panel_goToLocation" },
-    "btn.exploreNow":          { "page": "home", "field": "btn_exploreNow" },
-    "btn.getStarted":          { "page": "home", "field": "btn_getStarted" },
-    "btn.learnMore":           { "page": "home", "field": "btn_learnMore" },
-    "btn.viewCities":          { "page": "home", "field": "btn_viewCities" },
-    "nav.home":                { "page": "nav", "field": "nav_home" },
-    "nav.about":               { "page": "nav", "field": "nav_about" },
-    "nav.activity":            { "page": "nav", "field": "nav_activity" },
-    "nav.contact":             { "page": "nav", "field": "nav_contact" },
-    "footer.connectHeading":   { "page": "footer", "field": "footer_connectHeading" },
-    "footer.contact":          { "page": "footer", "field": "footer_contact" },
-    "footer.copyright":        { "page": "footer", "field": "footer_copyright" },
-    "footer.established":      { "page": "footer", "field": "footer_established" },
-    "footer.exploreHeading":   { "page": "footer", "field": "footer_exploreHeading" },
-    "footer.globalOffices":    { "page": "footer", "field": "footer_globalOffices" },
-    "footer.location":         { "page": "footer", "field": "footer_location" },
-    "footer.navigation":       { "page": "footer", "field": "footer_navigation" },
-    "footer.presenceHeading":  { "page": "footer", "field": "footer_presenceHeading" },
-    "footer.privacy":          { "page": "footer", "field": "footer_privacy" },
-    "footer.tagline":          { "page": "footer", "field": "footer_tagline" },
-    "footer.terms":            { "page": "footer", "field": "footer_terms" },
-    "aria.cities":             { "page": "home", "field": "aria_cities" },
-    "aria.close":              { "page": "home", "field": "aria_close" },
-    "aria.footerNav":          { "page": "home", "field": "aria_footerNav" },
-    "aria.nextCity":           { "page": "home", "field": "aria_nextCity" },
-    "aria.prevCity":           { "page": "home", "field": "aria_prevCity" },
-    "aria.tabernamHome":       { "page": "home", "field": "aria_tabernamHome" },
-    "aria.zoomIn":             { "page": "home", "field": "aria_zoomIn" },
-    "aria.zoomOut":            { "page": "home", "field": "aria_zoomOut" },
-    "globe.hint.text":         { "page": "home", "field": "globe_hint_text" },
-    "globe.intro.cta":         { "page": "home", "field": "globe_intro_cta" },
-    "globe.intro.description": { "page": "home", "field": "globe_intro_description" },
-    "globe.intro.heading":     { "page": "home", "field": "globe_intro_heading" },
-    "globe.panel.close":       { "page": "home", "field": "globe_panel_close" },
-    "globe.panel.viewDetails": { "page": "home", "field": "globe_panel_viewDetails" },
-    "globe.zoom.in":           { "page": "home", "field": "globe_zoom_in" },
-    "globe.zoom.out":          { "page": "home", "field": "globe_zoom_out" },
-    "globeHint.click":         { "page": "home", "field": "globeHint_click" },
-    "globeHint.drag":          { "page": "home", "field": "globeHint_drag" },
-    "globeHint.zoom":          { "page": "home", "field": "globeHint_zoom" },
-    "page.title.home":         { "page": "home", "field": "page_title_home" },
-    "page.title.about":        { "page": "home", "field": "page_title_about" },
-    "page.title.activity":     { "page": "home", "field": "page_title_activity" },
-    "page.title.contact":      { "page": "home", "field": "page_title_contact" },
-    "page.title.business":     { "page": "home", "field": "page_title_business" },
-
-    "btn.viewCV":              { "page": "about", "field": "btn_viewCV" },
-    "heading.aboutMe":         { "page": "about", "field": "heading_aboutMe" },
-
-    "contact.address1":          { "page": "contact", "field": "contact_address1" },
-    "contact.address2":          { "page": "contact", "field": "contact_address2" },
-    "contact.address3":          { "page": "contact", "field": "contact_address3" },
-    "contact.addressLabel":      { "page": "contact", "field": "contact_addressLabel" },
-    "contact.bankCredentials":   { "page": "contact", "field": "contact_bankCredentials" },
-    "contact.corporateIdsLabel": { "page": "contact", "field": "contact_corporateIdsLabel" },
-    "contact.emailLabel":        { "page": "contact", "field": "contact_emailLabel" },
-    "contact.identifiersLabel":  { "page": "contact", "field": "contact_identifiersLabel" },
-    "contact.phoneLabel":        { "page": "contact", "field": "contact_phoneLabel" },
-    "contact.websiteLabel":      { "page": "contact", "field": "contact_websiteLabel" },
-    "heading.contact":           { "page": "contact", "field": "heading_contact" },
-
-    "btn.goBack":                  { "page": "cv", "field": "btn_goBack" },
-    "cv.cta.viewFull":             { "page": "cv", "field": "cta_view_full" },
-    "cv.section.education":        { "page": "cv", "field": "section_education" },
-    "cv.section.experience":       { "page": "cv", "field": "section_experience" },
-    "cv.section.china":            { "page": "cv", "field": "section_china" },
-    "cv.section.languages":        { "page": "cv", "field": "section_languages" },
-    "cv.section.skills":           { "page": "cv", "field": "section_skills" },
-    "cv.hero.address":             { "page": "cv", "field": "hero_address" },
-    "cv.hero.nationality.label":   { "page": "cv", "field": "hero_nationality_label" },
-    "cv.hero.nationality.value":   { "page": "cv", "field": "hero_nationality_value" },
-    "cv.hero.wechat.label":        { "page": "cv", "field": "hero_wechat_label" },
-    "cv.contact.intro":            { "page": "cv", "field": "contact_intro" },
-    "cv.contact.title":            { "page": "cv", "field": "contact_title" },
-    "cv.contact.cta":              { "page": "cv", "field": "contact_cta" },
-    "cv.contact.address":          { "page": "cv", "field": "contact_address" },
-    "cv.contact.email":            { "page": "cv", "field": "contact_email" },
-    "cv.contact.phone":            { "page": "cv", "field": "contact_phone" },
-    "cv.modal.title":              { "page": "cv", "field": "modal_title" },
-    "cv.modal.intro":              { "page": "cv", "field": "modal_intro" },
-    "cv.modal.defaultBody":        { "page": "cv", "field": "modal_default_body" },
-    "cv.modal.subject":            { "page": "cv", "field": "modal_subject" },
-    "cv.modal.field.name":         { "page": "cv", "field": "modal_field_name" },
-    "cv.modal.field.email":        { "page": "cv", "field": "modal_field_email" },
-    "cv.modal.field.company":      { "page": "cv", "field": "modal_field_company" },
-    "cv.modal.field.message":      { "page": "cv", "field": "modal_field_message" },
-    "cv.modal.messagePlaceholder": { "page": "cv", "field": "modal_message_placeholder" },
-    "cv.modal.submit":             { "page": "cv", "field": "modal_submit" },
-    "cv.modal.cancel":             { "page": "cv", "field": "modal_cancel" },
-    "cv.modal.close":              { "page": "cv", "field": "modal_close" }
+    "hero.title": {
+      "page": "home",
+      "field": "hero_title"
+    },
+    "hero.body": {
+      "page": "home",
+      "field": "hero_body"
+    },
+    "quote.primary": {
+      "page": "home",
+      "field": "quote_primary"
+    },
+    "globeIntro.heading": {
+      "page": "home",
+      "field": "globeIntro_heading"
+    },
+    "globeIntro.body": {
+      "page": "home",
+      "field": "globeIntro_body"
+    },
+    "panel.viewDetails": {
+      "page": "home",
+      "field": "panel_viewDetails"
+    },
+    "panel.goToLocation": {
+      "page": "home",
+      "field": "panel_goToLocation"
+    },
+    "btn.exploreNow": {
+      "page": "home",
+      "field": "btn_exploreNow"
+    },
+    "btn.getToKnowMore": {
+      "page": "home",
+      "field": "btn_getToKnowMore"
+    },
+    "btn.getStarted": {
+      "page": "home",
+      "field": "btn_getStarted"
+    },
+    "btn.learnMore": {
+      "page": "home",
+      "field": "btn_learnMore"
+    },
+    "btn.viewCities": {
+      "page": "home",
+      "field": "btn_viewCities"
+    },
+    "nav.about": {
+      "page": "nav",
+      "field": "nav_about"
+    },
+    "nav.home": {
+      "page": "nav",
+      "field": "nav_home"
+    },
+    "nav.contact": {
+      "page": "nav",
+      "field": "nav_contact"
+    },
+    "footer.connectHeading": {
+      "page": "footer",
+      "field": "footer_connectHeading"
+    },
+    "footer.contact": {
+      "page": "footer",
+      "field": "footer_contact"
+    },
+    "footer.copyright": {
+      "page": "footer",
+      "field": "footer_copyright"
+    },
+    "footer.established": {
+      "page": "footer",
+      "field": "footer_established"
+    },
+    "footer.exploreHeading": {
+      "page": "footer",
+      "field": "footer_exploreHeading"
+    },
+    "footer.globalOffices": {
+      "page": "footer",
+      "field": "footer_globalOffices"
+    },
+    "footer.location": {
+      "page": "footer",
+      "field": "footer_location"
+    },
+    "footer.navigation": {
+      "page": "footer",
+      "field": "footer_navigation"
+    },
+    "footer.presenceHeading": {
+      "page": "footer",
+      "field": "footer_presenceHeading"
+    },
+    "footer.privacy": {
+      "page": "footer",
+      "field": "footer_privacy"
+    },
+    "footer.quote": {
+      "page": "footer",
+      "field": "footer_quote"
+    },
+    "footer.quoteAuthor": {
+      "page": "footer",
+      "field": "footer_quote_author"
+    },
+    "footer.terms": {
+      "page": "footer",
+      "field": "footer_terms"
+    },
+    "aria.cities": {
+      "page": "home",
+      "field": "aria_cities"
+    },
+    "aria.close": {
+      "page": "home",
+      "field": "aria_close"
+    },
+    "aria.footerNav": {
+      "page": "home",
+      "field": "aria_footerNav"
+    },
+    "aria.nextCity": {
+      "page": "home",
+      "field": "aria_nextCity"
+    },
+    "aria.prevCity": {
+      "page": "home",
+      "field": "aria_prevCity"
+    },
+    "aria.tabernamHome": {
+      "page": "home",
+      "field": "aria_tabernamHome"
+    },
+    "aria.zoomIn": {
+      "page": "home",
+      "field": "aria_zoomIn"
+    },
+    "aria.zoomOut": {
+      "page": "home",
+      "field": "aria_zoomOut"
+    },
+    "globe.hint.text": {
+      "page": "home",
+      "field": "globe_hint_text"
+    },
+    "globe.intro.cta": {
+      "page": "home",
+      "field": "globe_intro_cta"
+    },
+    "globe.intro.description": {
+      "page": "home",
+      "field": "globe_intro_description"
+    },
+    "globe.intro.heading": {
+      "page": "home",
+      "field": "globe_intro_heading"
+    },
+    "globe.panel.close": {
+      "page": "home",
+      "field": "globe_panel_close"
+    },
+    "globe.panel.viewDetails": {
+      "page": "home",
+      "field": "globe_panel_viewDetails"
+    },
+    "globe.zoom.in": {
+      "page": "home",
+      "field": "globe_zoom_in"
+    },
+    "globe.zoom.out": {
+      "page": "home",
+      "field": "globe_zoom_out"
+    },
+    "globeHint.click": {
+      "page": "home",
+      "field": "globeHint_click"
+    },
+    "globeHint.drag": {
+      "page": "home",
+      "field": "globeHint_drag"
+    },
+    "globeHint.zoom": {
+      "page": "home",
+      "field": "globeHint_zoom"
+    },
+    "page.title.home": {
+      "page": "home",
+      "field": "page_title_home"
+    },
+    "page.title.about": {
+      "page": "home",
+      "field": "page_title_about"
+    },
+    "page.title.activity": {
+      "page": "home",
+      "field": "page_title_activity"
+    },
+    "page.title.contact": {
+      "page": "home",
+      "field": "page_title_contact"
+    },
+    "page.title.business": {
+      "page": "home",
+      "field": "page_title_business"
+    },
+    "btn.viewCV": {
+      "page": "about",
+      "field": "btn_viewCV"
+    },
+    "heading.aboutMe": {
+      "page": "about",
+      "field": "heading_aboutMe"
+    },
+    "contact.address1": {
+      "page": "contact",
+      "field": "contact_address1"
+    },
+    "contact.address2": {
+      "page": "contact",
+      "field": "contact_address2"
+    },
+    "contact.address3": {
+      "page": "contact",
+      "field": "contact_address3"
+    },
+    "contact.addressLabel": {
+      "page": "contact",
+      "field": "contact_addressLabel"
+    },
+    "contact.bankCredentials": {
+      "page": "contact",
+      "field": "contact_bankCredentials"
+    },
+    "contact.corporateIdsLabel": {
+      "page": "contact",
+      "field": "contact_corporateIdsLabel"
+    },
+    "contact.emailLabel": {
+      "page": "contact",
+      "field": "contact_emailLabel"
+    },
+    "contact.identifiersLabel": {
+      "page": "contact",
+      "field": "contact_identifiersLabel"
+    },
+    "contact.phoneLabel": {
+      "page": "contact",
+      "field": "contact_phoneLabel"
+    },
+    "contact.websiteLabel": {
+      "page": "contact",
+      "field": "contact_websiteLabel"
+    },
+    "heading.contact": {
+      "page": "contact",
+      "field": "heading_contact"
+    },
+    "btn.goBack": {
+      "page": "cv",
+      "field": "btn_goBack"
+    },
+    "cv.cta.viewFull": {
+      "page": "cv",
+      "field": "cta_view_full"
+    },
+    "cv.section.education": {
+      "page": "cv",
+      "field": "section_education"
+    },
+    "cv.section.experience": {
+      "page": "cv",
+      "field": "section_experience"
+    },
+    "cv.section.china": {
+      "page": "cv",
+      "field": "section_china"
+    },
+    "cv.section.languages": {
+      "page": "cv",
+      "field": "section_languages"
+    },
+    "cv.section.skills": {
+      "page": "cv",
+      "field": "section_skills"
+    },
+    "cv.hero.address": {
+      "page": "cv",
+      "field": "hero_address"
+    },
+    "cv.hero.nationality.label": {
+      "page": "cv",
+      "field": "hero_nationality_label"
+    },
+    "cv.hero.nationality.value": {
+      "page": "cv",
+      "field": "hero_nationality_value"
+    },
+    "cv.hero.wechat.label": {
+      "page": "cv",
+      "field": "hero_wechat_label"
+    },
+    "cv.contact.intro": {
+      "page": "cv",
+      "field": "contact_intro"
+    },
+    "cv.contact.title": {
+      "page": "cv",
+      "field": "contact_title"
+    },
+    "cv.contact.cta": {
+      "page": "cv",
+      "field": "contact_cta"
+    },
+    "cv.contact.address": {
+      "page": "cv",
+      "field": "contact_address"
+    },
+    "cv.contact.email": {
+      "page": "cv",
+      "field": "contact_email"
+    },
+    "cv.contact.phone": {
+      "page": "cv",
+      "field": "contact_phone"
+    },
+    "cv.modal.title": {
+      "page": "cv",
+      "field": "modal_title"
+    },
+    "cv.modal.intro": {
+      "page": "cv",
+      "field": "modal_intro"
+    },
+    "cv.modal.defaultBody": {
+      "page": "cv",
+      "field": "modal_default_body"
+    },
+    "cv.modal.subject": {
+      "page": "cv",
+      "field": "modal_subject"
+    },
+    "cv.modal.field.name": {
+      "page": "cv",
+      "field": "modal_field_name"
+    },
+    "cv.modal.field.email": {
+      "page": "cv",
+      "field": "modal_field_email"
+    },
+    "cv.modal.field.company": {
+      "page": "cv",
+      "field": "modal_field_company"
+    },
+    "cv.modal.field.message": {
+      "page": "cv",
+      "field": "modal_field_message"
+    },
+    "cv.modal.messagePlaceholder": {
+      "page": "cv",
+      "field": "modal_message_placeholder"
+    },
+    "cv.modal.submit": {
+      "page": "cv",
+      "field": "modal_submit"
+    },
+    "cv.modal.cancel": {
+      "page": "cv",
+      "field": "modal_cancel"
+    },
+    "cv.modal.close": {
+      "page": "cv",
+      "field": "modal_close"
+    }
   },
-
   "dictionaryDynamic": {
     "_comment": "CV repeatable items — patterns expand into N concrete dictionary entries at apply/build time.",
-    "cv.edu.{i}.title":    { "page": "cv", "field": "edu_{i}_title",    "range": 6 },
-    "cv.edu.{i}.org":      { "page": "cv", "field": "edu_{i}_org",      "range": 6 },
-    "cv.edu.{i}.date":     { "page": "cv", "field": "edu_{i}_date",     "range": 6 },
-    "cv.exp.{i}.title":    { "page": "cv", "field": "exp_{i}_title",    "range": 9 },
-    "cv.exp.{i}.org":      { "page": "cv", "field": "exp_{i}_org",      "range": 9 },
-    "cv.exp.{i}.date":     { "page": "cv", "field": "exp_{i}_date",     "range": 9 },
-    "cv.exp.{i}.desc":     { "page": "cv", "field": "exp_{i}_desc",     "range": 9 },
-    "cv.china.{i}.text":   { "page": "cv", "field": "china_{i}_text",   "range": 9 },
-    "cv.china.{i}.years":  { "page": "cv", "field": "china_{i}_years",  "range": 9 },
-    "cv.lang.{i}.name":       { "page": "cv", "field": "lang_{i}_name",       "range": 5 },
-    "cv.lang.{i}.descriptor": { "page": "cv", "field": "lang_{i}_descriptor", "range": 5 },
-    "cv.skill.{i}":           { "page": "cv", "field": "skill_{i}",           "range": 5 }
+    "cv.edu.{i}.title": {
+      "page": "cv",
+      "field": "edu_{i}_title",
+      "range": 6
+    },
+    "cv.edu.{i}.org": {
+      "page": "cv",
+      "field": "edu_{i}_org",
+      "range": 6
+    },
+    "cv.edu.{i}.date": {
+      "page": "cv",
+      "field": "edu_{i}_date",
+      "range": 6
+    },
+    "cv.exp.{i}.title": {
+      "page": "cv",
+      "field": "exp_{i}_title",
+      "range": 9
+    },
+    "cv.exp.{i}.org": {
+      "page": "cv",
+      "field": "exp_{i}_org",
+      "range": 9
+    },
+    "cv.exp.{i}.date": {
+      "page": "cv",
+      "field": "exp_{i}_date",
+      "range": 9
+    },
+    "cv.exp.{i}.desc": {
+      "page": "cv",
+      "field": "exp_{i}_desc",
+      "range": 9
+    },
+    "cv.china.{i}.text": {
+      "page": "cv",
+      "field": "china_{i}_text",
+      "range": 9
+    },
+    "cv.china.{i}.years": {
+      "page": "cv",
+      "field": "china_{i}_years",
+      "range": 9
+    },
+    "cv.lang.{i}.name": {
+      "page": "cv",
+      "field": "lang_{i}_name",
+      "range": 5
+    },
+    "cv.lang.{i}.descriptor": {
+      "page": "cv",
+      "field": "lang_{i}_descriptor",
+      "range": 5
+    },
+    "cv.skill.{i}": {
+      "page": "cv",
+      "field": "skill_{i}",
+      "range": 5
+    }
   },
-
   "pageTexts": {
     "_comment": "Fields on each page singleton that the legacy frontend reads via texts.X (NOT through t()). Mostly text content; image fields listed in `assets` are emitted as full URLs.",
+    "home": {
+      "text": [
+        "about_eyebrow",
+        "about_body_1",
+        "about_body_2",
+        "about_body_3",
+        "about_body_4"
+      ],
+      "assets": ["quote_image"]
+    },
     "about": {
       "text": [
         "hero_name",
-        "about_eyebrow", "about_body_1", "about_body_2", "about_body_3", "about_body_4",
-        "leadership_title", "leadership_description",
-        "leadership_body_1", "leadership_body_2", "leadership_body_3",
-        "leadership_body_4", "leadership_body_5", "leadership_body_6",
-        "experience_eyebrow", "experience_title", "experience_body",
-        "experience_video_title", "experience_video_url",
-        "philanthropy_title", "philanthropy_body",
-        "philanthropy_story_1_title", "philanthropy_story_1_desc", "philanthropy_story_1_video_url",
-        "philanthropy_story_2_title", "philanthropy_story_2_desc", "philanthropy_story_2_video_url",
-        "closing_quote", "closing_quote_author", "closing_cta"
+        "about_paragraph_body",
+        "leadership_title",
+        "leadership_description",
+        "leadership_body_1",
+        "leadership_body_2",
+        "leadership_body_3",
+        "leadership_body_4",
+        "leadership_body_5",
+        "leadership_body_6",
+        "experience_eyebrow",
+        "experience_title",
+        "experience_body",
+        "experience_video_title",
+        "experience_video_url",
+        "philanthropy_title",
+        "philanthropy_body",
+        "philanthropy_story_1_title",
+        "philanthropy_story_1_desc",
+        "philanthropy_story_1_video_url",
+        "philanthropy_story_2_title",
+        "philanthropy_story_2_desc",
+        "philanthropy_story_2_video_url",
+        "closing_quote",
+        "closing_quote_author",
+        "closing_cta"
       ],
       "assets": [
-        "portrait_image", "closing_background",
-        "leadership_body_1_image", "leadership_body_2_image", "leadership_body_3_image",
-        "leadership_body_4_image", "leadership_body_5_image", "leadership_body_6_image"
+        "portrait_image",
+        "closing_background",
+        "leadership_body_1_image",
+        "leadership_body_2_image",
+        "leadership_body_3_image",
+        "leadership_body_4_image",
+        "leadership_body_5_image",
+        "leadership_body_6_image"
       ]
     },
     "contact": {
       "text": [
-        "contact_heading_title", "contact_subheading",
-        "contact_maps_title", "contact_quote_text", "contact_quote_author"
+        "contact_heading_title",
+        "contact_subheading",
+        "contact_maps_title",
+        "contact_quote_text",
+        "contact_quote_author"
       ],
-      "assets": ["portrait_image"],
+      "assets": [
+        "portrait_image"
+      ],
       "_fieldRename": {
         "contact_heading_title": "heading_title",
-        "contact_subheading":    "subheading",
-        "contact_maps_title":    "maps_title",
-        "contact_quote_text":    "quote_text",
-        "contact_quote_author":  "quote_author"
+        "contact_subheading": "subheading",
+        "contact_maps_title": "maps_title",
+        "contact_quote_text": "quote_text",
+        "contact_quote_author": "quote_author"
       }
     }
   }

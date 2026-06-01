@@ -26,7 +26,7 @@ export default function Footer({ office }: Props) {
     : t('footer.location');
 
   return (
-    <footer className="mt-20 px-[var(--side-padding)] pt-16 pb-6 bg-footer-bg border-t border-border text-text">
+    <footer className="px-[var(--side-padding)] pt-16 pb-6 bg-footer-bg border-t border-border text-text">
       <div className="max-w-[var(--max-width)] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.2fr] gap-12 lg:gap-16 pb-12">
         {/* Brand column */}
         <div className="flex flex-col gap-5 max-w-[360px]">
@@ -39,9 +39,14 @@ export default function Footer({ office }: Props) {
               className="h-8 w-auto object-contain"
             />
           </Link>
-          <p className="text-sm leading-relaxed text-muted">
-            {t('footer.tagline')}
-          </p>
+          <figure className="flex flex-col">
+            <blockquote className="text-sm italic leading-relaxed text-muted">
+              &ldquo;{t('footer.quote')}&rdquo;
+            </blockquote>
+            <figcaption className="mt-1 self-end text-xs font-medium text-muted italic">
+              — {t('footer.quoteAuthor')}
+            </figcaption>
+          </figure>
           <div className="flex items-center gap-3 mt-2">
             <span className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-text" aria-hidden>
               <Globe />

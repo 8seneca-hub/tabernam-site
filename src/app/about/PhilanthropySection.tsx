@@ -1,14 +1,8 @@
 'use client';
 
 import FadeIn from '@/animations/FadeIn';
-import Video from '@/components/ui/Video';
+import VideoCard from '@/components/ui/VideoCard';
 import type { PageTexts } from '@/lib/directus';
-
-const PlayIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="w-7 h-7 ml-0.5">
-    <path d="M8 5v14l11-7z" />
-  </svg>
-);
 
 interface Props {
   texts: PageTexts;
@@ -46,30 +40,12 @@ export default function PhilanthropySection({ texts }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           {stories.map((story, i) => (
             <FadeIn key={story.title || i} delay={0.1 + i * 0.1} className="flex flex-col gap-6">
-              <Video
-                videoUrl={story.videoUrl}
-                title={story.title}
-                className="aspect-video rounded-xl border border-border bg-gray-80 shadow-md"
-              >
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center text-brand shadow-lg transition-transform group-hover:scale-110">
-                    <PlayIcon />
-                  </div>
-                </div>
-              </Video>
-              <div className="flex flex-col gap-2">
-                {story.title && (
-                  <h3 className="text-2xl md:text-3xl font-semibold text-text leading-tight">
-                    {story.title}
-                  </h3>
-                )}
-                {story.desc && (
-                  <p className="text-base font-normal text-muted leading-relaxed">
-                    {story.desc}
-                  </p>
-                )}
-              </div>
+              <VideoCard videoUrl={story.videoUrl} title={story.title} />
+              {story.desc && (
+                <p className="text-base font-normal text-muted leading-relaxed">
+                  {story.desc}
+                </p>
+              )}
             </FadeIn>
           ))}
         </div>

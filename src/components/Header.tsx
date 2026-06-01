@@ -90,7 +90,7 @@ export default function Header() {
   };
 
   const linkClass = (href: string) =>
-    `relative text-sm font-medium px-2 py-2 transition-colors duration-200 ${isActive(href)
+    `relative text-base font-medium px-2 py-2 transition-colors duration-200 ${isActive(href)
       ? 'text-brand after:absolute after:left-2 after:right-2 after:-bottom-0.5 after:h-[2px] after:bg-brand after:content-[""]'
       : 'text-text hover:text-brand'
     }`;
@@ -101,28 +101,14 @@ export default function Header() {
       className="site-header fixed top-0 left-0 right-0 z-100 bg-header grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
     >
       <div className="flex items-center gap-4">
-        {/* <button
-          ref={toggleRef}
-          type="button"
-          className="nav-toggle flex w-10 h-10 p-0 bg-transparent border-0 cursor-pointer relative items-center justify-center"
-          aria-label="Open menu"
-          aria-expanded="false"
-          aria-controls="primary-nav"
-          onClick={toggleNav}
-        >
-          <span className="nav-toggle-bar"></span>
-          <span className="nav-toggle-bar"></span>
-          <span className="nav-toggle-bar"></span>
-        </button> */}
-
         <Link href="/" className="flex items-center" aria-label="Tabernam home">
           <Image
             src={logoImage}
             alt={logoText}
-            width={100}
-            height={100}
+            width={150}
+            height={150}
             priority
-            className="max-w-[100px] object-contain"
+            className="max-w-[150px] object-contain"
           />
         </Link>
       </div>
@@ -132,7 +118,7 @@ export default function Header() {
         className="nav flex items-center justify-center gap-8 max-md:gap-0"
         id="primary-nav"
       >
-        <ActivityLink className={linkClass('/activities')} onClick={closeNav}>{t('nav.activity')}</ActivityLink>
+        <Link href="/" className={linkClass('/')}>{t('nav.home')}</Link>
         <Link href="/about" className={linkClass('/about')} onClick={closeNav}>{t('nav.about')}</Link>
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>

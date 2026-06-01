@@ -156,7 +156,7 @@ const DICT_BY_PAGE: Record<string, Array<{ key: string; field: string }>> = (() 
 })();
 
 // All translatable field names per page (dict fields + page-text fields).
-function allTextFieldsFor(page: 'home' | 'about' | 'contact' | 'cv'): string[] {
+function allTextFieldsFor(page: 'home' | 'about' | 'contact' | 'cv' | 'nav' | 'footer'): string[] {
   const dictFields = (DICT_BY_PAGE[page] || []).map((x) => x.field);
   const pageTextConfig = (pageKeysConfig.pageTexts as Record<string, { text?: string[] }>)[page];
   const extra = pageTextConfig?.text ?? [];
@@ -175,13 +175,13 @@ async function readPageSingleton(
   page: 'home' | 'about' | 'contact' | 'cv' | 'nav' | 'footer',
   textFields: string[],
   assetFields: string[],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   extraSingletonFields: string[] = [],
 ): Promise<SingletonReadShape> {
-  const fields: unknown[] = [
-    ...assetFields,
-    ...extraSingletonFields,
-    { translations: [...textFields, { language: ['code'] }] },
-  ];
+  // Query `*` + a wildcard expansion on translations so renaming/dropping
+  // a single field on the singleton never 403s the whole batch. We then
+  // pick out the fields the caller asked for client-side.
+  const fields: unknown[] = ['*', { translations: ['*', { language: ['code'] }] }];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const row = (await directus.request(readSingleton(page, { fields } as any))) as Record<string, unknown>;
   const assets: Record<string, string> = {};
@@ -213,17 +213,17 @@ export function pickPageTexts(bundle: PageTextsBundle, lang: string): PageTexts 
 // Compose a PageTextsBundle for the given page that the legacy frontend
 // code consumes via `texts.<section>` and `pickPageTexts(bundle, lang)`.
 export async function getPageTexts(page: string): Promise<PageTextsBundle> {
-  if (page !== 'about' && page !== 'contact') return {};
+  if (page !== 'about' && page !== 'contact' && page !== 'home') return {};
   const cfg = (pageKeysConfig.pageTexts as Record<string, { text?: string[]; assets?: string[]; _fieldRename?: Record<string, string> }>)[page];
   if (!cfg) return {};
 
-  const textFields = allTextFieldsFor(page as 'about' | 'contact');
+  const textFields = allTextFieldsFor(page as 'about' | 'contact' | 'home');
   const assetFields = cfg.assets ?? [];
   const fieldRename = cfg._fieldRename ?? {};
 
   try {
     const { assets, byLang } = await readPageSingleton(
-      page as 'about' | 'contact',
+      page as 'about' | 'contact' | 'home',
       // For contact, the singleton fields are stored under renamed names
       // (heading_title, not contact_heading_title). Translate when querying.
       textFields.map((f) => fieldRename[f] ?? f),
@@ -360,9 +360,6 @@ export async function getLanguages(): Promise<LangInfo[]> {
   }
 }
 
-// Build the global i18n dictionary from all four page singletons. Each
-// dictionary entry from page-keys.json points at one (page, field); we
-// query that page's translations and emit `{ [code]: { [key]: value } }`.
 export async function getDictionaries(): Promise<Record<string, Record<string, string>>> {
   try {
     const pages = ['home', 'about', 'contact', 'cv', 'nav', 'footer'] as const;

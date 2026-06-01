@@ -4,14 +4,17 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useI18n } from '@/app/hook/useI18n';
 import FadeIn from '@/animations/FadeIn';
-import { PageTexts } from '@/lib/data';
+import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
+import Button from '../ui/Button';
+import Link from 'next/link';
 
 interface Props {
-  texts: PageTexts;
+  texts: PageTextsBundle;
 }
 
-export default function AboutSection({ texts }: Props) {
-  const { t } = useI18n();
+export default function AboutSection({ texts: bundle }: Props) {
+  const { lang, t } = useI18n();
+  const texts = pickPageTexts(bundle, lang);
   const eyebrow = texts.about_eyebrow;
   const bodies = [texts.about_body_1, texts.about_body_2].filter(Boolean) as string[];
   const [bodyIndex, setBodyIndex] = useState(0);
@@ -38,7 +41,7 @@ export default function AboutSection({ texts }: Props) {
           </h1>
         </FadeIn>
         <FadeIn delay={0.1} className="w-full max-w-[50vw] mx-auto max-[1100px]:max-w-none">
-          <div className="relative min-h-[12rem] overflow-hidden text-center">
+          <div className="relative min-h-[12rem] text-center">
             <AnimatePresence mode="wait" initial={false}>
               <motion.p
                 key={bodyIndex}
@@ -51,6 +54,19 @@ export default function AboutSection({ texts }: Props) {
                 {`"${bodies[bodyIndex] || ''}"`}
               </motion.p>
             </AnimatePresence>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <Button
+              as={Link}
+              href="/about"
+              variant="primary"
+              size="md"
+              shape="pill"
+              icon="→"
+              className="text-sm font-semibold !text-white uppercase tracking-[0.2em] shadow-xl"
+            >
+              {t('btn.getToKnowMore')}
+            </Button>
           </div>
         </FadeIn>
       </section>

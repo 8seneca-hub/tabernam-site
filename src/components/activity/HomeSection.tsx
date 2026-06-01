@@ -66,7 +66,6 @@ export default function ActivitySection({ activities: activitiesProp }: Props) {
   const [isDetail, setIsDetail] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Initialize globe
   useEffect(() => {
     const container = globeContainerRef.current;
     if (!container || typeof Globe !== 'function') return;

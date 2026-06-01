@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
-import AboutSection from './AboutSection';
+import AboutParagraph from './AboutParagraph';
 import ExperienceStoriesSection from './ExperienceStoriesSection';
 import PhilanthropySection from './PhilanthropySection';
 import LeadershipSection from './LeadershipSection';
@@ -20,14 +20,14 @@ export default function AboutContent({ texts: bundle }: Props) {
   const texts = pickPageTexts(bundle, lang);
 
   return (
-    <main className="cv-page pt-[var(--header-height)] pb-24">
+    <main className="cv-page pt-[var(--header-height)]">
       <HeroHeader texts={texts} />
-      <AboutSection texts={texts} />
+      <AboutParagraph texts={texts} />
       <LeadershipSection texts={texts} />
       <ExperienceStoriesSection texts={texts} />
       <PhilanthropySection texts={texts} />
       <ClosingQuote texts={texts} />
-      <div className="w-[80%] mx-auto py-12 md:py-16 flex justify-center">
+      {/* <div className="w-[80%] mx-auto py-12 md:py-16 flex justify-center">
         <Button
           as={Link}
           href="/cv"
@@ -39,7 +39,7 @@ export default function AboutContent({ texts: bundle }: Props) {
         >
           {t('btn.viewCV')}
         </Button>
-      </div>
+      </div> */}
     </main>
   );
 }

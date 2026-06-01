@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo } from 'react';
 import { motion, animate, useMotionValue, useTransform, type MotionValue } from 'motion/react';
+import Image from '@/components/ui/Image';
 
 const FALLBACK_EN = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
 
 interface Props {
   en?: string;
+  imageUrl?: string;
 }
 
 const SWEEP_DURATION_S = 8;
@@ -31,7 +33,7 @@ function RevealChar({
   return <motion.span style={{ color }}>{children}</motion.span>;
 }
 
-export default function QuoteSection({ en }: Props) {
+export default function QuoteSection({ en, imageUrl }: Props) {
   const progress = useMotionValue(0);
 
   const enText = en && en.trim() ? en : FALLBACK_EN;
@@ -63,20 +65,33 @@ export default function QuoteSection({ en }: Props) {
   }, [progress]);
 
   return (
-    <section className="quote relative w-full min-h-screen flex items-center justify-center px-[var(--side-padding)] py-20">
-      <div className="flex flex-col gap-[30px] w-[70vw] max-w-[900px] mx-auto text-center max-[1100px]:w-full max-[1100px]:max-w-none">
-        <p className="text-[36px] font-medium leading-snug max-[1100px]:text-[28px]">
-          {enChars.map((ch, i) => (
-            <RevealChar
-              key={`en-${i}`}
-              progress={progress}
-              start={i / totalSlots}
-              end={(i + overlap) / totalSlots}
-            >
-              {ch}
-            </RevealChar>
-          ))}
-        </p>
+    <section className="quote relative w-full min-h-screen flex items-center px-[var(--side-padding)] py-20">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full max-w-[1200px] mx-auto">
+        <div className="flex flex-col gap-[30px] text-left">
+          <p className="text-[36px] font-medium leading-snug max-[1100px]:text-[28px]">
+            {enChars.map((ch, i) => (
+              <RevealChar
+                key={`en-${i}`}
+                progress={progress}
+                start={i / totalSlots}
+                end={(i + overlap) / totalSlots}
+              >
+                {ch}
+              </RevealChar>
+            ))}
+          </p>
+        </div>
+        <div className="flex justify-center lg:justify-end">
+          <div className="w-[480px] h-[600px] overflow-hidden max-w-full">
+            <Image
+              src={imageUrl || '/tibor_image.png'}
+              alt="Quote illustration"
+              width={480}
+              height={600}
+              className="w-[480px] h-[600px] object-cover max-w-full"
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

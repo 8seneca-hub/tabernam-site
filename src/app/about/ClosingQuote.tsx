@@ -39,7 +39,6 @@ export default function ClosingQuote({ texts }: Props) {
         backgroundImage: `url(${backgroundImage})`,
       }}
     >
-      {/* Dark overlay with a spotlight cut-out that follows the cursor */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
