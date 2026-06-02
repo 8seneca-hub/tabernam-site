@@ -45,7 +45,7 @@ export default function ExperienceStoriesSection({ texts }: Props) {
           <Video
             videoUrl={videoUrl}
             title={videoTitle}
-            className="aspect-[21/9] rounded-xl border border-border bg-gray-70 shadow-lg"
+            className="feathered-image aspect-[21/9] rounded-xl border border-border bg-gray-70 shadow-lg"
           >
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
             <div className="absolute inset-0 flex items-center justify-center">

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Noto_Sans_SC } from 'next/font/google';
+import { DM_Sans, Noto_Sans_SC, Pinyon_Script } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
@@ -9,15 +9,22 @@ import Footer from '@/components/Footer';
 
 const dmSans = DM_Sans({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-dm-sans',
   display: 'swap',
 });
 
 const notoSansSC = Noto_Sans_SC({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['300', '400', '500'],
   variable: '--font-noto-sc',
+  display: 'swap',
+});
+
+const pinyonScript = Pinyon_Script({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-pinyon-script',
   display: 'swap',
 });
 
@@ -68,7 +75,7 @@ export default async function RootLayout({
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${dmSans.variable} ${notoSansSC.variable}`} style={themeVars}>
+    <html lang="en" className={`${dmSans.variable} ${notoSansSC.variable} ${pinyonScript.variable}`} style={themeVars}>
       <body className="bg-bg text-text leading-snug min-h-screen flex flex-col">
         <I18nProvider languages={languages} dictionaries={dictionaries}>
           <ThemeProvider settings={settings}>

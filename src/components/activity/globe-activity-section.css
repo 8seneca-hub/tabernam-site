@@ -2,7 +2,6 @@
   position: relative;
   width: 100%;
   height: 130vh;
-  margin-top: 128px;
   background: #ffffff;
   color: #1a1a1a;
   overflow: hidden;
@@ -102,17 +101,18 @@
 }
 .ga-intro h2 {
   margin: 0 0 16px;
-  font-size: clamp(24px, 2.6vw, 34px);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   line-height: 1.15;
 }
 .ga-intro p {
   margin: 0 auto;
   max-width: 620px;
-  font-size: clamp(13px, 1.05vw, 15px);
+  font-size: 20px;
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: normal;
   color: #4a5560;
 }
 .ga-cta {
@@ -343,11 +343,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #1a1a1a;
+  color: #ffffff;
   font-size: 13px;
   line-height: 1.25;
   font-weight: 500;
   letter-spacing: 0;
+  /* Soft dark shadow keeps the white text legible over bright satellite
+     imagery (snow, sand, clouds, light city blocks). */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 .ga-hint span {
   /* Preserve newlines from translation values for 2-line hint layout. */
@@ -357,7 +360,8 @@
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  color: #1a1a1a;
+  color: #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 @media (max-width: 720px) {
   .ga-hints {

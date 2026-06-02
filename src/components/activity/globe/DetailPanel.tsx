@@ -31,7 +31,7 @@ export default function DetailPanel({ isOpen, city, photos, photoIdx, onClose }:
     >
       {city && photos && (
         <article className="relative flex flex-col bg-[#0a1d3a] text-white rounded-[20px] overflow-hidden border-2 border-white/[0.18] shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
-          <div className="relative w-full aspect-[16/10] shrink-0 overflow-hidden bg-[#111]">
+          <div className="feathered-image-sm relative w-full aspect-[16/10] shrink-0 overflow-hidden bg-[#111]">
             {photos.map((p, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
