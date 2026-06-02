@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { useI18n } from '@/app/hook/useI18n';
+import { motion } from 'motion/react';
 import type { HeroSlide } from '@/lib/directus';
 
 interface Props {
@@ -15,7 +14,7 @@ const FALLBACK_SLIDES: HeroSlide[] = [
   { image: '/carousel/photo-22.jpg', alt: '' },
 ];
 
-const SLIDE_INTERVAL = 3000;
+const SLIDE_INTERVAL = 5000;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -27,7 +26,6 @@ const fadeUp = {
 };
 
 export default function HeroSection({ slides }: Props) {
-  const { t } = useI18n();
   const items = slides && slides.length > 0 ? slides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -43,32 +41,19 @@ export default function HeroSection({ slides }: Props) {
 
   return (
     <section
-      className="hero max-sm:!px-0"
+      className="hero px-[40px]"
       style={{
-        height: '100vh',
-        paddingTop: 'calc(var(--header-height) + 20px)',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        paddingBottom: '20px',
+        paddingTop: '200px',
+        paddingBottom: '60px',
       }}
     >
-      <div className="hero-inner relative w-full h-full flex flex-col items-center justify-center text-center gap-10 px-10 max-sm:gap-8 max-sm:py-16 overflow-hidden rounded-2xl">
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={current.image}
-            initial={{ x: '100%', scale: 0.85, opacity: 0 }}
-            animate={{ x: '0%', scale: 1, opacity: 1 }}
-            exit={{ x: '-100%', scale: 0.85, opacity: 0 }}
-            transition={{ duration: 0.9, ease: [0.65, 0, 0.35, 1] }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `linear-gradient(rgba(10,15,25,0.5), rgba(10,15,25,0.5)), url('${current.image}')`,
-            }}
-            aria-label={current.alt || undefined}
-          />
-        </AnimatePresence>
-
-        <div className="hero-headline relative z-10 flex flex-col gap-[30px] max-w-[65vw] w-full mx-auto max-[1100px]:max-w-[80vw] max-[1100px]:gap-5 max-sm:max-w-none max-sm:gap-4">
+      {/* Inner frame: text + image stack, full-width respecting the section's
+          40px side padding. */}
+      <div className="w-full flex flex-col items-center gap-[120px]">
+        {/* Title + description block.
+            Title:       64px / leading 52px / -3% tracking / bold per spec.
+            Description: 28px / leading 36px / -3% tracking / light per spec. */}
+        <div className="flex flex-col items-center gap-[30px] w-full text-center">
           <motion.h1
             className="text-[45px] font-bold tracking-[-0.04em] leading-[72px] text-white max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
             custom={0.1}
@@ -76,21 +61,49 @@ export default function HeroSection({ slides }: Props) {
             animate="visible"
             variants={fadeUp}
           >
-            {t('hero.title')}{' '}
+            For decades of foreign trade
           </motion.h1>
+          <motion.p
+            className="text-[28px] leading-[36px] tracking-[-0.03em] font-light text-text w-full max-w-[700px] max-md:text-[20px] max-md:leading-[28px]"
+            custom={0.2}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+          >
+            A trusted bridge between Slovakia and China, Vietnam, Germany, US, France, Laos, Singapore, Russia, Ukraine, Kazakhstan, Kenya and other countries
+          </motion.p>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-          {items.map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              aria-label={`Go to slide ${idx + 1}`}
-              onClick={() => setActiveIndex(idx)}
-              className={`h-1 rounded-full bg-white transition-all duration-300 ${idx === activeIndex ? 'w-10 opacity-100' : 'w-5 opacity-60'
-                }`}
+        {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
+            All slides are stacked; the active one cross-fades in via opacity. */}
+        <div className="feathered-image relative w-full aspect-[16/9] rounded-[50px] overflow-hidden bg-surface">
+          {items.map((slide, idx) => (
+            <div
+              key={slide.image}
+              aria-hidden={idx !== activeIndex}
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out"
+              style={{
+                backgroundImage: `url('${slide.image}')`,
+                opacity: idx === activeIndex ? 1 : 0,
+              }}
+              aria-label={slide.alt || undefined}
             />
           ))}
+
+          {items.length > 1 && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+              {items.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  aria-label={`Go to slide ${idx + 1}`}
+                  onClick={() => setActiveIndex(idx)}
+                  className={`h-1 rounded-full bg-white transition-all duration-300 ${idx === activeIndex ? 'w-10 opacity-100' : 'w-5 opacity-60'
+                    }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

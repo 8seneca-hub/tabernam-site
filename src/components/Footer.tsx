@@ -1,11 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import Image from '@/components/ui/Image';
 import { useI18n } from '@/app/hook/useI18n';
-import { useTheme } from '@/lib/theme-context';
 import type { ContactOffice } from '@/lib/data';
 import ActivityLink from './activity/ActivityLink';
+import Logo from './Logo';
 import { Earth, Globe, Mail, MapPin } from 'lucide-react';
 
 
@@ -18,7 +17,6 @@ interface Props {
 
 export default function Footer({ office }: Props) {
   const { t } = useI18n();
-  const { logoImage, logoText } = useTheme();
   const email = office?.workEmail || 'hello@tabernam.com';
   const mailHref = `mailto:${email}`;
   const location = office?.addressLines && office.addressLines.length > 0
@@ -31,13 +29,7 @@ export default function Footer({ office }: Props) {
         {/* Brand column */}
         <div className="flex flex-col gap-5 max-w-[360px]">
           <Link href="/" className="inline-flex" aria-label={t('aria.tabernamHome')}>
-            <Image
-              src={logoImage}
-              alt={logoText}
-              width={164}
-              height={164}
-              className="h-8 w-auto object-contain"
-            />
+            <Logo size={64} />
           </Link>
           <figure className="flex flex-col">
             <blockquote className="text-sm italic leading-relaxed text-muted">

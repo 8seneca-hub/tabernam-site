@@ -371,7 +371,7 @@ export default function ActivitySection({ activities: activitiesProp }: Props) {
                   tabIndex={0}
                   className={`activity-card group relative rounded-2xl overflow-hidden bg-dark/60 border border-white/10 backdrop-blur-md transition-[border-color,background] duration-300 ${isOpen ? 'border-white/40 bg-dark/80' : ''}`}
                 >
-                  <div className="activity-card-image relative w-full aspect-[16/9] bg-gray-90 overflow-hidden">
+                  <div className="activity-card-image feathered-image-sm relative w-full aspect-[16/9] bg-gray-90 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={a.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
                   </div>

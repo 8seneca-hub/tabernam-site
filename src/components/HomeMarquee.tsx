@@ -20,19 +20,10 @@ const ROW_2_IMAGES = [
   '/carousel/photo-25.jpg',
 ];
 
-const ROW_3_IMAGES = [
-  '/carousel/photo-01.jpg',
-  '/carousel/photo-04.jpg',
-  '/carousel/photo-12.jpg',
-  '/carousel/photo-16.jpg',
-  '/carousel/photo-22.jpg',
-  '/carousel/photo-28.jpg',
-];
-
 export default function HomeMarquee() {
   return (
     <motion.section
-      className="home-marquee w-full flex flex-col gap-5 py-10"
+      className="home-marquee w-full flex flex-col gap-5 py-[80px]"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.1 }}
@@ -52,20 +43,6 @@ export default function HomeMarquee() {
         <div className="marquee-track marquee-track--left" aria-hidden="true">
           {[...ROW_2_IMAGES, ...ROW_2_IMAGES].map((src, i) => (
             <div key={`row2-${i}`} className="marquee-cell bg-gray-70">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" />
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="marquee">
-        <div
-          className="marquee-track marquee-track--right"
-          style={{ animationDelay: '-20s' }}
-          aria-hidden="true"
-        >
-          {[...ROW_3_IMAGES, ...ROW_3_IMAGES].map((src, i) => (
-            <div key={`row3-${i}`} className="marquee-cell bg-gray-70">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt="" loading="lazy" />
             </div>

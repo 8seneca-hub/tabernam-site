@@ -65,7 +65,7 @@ export default function GlobeSection({ cities = [] }: Props) {
     mapboxgl.accessToken = MAPBOX_TOKEN;
     const map = new mapboxgl.Map({
       container,
-      style: 'mapbox://styles/sangtong/cmpmjqywo001f01r1fudm9pw2',
+      style: 'mapbox://styles/mapbox/satellite-v9',
       projection: { name: 'globe' },
       center: IDLE_CENTER,
       zoom: IDLE_ZOOM,
@@ -98,10 +98,16 @@ export default function GlobeSection({ cities = [] }: Props) {
         'star-intensity': 0,
       });
 
-      try {
-        map.setConfigProperty('basemap', 'showPlaceLabels', false);
-      } catch {
-      }
+      // Hide every Mapbox-provided text label (country, place, road, POI,
+      // transit, water, natural). Our red active pin marker is the only
+      // label we want — Mapbox's labels would clutter the satellite
+      // imagery and overlap our pins.
+      const styleDef = map.getStyle();
+      styleDef?.layers?.forEach((layer) => {
+        if (layer.type === 'symbol') {
+          map.setLayoutProperty(layer.id, 'visibility', 'none');
+        }
+      });
 
       if (!map.getSource('mapbox-dem')) {
         map.addSource('mapbox-dem', {
@@ -365,7 +371,7 @@ export default function GlobeSection({ cities = [] }: Props) {
           onClick={() => { setIsOpen(true); setActiveIdx(0); }}
           disabled={cityViews.length === 0}
         >
-          {t('btn.exploreNow')}
+          View cities
         </button>
       </div>
 
