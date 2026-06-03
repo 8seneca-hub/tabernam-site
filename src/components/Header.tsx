@@ -4,7 +4,8 @@ import { useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/app/hook/useI18n';
-import Logo from './Logo';
+import { useTheme } from '@/lib/theme-context';
+import Image from './ui/Image';
 import LangSwitcher from './LangSwitcher';
 
 export default function Header() {
@@ -98,11 +99,11 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] h-[var(--header-height)]"
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
     >
       <div className="flex items-center gap-4">
-        <Link href="/" className="flex items-center" aria-label="Tabernam home">
-          <Logo size={36} className="!text-brand" />
+        <Link href="/" className="flex items-center" aria-label={`${logoText || 'Tabernam'} home`}>
+          <Image src={logoImage} alt={logoText || 'Tabernam'} priority width={150} height={150} />
         </Link>
       </div>
 
