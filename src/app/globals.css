@@ -52,7 +52,7 @@
   --color-footer-bg: var(--gray-40);
   --max-width: 1512px;
   --side-padding: 40px;
-  --header-height: 72px;
+  --header-height: 60px;
   /* Full-rounding token (kept out of @theme so it doesn't override Tailwind's
      built-in `rounded-full`, which true circles/pills still rely on). */
   --radius-full: 100px;

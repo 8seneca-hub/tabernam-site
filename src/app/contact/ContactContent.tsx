@@ -22,8 +22,8 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
 
   if (!active) {
     return (
-      <main className="contact-page pt-[calc(var(--header-height)+40px)] pb-20">
-        <section className="w-[80%] mx-auto">
+      <main className="contact-page pt-[var(--header-height)] pb-20">
+        <section className="px-[60px] py-20 max-w-[1320px] mx-auto">
           <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
         </section>
       </main>
@@ -45,16 +45,18 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
   const phoneLabel = t('contact.phoneLabel');
 
   return (
-    <main className="contact-page pt-[calc(var(--header-height)+40px)] pb-0">
-      <h1 className="text-[3.25rem] text-brand font-semibold text-center mb-6">
-        {headingTitle}
-      </h1>
-      <p className="text-lg text-text text-center mb-6 max-w-4xl mx-auto">
-        {subheadingTitle}
-      </p>
-      <section className="w-[80%] max-w-[1100px] mx-auto grid grid-cols-[1fr_auto] gap-12 pt-8 pb-16">
-        <FadeIn delay={0.15} className="flex flex-col self-center ml-auto">
-          <div className="flex flex-col gap-8 mb-12">
+    <main className="contact-page pt-[var(--header-height)]">
+      <section className="px-[60px] pt-12 pb-16">
+        <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
+          {/* Text column — 55% of the frame: heading, intro, and contact details. */}
+          <FadeIn delay={0.15} className="w-full lg:w-[55%] flex flex-col gap-[30px] pt-[20px]">
+            <h1 className="text-5xl md:text-6xl font-bold text-brand tracking-tight leading-tight max-md:text-4xl">
+              {headingTitle}
+            </h1>
+            <p className="text-[20px] font-medium tracking-[-0.02rem] text-dark leading-relaxed">
+              {subheadingTitle}
+            </p>
+            <div className="flex flex-col gap-8 mt-4">
             {active.workEmail && active.personalEmail && (
               <div className="flex items-start gap-5">
                 <span className="w-10 h-10 rounded-2 flex items-center justify-center text-brand shrink-0">
@@ -141,34 +143,37 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
                 </div>
               </div>
             )}
-          </div>
-        </FadeIn>
+            </div>
+          </FadeIn>
 
-        <FadeIn delay={0.15} className="sticky top-[calc(var(--header-height)+40px)]">
-          <div className="feathered-image-sm w-[300px] h-[300px] mx-auto overflow-hidden">
-            <Image
-              src={texts.portrait_image || '/tibor_image.png'}
-              alt="Tibor Buček Professional Portrait"
-              width={300}
-              height={300}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <figure className="mt-6 pl-5">
-            <blockquote className="text-md italic text-text leading-relaxed">
-              “{texts.contact_quote_text || 'Be diligent in your work, honest in your heart, and kind to people.'}”
-            </blockquote>
-            <figcaption className="mt-2 text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
-              — {texts.contact_quote_author || 'Confucius'}
-            </figcaption>
-          </figure>
-        </FadeIn>
+          {/* Image column — fills the remaining width: portrait + quotation. */}
+          <FadeIn delay={0.15} className="w-full lg:flex-1 lg:pt-[20px]">
+            <div className="feathered-image relative w-full aspect-[4/5] max-h-[460px] rounded-4 overflow-hidden bg-surface">
+              <Image
+                src={texts.portrait_image || '/tibor_image.png'}
+                alt="Tibor Buček Professional Portrait"
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+            <figure className="mt-8 pl-5">
+              <blockquote className="text-xl italic text-text leading-relaxed">
+                “{texts.contact_quote_text || 'Be diligent in your work, honest in your heart, and kind to people.'}”
+              </blockquote>
+              <figcaption className="mt-3 text-[11px] font-semibold text-brand uppercase tracking-[0.25em]">
+                — {texts.contact_quote_author || 'Confucius'}
+              </figcaption>
+            </figure>
+          </FadeIn>
+        </div>
       </section>
 
       {active.mapImages.length > 0 && (
-        <section className="w-[80%] max-w-[1100px] mx-auto pb-20">
+        <section className="px-[60px] pb-20">
+          <div className="max-w-[1320px] mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-text">
+            <h2 className="text-text">
               {texts.contact_maps_title || 'Travel routes'}
             </h2>
             {active.mapImages.length > MAP_VISIBLE && (
@@ -221,6 +226,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
                 </div>
               ))}
             </div>
+          </div>
           </div>
         </section>
       )}

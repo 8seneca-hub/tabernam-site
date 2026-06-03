@@ -98,7 +98,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] h-[var(--header-height)]"
     >
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center" aria-label="Tabernam home">

@@ -36,8 +36,11 @@ export default function Video({
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoId = videoUrl ? getYouTubeId(videoUrl) : null;
+  // maxresdefault is native 16:9 (fills the card edge-to-edge); hqdefault is a
+  // 4:3 frame with baked-in black bars, used only as a fallback when there's no
+  // HD thumbnail.
   const thumbnailSrc =
-    thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null);
+    thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null);
 
   if (isPlaying && videoId) {
     return (
@@ -66,6 +69,13 @@ export default function Video({
         <img
           src={thumbnailSrc}
           alt=""
+          onError={(e) => {
+            const img = e.currentTarget;
+            if (videoId && !img.dataset.fallback) {
+              img.dataset.fallback = '1';
+              img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            }
+          }}
           className="absolute inset-0 w-full h-full object-cover"
         />
       )}
