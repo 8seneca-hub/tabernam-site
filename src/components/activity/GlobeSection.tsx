@@ -6,6 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './globe-section.css';
 import { useI18n } from '@/app/hook/useI18n';
+import { Move, ZoomIn, MapPin } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
 import type { GlobeCity } from '@/lib/type';
 import {
@@ -91,10 +92,12 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     map.on('style.load', () => {
       map.setFog({
-        color: 'rgb(255, 255, 255)',
+        // gray-20 (#F7F7F7) so the space/haze around the globe matches the
+        // section background instead of painting it white.
+        color: 'rgb(247, 247, 247)',
         'high-color': 'rgb(190, 210, 240)',
         'horizon-blend': 0.01,
-        'space-color': 'rgb(255, 255, 255)',
+        'space-color': 'rgb(247, 247, 247)',
         'star-intensity': 0,
       });
 
@@ -363,7 +366,21 @@ export default function GlobeSection({ cities = [] }: Props) {
       )}
 
       <div className={`ga-intro${isOpen ? ' out' : ''}`}>
-        <h2>{t('globeIntro.heading')}</h2>
+        <h2>
+          {(() => {
+            const heading = t('globeIntro.heading');
+            const i = heading.indexOf('across');
+            // Highlight "across continents…" in the accent color. Falls back to
+            // the plain heading for translations that don't contain "across".
+            if (i === -1) return heading;
+            return (
+              <>
+                {heading.slice(0, i)}
+                <span className="text-accent">{heading.slice(i)}</span>
+              </>
+            );
+          })()}
+        </h2>
         <p>{t('globeIntro.body')}</p>
         <button
           type="button"
@@ -409,7 +426,7 @@ export default function GlobeSection({ cities = [] }: Props) {
               </button>
             </div>
             <div className="ga-card-body">
-              <h2 className="ga-name">{activeView.name}</h2>
+              <h3 className="ga-name">{activeView.name}</h3>
               <button
                 type="button"
                 className="ga-location"
@@ -458,6 +475,23 @@ export default function GlobeSection({ cities = [] }: Props) {
             <path d="M5 12h14" />
           </svg>
         </button>
+      </div>
+
+      {/* Detail-view guide — bottom-left. Hardcoded English for now; could be
+          wired to i18n keys later (the .ga-hint span preserves \n line breaks). */}
+      <div className={`ga-hints${isOpen ? ' visible' : ''}`} aria-hidden="true">
+        <div className="ga-hint">
+          <Move />
+          <span>{'Drag to move the\nglobe around'}</span>
+        </div>
+        <div className="ga-hint">
+          <ZoomIn />
+          <span>{'Zoom in & out\nto view'}</span>
+        </div>
+        <div className="ga-hint">
+          <MapPin />
+          <span>{'Click on city to view\ndetails'}</span>
+        </div>
       </div>
 
     </section>

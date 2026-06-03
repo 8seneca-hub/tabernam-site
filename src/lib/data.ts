@@ -240,7 +240,7 @@ export const CHINA_DESTINATIONS = [
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   colorBg: '#FFFFFF',
-  colorBrand: '#1C4582',
+  colorBrand: '#1759B0',
   colorText: '#101823',
   colorMuted: '#5A6B83',
   colorSurface: '#C2CBD7',

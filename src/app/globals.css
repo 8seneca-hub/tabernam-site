@@ -4,9 +4,10 @@
 @theme {
   --color-white: var(--white);
   --color-dark: var(--dark);
-  --color-gray-90: var(--gray-90);
   --color-gray-80: var(--gray-80);
-  --color-gray-70: var(--gray-70);
+  --color-gray-60: var(--gray-60);
+  --color-gray-40: var(--gray-40);
+  --color-gray-20: var(--gray-20);
   --color-brand: var(--brand);
   --color-accent: var(--accent);
   --color-bg: var(--color-bg);
@@ -19,31 +20,42 @@
   --color-header: var(--color-header);
   --color-border: var(--color-border);
   --color-footer-bg: var(--color-footer-bg);
+
+  /* Border-radius scale (design tokens) → rounded-1 … rounded-5 utilities */
+  --radius-1: 4px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-4: 16px;
+  --radius-5: 24px;
 }
 
 /* ─────────── Palette + Directus CSS variable defaults ─────────── */
 :root {
   --white: #FFFFFF;
   --dark: #101823;
-  --gray-90: #5A6B83;
-  --gray-80: #C2CBD7;
-  --gray-70: #E9EDF1;
-  --brand: #1C4582;
-  --accent: #F8221F;
+  --gray-80: #5A6B83;
+  --gray-60: #C2CBD7;
+  --gray-40: #E9EDF1;
+  --gray-20: #F7F7F7;
+  --brand: #1759B0;
+  --accent: #FF8A35;
 
   --color-bg: var(--white);
   --color-text: var(--dark);
-  --color-muted: var(--gray-90);
-  --color-surface: var(--gray-80);
-  --color-button: var(--gray-70);
+  --color-muted: var(--gray-80);
+  --color-surface: var(--gray-60);
+  --color-button: var(--gray-40);
   --color-button-text: var(--dark);
-  --color-button-hover: var(--gray-80);
+  --color-button-hover: var(--gray-60);
   --color-header: var(--white);
-  --color-border: var(--gray-80);
-  --color-footer-bg: var(--gray-70);
+  --color-border: var(--gray-60);
+  --color-footer-bg: var(--gray-40);
   --max-width: 1512px;
   --side-padding: 40px;
   --header-height: 72px;
+  /* Full-rounding token (kept out of @theme so it doesn't override Tailwind's
+     built-in `rounded-full`, which true circles/pills still rely on). */
+  --radius-full: 100px;
 }
 
 /* ─────────── Base resets ─────────── */
@@ -72,6 +84,28 @@ img {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* ─────────── Global heading scale ─────────── */
+h1 {
+  font-family: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 72px;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-family: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 52px;
+  line-height: 56px;
+  letter-spacing: -0.03em;
+}
+
+/* Homepage only: H2 headings default to the brand color. */
+.home-page h2 {
+  color: var(--color-brand);
 }
 
 /* ─────────── Header: auto-hide on scroll ─────────── */
@@ -147,7 +181,7 @@ a {
   left: 50%;
   width: 194px;
   height: 250px;
-  border-radius: 14px;
+  border-radius: var(--radius-3);
   overflow: hidden;
   background: var(--color-surface);
   border: 0;
@@ -266,9 +300,10 @@ a {
 
 .marquee-cell {
   flex-shrink: 0;
-  width: 460px;
+  width: 462px;
+  /* 16:9 of 462 ≈ 260px */
   height: 260px;
-  border-radius: 20px;
+  border-radius: var(--radius-3);
   overflow: hidden;
   position: relative;
 }
@@ -281,76 +316,39 @@ a {
   display: block;
 }
 
-/* ─────────── Feathered image edges ───────────
-   Applies four white inset box-shadows on a ::after pseudo-element so the
-   feather renders ON TOP of the actual image (inset shadows on <img>
-   themselves don't visibly render because the image content paints over).
-   Per the Figma spec:
-     bottom edge: 0 / 20  / 36 / 18
-     top    edge: 0 / -20 / 26 / 18
-     left   edge: 20 / 0  / 26 / 18
-     right  edge: -20 / 0 / 26 / 18
-*/
-.feathered-image {
+/* ─────────── Feathered image edges (brand identity) ───────────
+   Every framed image gets a soft white vignette feathering inward from its
+   edges — a stack of white inset shadows per the design spec. It's painted by
+   an ::after overlay so it sits on top of the image and inherits the
+   container's border-radius. Containers must establish a positioning context
+   (provided here) and clip overflow (set per-element in the markup). */
+.feathered-image,
+.feathered-image-sm,
+.marquee-cell {
   position: relative;
 }
-.feathered-image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  /* Animate box-shadow's spread (not opacity) so the feather lines
-     physically retract toward the edges and disappear, rather than fading
-     uniformly in place. */
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    inset 0 0 26px 18px #ffffff,
-    inset 0 0 26px 18px #ffffff,
-    inset 0 0 26px 18px #ffffff,
-    inset 0 0 36px 18px #ffffff;
-}
-.feathered-image:hover::after {
-  /* Push the spread far negative so the inset shadow's boundary contracts
-     past the visible box → feather lines slide outward off the edges. */
-  box-shadow:
-    inset 0 0 26px -200px #ffffff,
-    inset 0 0 26px -200px #ffffff,
-    inset 0 0 26px -200px #ffffff,
-    inset 0 0 36px -200px #ffffff;
-}
-
-/* Smaller per-edge feather for compact image cards (e.g. marquee cells,
-   gallery thumbnails). Per the Figma spec — four directional inner shadows,
-   8px offset / 12px blur / 0 spread / pure white. Lighter than the large
-   feather used for hero/content images so smaller cards keep more of their
-   subject visible. */
-.feathered-image-sm {
-  position: relative;
-}
+.feathered-image::after,
 .feathered-image-sm::after,
 .marquee-cell::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  z-index: 2;
   pointer-events: none;
-  /* See note on .feathered-image::after — animating spread, not opacity,
-     so the feather slides off the edges instead of fading in place. */
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: inherit;
   box-shadow:
-    inset -8px 0 12px 0 #ffffff,
-    inset 8px 0 12px 0 #ffffff,
-    inset 0 -8px 12px 0 #ffffff,
-    inset 0 8px 12px 0 #ffffff;
+    inset 0 0 3.48px 2.61px #fff,
+    inset 0 0 8.71px 6.97px #fff,
+    inset 0 0 34.83px 31.35px #fff;
 }
-.feathered-image-sm:hover::after,
-.marquee-cell:hover::after {
+/* Smaller framed images use a lighter feather so the white edge stays
+   proportional and doesn't overwhelm the image. */
+.feathered-image-sm::after,
+.marquee-cell::after {
   box-shadow:
-    inset -8px 0 12px -200px #ffffff,
-    inset 8px 0 12px -200px #ffffff,
-    inset 0 -8px 12px -200px #ffffff,
-    inset 0 8px 12px -200px #ffffff;
+    inset 0 0 2px 1.5px #fff,
+    inset 0 0 5px 4px #fff,
+    inset 0 0 18px 16px #fff;
 }
 
 @keyframes marquee-scroll-left {
@@ -498,7 +496,7 @@ a {
 }
 
 .globe-svg .globe-disk {
-  fill: var(--gray-70);
+  fill: var(--gray-40);
   stroke: var(--dark);
   stroke-width: 1.5;
 }
@@ -587,7 +585,7 @@ a {
   display: block;
   height: 100%;
   width: 0;
-  background: var(--gray-80);
+  background: var(--gray-60);
   transition: width 0.1s linear;
 }
 
@@ -630,7 +628,7 @@ a {
 }
 
 .info-card[open]>summary {
-  border-bottom: 1px solid var(--gray-80);
+  border-bottom: 1px solid var(--gray-60);
 }
 
 /* Page-load entrance animations now handled by Motion */
@@ -746,7 +744,7 @@ a {
   .nav a {
     padding: 16px 0;
     font-size: 16px;
-    border-bottom: 1px solid var(--gray-70);
+    border-bottom: 1px solid var(--gray-40);
     width: 100%;
   }
 
@@ -905,8 +903,8 @@ a {
     height: 36px;
     padding: 0;
     border-radius: 50%;
-    background: var(--gray-70);
-    border: 1px solid var(--gray-80);
+    background: var(--gray-40);
+    border: 1px solid var(--gray-60);
     font-size: 0;
     line-height: 0;
     color: transparent;
@@ -924,9 +922,9 @@ a {
   }
 
   .city-card {
-    background: var(--gray-70);
+    background: var(--gray-40);
     border: 0;
-    border-radius: 16px;
+    border-radius: var(--radius-4);
     padding: 16px;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;

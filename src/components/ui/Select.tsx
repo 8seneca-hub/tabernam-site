@@ -46,7 +46,7 @@ export default function Select({ value, onChange, options, ariaLabel, className 
     >
       <button
         type="button"
-        className="flex items-center gap-2 bg-transparent px-4 py-2 font-[inherit] text-sm font-semibold uppercase tracking-wider text-text cursor-pointer w-max hover:bg-gray-70/40 transition-colors max-sm:px-3 max-sm:text-xs"
+        className="flex items-center gap-2 bg-transparent px-4 py-2 font-[inherit] text-sm font-semibold uppercase tracking-wider text-text cursor-pointer w-max hover:bg-gray-40/40 transition-colors max-sm:px-3 max-sm:text-xs"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
@@ -74,7 +74,7 @@ export default function Select({ value, onChange, options, ariaLabel, className 
                 type="button"
                 role="option"
                 aria-selected={o.value === value}
-                className="flex items-center gap-2 w-full px-5 py-2.5 bg-transparent border-0 font-[inherit] text-base text-text text-left cursor-pointer hover:bg-gray-70 focus-visible:bg-gray-70 focus-visible:outline-none"
+                className="flex items-center gap-2 w-full px-5 py-2.5 bg-transparent border-0 font-[inherit] text-base text-text text-left cursor-pointer hover:bg-gray-40 focus-visible:bg-gray-40 focus-visible:outline-none"
                 onClick={() => { onChange(o.value); close(); }}
               >
                 <span className="flex-1 whitespace-nowrap">{o.label}</span>

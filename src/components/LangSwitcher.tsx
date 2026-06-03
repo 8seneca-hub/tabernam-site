@@ -13,7 +13,7 @@ export default function LangSwitcher() {
       value={lang}
       onChange={switchLang}
       ariaLabel="Language"
-      className="lang-switcher ml-1"
+      className="lang-switcher ml-1 [&>button]:!text-dark [&>button]:!text-[18px] [&>button]:!font-normal [&>button]:!normal-case [&>button]:!tracking-[-0.007em] [&>button]:hover:!bg-transparent [&>button>svg]:!text-dark"
       options={languages.map((l) => ({
         value: l.code,
         label: l.name,

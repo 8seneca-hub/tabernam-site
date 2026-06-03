@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Noto_Sans_SC, Pinyon_Script } from 'next/font/google';
+import { Inter, Noto_Sans_SC, Pinyon_Script } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
@@ -7,9 +7,13 @@ import { getLanguages, getDictionaries, getSiteSettings, getContactOffice } from
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   weight: ['300', '400', '500', '600', '700', '800'],
+  /* Variable name kept as `--font-dm-sans` so the rest of the codebase
+     (globals.css, inline `style={{ fontFamily: ... }}` references) continues
+     to resolve to whatever the body font currently is, without touching every
+     call site. */
   variable: '--font-dm-sans',
   display: 'swap',
 });
@@ -75,8 +79,11 @@ export default async function RootLayout({
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${dmSans.variable} ${notoSansSC.variable} ${pinyonScript.variable}`} style={themeVars}>
-      <body className="bg-bg text-text leading-snug min-h-screen flex flex-col">
+    <html lang="en" className={`${inter.variable} ${notoSansSC.variable} ${pinyonScript.variable}`} style={themeVars}>
+      <body
+        className="bg-bg text-text leading-snug min-h-screen flex flex-col"
+        suppressHydrationWarning
+      >
         <I18nProvider languages={languages} dictionaries={dictionaries}>
           <ThemeProvider settings={settings}>
             <Header />

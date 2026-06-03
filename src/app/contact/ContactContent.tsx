@@ -57,7 +57,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
           <div className="flex flex-col gap-8 mb-12">
             {active.workEmail && active.personalEmail && (
               <div className="flex items-start gap-5">
-                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                <span className="w-10 h-10 rounded-2 flex items-center justify-center text-brand shrink-0">
                   <Mail size={20} />
                 </span>
                 <div className="flex flex-col gap-1.5">
@@ -81,7 +81,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
             )}
             {active.phone && (
               <div className="flex items-start gap-5">
-                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                <span className="w-10 h-10 rounded-2 flex items-center justify-center text-brand shrink-0">
                   <Phone size={20} />
                 </span>
                 <div className="flex flex-col gap-1.5">
@@ -107,7 +107,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
             )}
             {active.addressLines.length > 0 && (
               <div className="flex items-start gap-5">
-                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                <span className="w-10 h-10 rounded-2 flex items-center justify-center text-brand shrink-0">
                   <MapPin size={20} />
                 </span>
                 <div className="flex flex-col gap-1.5">
@@ -126,7 +126,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
             )}
             {active.websiteUrl && (
               <div className="flex items-start gap-5">
-                <span className="w-10 h-10 rounded-lg flex items-center justify-center text-brand shrink-0">
+                <span className="w-10 h-10 rounded-2 flex items-center justify-center text-brand shrink-0">
                   <Globe size={20} />
                 </span>
                 <div className="flex flex-col gap-1.5">
@@ -145,13 +145,15 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
         </FadeIn>
 
         <FadeIn delay={0.15} className="sticky top-[calc(var(--header-height)+40px)]">
-          <Image
-            src={texts.portrait_image || '/tibor_image.png'}
-            alt="Tibor Buček Professional Portrait"
-            width={300}
-            height={300}
-            className="w-[300px] h-[300px] mx-auto"
-          />
+          <div className="feathered-image-sm w-[300px] h-[300px] mx-auto overflow-hidden">
+            <Image
+              src={texts.portrait_image || '/tibor_image.png'}
+              alt="Tibor Buček Professional Portrait"
+              width={300}
+              height={300}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <figure className="mt-6 pl-5">
             <blockquote className="text-md italic text-text leading-relaxed">
               “{texts.contact_quote_text || 'Be diligent in your work, honest in your heart, and kind to people.'}”
@@ -206,7 +208,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {active.mapImages.map((src, i) => (
                 <div
                   key={i}
-                  className="shrink-0 overflow-hidden rounded-lg"
+                  className="feathered-image-sm shrink-0 overflow-hidden rounded-2"
                   style={{ width: `calc((100% - ${(MAP_VISIBLE - 1) * 24}px) / ${MAP_VISIBLE})` }}
                 >
                   <Image

@@ -36,7 +36,10 @@ export default function VideoCard({
   playStyle = 'light',
   className = '',
 }: Props) {
-  const aspectClass = aspect === 'cinema' ? 'aspect-[21/9]' : 'aspect-video';
+  // Both the default and "cinema" variants now lock to 16:9 per spec —
+  // the `aspect` prop is kept for backwards-compat with existing call sites.
+  const aspectClass = 'aspect-video';
+  void aspect;
   const isBrand = playStyle === 'brand';
   const dimClass = isBrand
     ? 'bg-black/30 group-hover:bg-black/20'
@@ -50,7 +53,7 @@ export default function VideoCard({
     <Video
       videoUrl={videoUrl}
       title={title}
-      className={`block ${aspectClass} rounded-xl border border-border bg-gray-70 ${shadow} overflow-hidden ${className}`.trim()}
+      className={`block ${aspectClass} rounded-3 border border-border bg-gray-40 ${shadow} overflow-hidden ${className}`.trim()}
     >
       <div className={`absolute inset-0 ${dimClass} transition-colors`} />
       <div className="absolute inset-0 flex items-center justify-center">

@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { motion, animate, useMotionValue, useTransform, type MotionValue } from 'motion/react';
+import { motion } from 'motion/react';
 import Image from '@/components/ui/Image';
 import { useI18n } from '@/app/hook/useI18n';
 
@@ -11,92 +10,69 @@ interface Props {
   imageUrl?: string;
 }
 
-const SWEEP_DURATION_S = 8;
-const HOLD_AT_FULL_S = 1.5;
-
-function RevealChar({
-  progress,
-  start,
-  end,
-  children,
-}: {
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
-  children: React.ReactNode;
-}) {
-  const color = useTransform(
-    progress,
-    [start, end],
-    ['var(--color-surface)', 'var(--brand)']
-  );
-  return <motion.span style={{ color }}>{children}</motion.span>;
-}
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay, duration: 0.7, ease: [0.22, 0.61, 0.36, 1] as const },
+  }),
+};
 
 export default function QuoteSection({ imageUrl }: Props) {
   const { t } = useI18n();
-  const progress = useMotionValue(0);
 
-  const translated = t('quote.primary');
-  const text =
-    translated && translated.trim() && translated !== 'quote.primary'
-      ? translated
+  const translatedBody = t('quote.primary');
+  const body =
+    translatedBody && translatedBody.trim() && translatedBody !== 'quote.primary'
+      ? translatedBody
       : FALLBACK_EN;
 
-  const chars = useMemo(() => [...text], [text]);
-
-  const overlap = 6;
-  const totalSlots = chars.length + overlap;
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function run() {
-      while (!cancelled) {
-        progress.set(0);
-        await animate(progress, 1, {
-          duration: SWEEP_DURATION_S,
-          ease: 'linear',
-        });
-        if (cancelled) return;
-        await new Promise((r) => setTimeout(r, HOLD_AT_FULL_S * 1000));
-      }
-    }
-
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [progress]);
-
   return (
-    <section className="quote relative w-full min-h-screen flex items-center px-[var(--side-padding)] py-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full max-w-[1200px] mx-auto">
-        <div className="flex flex-col gap-[30px] text-left">
-          <p className="text-[36px] font-medium leading-snug max-[1100px]:text-[28px]">
-            {chars.map((ch, i) => (
-              <RevealChar
-                key={`q-${i}`}
-                progress={progress}
-                start={i / totalSlots}
-                end={(i + overlap) / totalSlots}
-              >
-                {ch}
-              </RevealChar>
-            ))}
-          </p>
-        </div>
-        <div className="flex justify-center lg:justify-end">
-          <div className="w-[480px] h-[600px] overflow-hidden max-w-full">
-            <Image
-              src={imageUrl || '/tibor_image.png'}
-              alt="Quote illustration"
-              width={480}
-              height={600}
-              className="w-[480px] h-[600px] object-cover max-w-full"
-            />
-          </div>
-        </div>
+    <section className="quote w-full px-[60px] py-[150px]">
+      <div className="max-w-[1320px] mx-auto grid grid-cols-[3fr_2fr] gap-[100px] items-start max-md:grid-cols-1 max-md:gap-[40px]">
+        {/* Left column — title + body, top-aligned, text left-aligned. */}
+        <motion.div
+          className="flex flex-col items-start gap-[30px] pt-[40px]"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          {/* TODO: title is hardcoded — wire to a Directus i18n key (e.g. quote.title)
+              once the page-keys migration is run. The two-tone coloring (accent + dark)
+              splits the phrase at the comma. */}
+          <motion.h2
+            className="text-[52px] leading-[56px] tracking-[-0.02em] font-bold text-left max-md:text-[36px] max-md:leading-[40px]"
+            custom={0}
+            variants={fadeUp}
+          >
+            <span className="text-accent">Build on trust</span>
+            <span>, not transactions</span>
+          </motion.h2>
+          <motion.p
+            className="text-[24px] leading-[30px] tracking-[-0.01em] font-medium text-text text-left"
+            custom={0.15}
+            variants={fadeUp}
+          >
+            {body}
+          </motion.p>
+        </motion.div>
+
+        {/* Right column — 3:4 portrait image, fills its 2-of-5 grid column. */}
+        <motion.div
+          className="feathered-image relative w-full aspect-[3/4] rounded-4 overflow-hidden bg-surface"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 0.61, 0.36, 1] }}
+        >
+          <Image
+            src={imageUrl || '/tibor_image.png'}
+            alt="Portrait photograph"
+            fill
+            className="object-cover"
+          />
+        </motion.div>
       </div>
     </section>
   );

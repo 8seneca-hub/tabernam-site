@@ -14,7 +14,7 @@ interface Props {
 const DEFAULT_RECIPIENT = 'tiborbucek@gmail.com';
 
 const INPUT_CLASS =
-  'w-full px-3.5 py-2.5 bg-surface text-text border border-border rounded-lg text-[15px] leading-snug outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/20';
+  'w-full px-3.5 py-2.5 bg-surface text-text border border-border rounded-2 text-[15px] leading-snug outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/20';
 
 export default function RequestCvModal({ open, onClose, recipient = DEFAULT_RECIPIENT }: Props) {
   const { t } = useI18n();
@@ -74,7 +74,7 @@ export default function RequestCvModal({ open, onClose, recipient = DEFAULT_RECI
           />
 
           <motion.div
-            className="relative w-full max-w-[480px] bg-bg text-text rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] p-7 max-md:p-5"
+            className="relative w-full max-w-[480px] bg-bg text-text rounded-4 shadow-[0_20px_60px_rgba(0,0,0,0.25)] p-7 max-md:p-5"
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}

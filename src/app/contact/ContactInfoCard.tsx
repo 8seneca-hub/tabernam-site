@@ -13,7 +13,7 @@ export default function ContactInfoCard({ className = '' }: Props) {
 
   return (
     <div
-      className={`w-full max-w-[480px] bg-bg text-text rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] border border-border p-7 max-md:p-5 ${className}`.trim()}
+      className={`w-full max-w-[480px] bg-bg text-text rounded-4 shadow-[0_20px_60px_rgba(0,0,0,0.25)] border border-border p-7 max-md:p-5 ${className}`.trim()}
     >
       <h3 className="text-2xl font-bold text-text">{t('cv.contact.title')}</h3>
       <p className="mt-2 text-sm text-muted leading-relaxed">

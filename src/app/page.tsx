@@ -16,7 +16,7 @@ export default async function HomePage() {
   const quoteImage = texts.en?.quote_image ?? '';
 
   return (
-    <main>
+    <main className="home-page">
       <HeroSection slides={heroSlides} />
       <QuoteSection imageUrl={quoteImage} />
       <AboutSection texts={texts} />

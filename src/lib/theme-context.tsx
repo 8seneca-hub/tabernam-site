@@ -14,7 +14,7 @@ const defaults: SiteSettings = {
   colorHeader: '#FFFFFF',
   colorBorder: '#C2CBD7',
   colorFooterBg: '#E9EDF1',
-  colorBrand: '#1C4582',
+  colorBrand: '#1759B0',
   fontFamily: '',
   logoImage: '/tabernam-logo.png',
   logoText: 'Tabernam',

@@ -40,43 +40,47 @@ export default function HeroSection({ slides }: Props) {
   const current = items[activeIndex] ?? items[0];
 
   return (
-    <section
-      className="hero px-[40px]"
-      style={{
-        paddingTop: '200px',
-        paddingBottom: '60px',
-      }}
-    >
-      {/* Inner frame: text + image stack, full-width respecting the section's
-          40px side padding. */}
-      <div className="w-full flex flex-col items-center gap-[120px]">
-        {/* Title + description block.
-            Title:       64px / leading 52px / -3% tracking / bold per spec.
-            Description: 28px / leading 36px / -3% tracking / light per spec. */}
-        <div className="flex flex-col items-center gap-[30px] w-full text-center">
-          <motion.h1
-            className="text-[45px] font-bold tracking-[-0.04em] leading-[72px] text-white max-[1100px]:text-[40px] max-md:text-[32px] max-sm:text-[30px]"
-            custom={0.1}
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-          >
-            For decades of foreign trade
-          </motion.h1>
-          <motion.p
-            className="text-[28px] leading-[36px] tracking-[-0.03em] font-light text-text w-full max-w-[700px] max-md:text-[20px] max-md:leading-[28px]"
-            custom={0.2}
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-          >
-            A trusted bridge between Slovakia and China, Vietnam, Germany, US, France, Laos, Singapore, Russia, Ukraine, Kazakhstan, Kenya and other countries
-          </motion.p>
+    <section className="hero relative" style={{ paddingBottom: '60px' }}>
+      {/* Top region — full-bleed gradient backdrop. It contains the header-clearance
+          padding (pt), the hero text, and the gap (pb), so it auto-sizes to its own
+          content; its bottom edge therefore always lands exactly at the top of the
+          image regardless of how the text wraps at different screen sizes. The
+          gradient fades from a soft brand tint at the page top down to the page
+          background where the image begins. */}
+      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] pt-[250px] pb-[200px]">
+        {/* Centering frame, capped at 1320px to align with the other sections. */}
+        <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
+          {/* Title + description block — hugs content so the body wraps to the
+              title's width.
+              Title:       64px / leading 52px / -3% tracking / bold per spec.
+              Description: 28px / leading 32px / -3% tracking / medium per spec. */}
+          <div className="flex flex-col items-center gap-[30px] text-center">
+            <motion.h1
+              className="text-[64px] font-bold tracking-[-0.03em] leading-[52px] text-brand max-[1100px]:text-[48px] max-[1100px]:leading-[44px] max-md:text-[36px] max-md:leading-[36px]"
+              custom={0.1}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+            >
+              For decades of foreign trade
+            </motion.h1>
+            <motion.p
+              className="text-[28px] leading-[32px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
+              custom={0.2}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+            >
+              A trusted bridge between Slovakia and China, Vietnam, Germany, US, France, Laos, Singapore, Russia, Ukraine, Kazakhstan, Kenya and other countries
+            </motion.p>
+          </div>
         </div>
+      </div>
 
-        {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
-            All slides are stacked; the active one cross-fades in via opacity. */}
-        <div className="feathered-image relative w-full aspect-[16/9] rounded-[50px] overflow-hidden bg-surface">
+      {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
+          All slides are stacked; the active one cross-fades in via opacity. */}
+      <div className="px-[40px]">
+        <div className="feathered-image relative w-full max-w-[1320px] mx-auto aspect-[16/9] rounded-5 overflow-hidden bg-surface">
           {items.map((slide, idx) => (
             <div
               key={slide.image}
@@ -90,20 +94,6 @@ export default function HeroSection({ slides }: Props) {
             />
           ))}
 
-          {items.length > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-              {items.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  aria-label={`Go to slide ${idx + 1}`}
-                  onClick={() => setActiveIndex(idx)}
-                  className={`h-1 rounded-full bg-white transition-all duration-300 ${idx === activeIndex ? 'w-10 opacity-100' : 'w-5 opacity-60'
-                    }`}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </section>

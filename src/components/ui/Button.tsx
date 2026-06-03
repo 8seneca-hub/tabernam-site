@@ -8,7 +8,7 @@ type Shape = 'rounded' | 'pill';
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary: 'bg-brand text-white hover:bg-brand/90',
-  outline: 'bg-white/10 backdrop-blur-sm border border-border text-text hover:bg-white/50 hover:border-gray-90',
+  outline: 'bg-white/10 backdrop-blur-sm border border-border text-text hover:bg-white/50 hover:border-gray-80',
   ghost: 'bg-transparent text-text hover:bg-surface/60',
 };
 
@@ -19,7 +19,7 @@ const SIZE_CLASSES: Record<Size, string> = {
 };
 
 const SHAPE_CLASSES: Record<Shape, string> = {
-  rounded: 'rounded-lg',
+  rounded: 'rounded-2',
   pill: 'rounded-full',
 };
 
