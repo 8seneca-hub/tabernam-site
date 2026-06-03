@@ -6,6 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './globe-section.css';
 import { useI18n } from '@/app/hook/useI18n';
+import { Move, ZoomIn, MapPin } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
 import type { GlobeCity } from '@/lib/type';
 import {
@@ -65,7 +66,7 @@ export default function GlobeSection({ cities = [] }: Props) {
     mapboxgl.accessToken = MAPBOX_TOKEN;
     const map = new mapboxgl.Map({
       container,
-      style: 'mapbox://styles/sangtong/cmpmjqywo001f01r1fudm9pw2',
+      style: 'mapbox://styles/mapbox/satellite-v9',
       projection: { name: 'globe' },
       center: IDLE_CENTER,
       zoom: IDLE_ZOOM,
@@ -91,17 +92,25 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     map.on('style.load', () => {
       map.setFog({
-        color: 'rgb(255, 255, 255)',
+        // gray-20 (#F7F7F7) so the space/haze around the globe matches the
+        // section background instead of painting it white.
+        color: 'rgb(247, 247, 247)',
         'high-color': 'rgb(190, 210, 240)',
         'horizon-blend': 0.01,
-        'space-color': 'rgb(255, 255, 255)',
+        'space-color': 'rgb(247, 247, 247)',
         'star-intensity': 0,
       });
 
-      try {
-        map.setConfigProperty('basemap', 'showPlaceLabels', false);
-      } catch {
-      }
+      // Hide every Mapbox-provided text label (country, place, road, POI,
+      // transit, water, natural). Our red active pin marker is the only
+      // label we want — Mapbox's labels would clutter the satellite
+      // imagery and overlap our pins.
+      const styleDef = map.getStyle();
+      styleDef?.layers?.forEach((layer) => {
+        if (layer.type === 'symbol') {
+          map.setLayoutProperty(layer.id, 'visibility', 'none');
+        }
+      });
 
       if (!map.getSource('mapbox-dem')) {
         map.addSource('mapbox-dem', {
@@ -357,7 +366,21 @@ export default function GlobeSection({ cities = [] }: Props) {
       )}
 
       <div className={`ga-intro${isOpen ? ' out' : ''}`}>
-        <h2>{t('globeIntro.heading')}</h2>
+        <h2>
+          {(() => {
+            const heading = t('globeIntro.heading');
+            const i = heading.indexOf('across');
+            // Highlight "across continents…" in the accent color. Falls back to
+            // the plain heading for translations that don't contain "across".
+            if (i === -1) return heading;
+            return (
+              <>
+                {heading.slice(0, i)}
+                <span className="text-accent">{heading.slice(i)}</span>
+              </>
+            );
+          })()}
+        </h2>
         <p>{t('globeIntro.body')}</p>
         <button
           type="button"
@@ -365,7 +388,7 @@ export default function GlobeSection({ cities = [] }: Props) {
           onClick={() => { setIsOpen(true); setActiveIdx(0); }}
           disabled={cityViews.length === 0}
         >
-          {t('btn.exploreNow')}
+          View cities
         </button>
       </div>
 
@@ -403,7 +426,7 @@ export default function GlobeSection({ cities = [] }: Props) {
               </button>
             </div>
             <div className="ga-card-body">
-              <h2 className="ga-name">{activeView.name}</h2>
+              <h3 className="ga-name">{activeView.name}</h3>
               <button
                 type="button"
                 className="ga-location"
@@ -452,6 +475,23 @@ export default function GlobeSection({ cities = [] }: Props) {
             <path d="M5 12h14" />
           </svg>
         </button>
+      </div>
+
+      {/* Detail-view guide — bottom-left. Hardcoded English for now; could be
+          wired to i18n keys later (the .ga-hint span preserves \n line breaks). */}
+      <div className={`ga-hints${isOpen ? ' visible' : ''}`} aria-hidden="true">
+        <div className="ga-hint">
+          <Move />
+          <span>{'Drag to move the\nglobe around'}</span>
+        </div>
+        <div className="ga-hint">
+          <ZoomIn />
+          <span>{'Zoom in & out\nto view'}</span>
+        </div>
+        <div className="ga-hint">
+          <MapPin />
+          <span>{'Click on city to view\ndetails'}</span>
+        </div>
       </div>
 
     </section>

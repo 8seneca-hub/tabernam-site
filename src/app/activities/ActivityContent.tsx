@@ -37,7 +37,7 @@ export default function ActivityContent({ cities }: Props) {
     <main className="pt-[109px] pb-[120px] flex flex-col gap-10">
       {secondary && (
         <div className="w-full max-w-[1200px] mx-auto px-[var(--side-padding)]">
-          <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-gray-70">
+          <div className="feathered-image w-full aspect-[16/9] rounded-3 overflow-hidden bg-gray-40">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="w-full h-full object-cover" src={secondary} alt={name} />
           </div>
@@ -51,7 +51,7 @@ export default function ActivityContent({ cities }: Props) {
         {gallery.length > 0 && (
           <div className="mt-6 grid grid-cols-2 gap-4 max-md:grid-cols-1">
             {gallery.map((src) => (
-              <div key={src} className="w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-70">
+              <div key={src} className="feathered-image-sm w-full aspect-[16/9] rounded-t-2 rounded-b-none overflow-hidden bg-gray-40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className="w-full h-full object-cover" src={src} alt={name} />
               </div>

@@ -369,21 +369,21 @@ export default function ActivitySection({ activities: activitiesProp }: Props) {
                   onMouseEnter={() => setActiveIndex(i)}
                   onFocus={() => setActiveIndex(i)}
                   tabIndex={0}
-                  className={`activity-card group relative rounded-2xl overflow-hidden bg-dark/60 border border-white/10 backdrop-blur-md transition-[border-color,background] duration-300 ${isOpen ? 'border-white/40 bg-dark/80' : ''}`}
+                  className={`activity-card group relative rounded-4 overflow-hidden bg-dark/60 border border-white/10 backdrop-blur-md transition-[border-color,background] duration-300 ${isOpen ? 'border-white/40 bg-dark/80' : ''}`}
                 >
-                  <div className="activity-card-image relative w-full aspect-[16/9] bg-gray-90 overflow-hidden">
+                  <div className="activity-card-image feathered-image-sm relative w-full aspect-[16/9] bg-gray-80 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={a.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
                   </div>
                   <div className="flex items-center justify-between gap-4 px-5 pt-4 pb-2">
                     <h3 className="text-lg font-bold text-white truncate">{a.title}</h3>
-                    <span className="text-sm text-gray-80 shrink-0">{a.label}</span>
+                    <span className="text-sm text-gray-60 shrink-0">{a.label}</span>
                   </div>
                   <div
                     className={`grid transition-[grid-template-rows,padding] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr] pb-5' : 'grid-rows-[0fr]'}`}
                   >
                     <div className="overflow-hidden px-5">
-                      <p className="text-sm font-normal leading-normal text-gray-80 mb-4">{a.body}</p>
+                      <p className="text-sm font-normal leading-normal text-gray-60 mb-4">{a.body}</p>
                       <Button
                         as={Link}
                         href={`/activities?id=${encodeURIComponent(a.id)}`}

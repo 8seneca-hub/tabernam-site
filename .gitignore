@@ -13,3 +13,6 @@ next-env.d.ts
 # `database/data.db` + `uploads/` are committed so `docker compose up`
 # restores the full state on a fresh clone. `extensions/` stays runtime-only.
 extensions/
+
+# Local WhatsApp media scratch folder
+Tabernam/

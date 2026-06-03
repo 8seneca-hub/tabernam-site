@@ -40,7 +40,7 @@ export default function LeadershipSection({ texts }: Props) {
             {items.map((item, i) => (
               <FadeIn key={i} delay={0.1 + i * 0.05} className="flex gap-6 pt-2 items-center">
                 {item.image && (
-                  <div className="relative w-16 h-16 shrink-0 rounded-xl">
+                  <div className="relative w-16 h-16 shrink-0 rounded-3">
                     <Image
                       src={item.image}
                       alt=""

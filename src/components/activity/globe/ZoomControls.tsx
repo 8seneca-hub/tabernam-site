@@ -13,7 +13,7 @@ export default function ZoomControls({ isOpen, onZoomIn, onZoomOut }: Props) {
   const { t } = useI18n();
   return (
     <motion.div
-      className="fixed top-1/2 left-7 -translate-y-1/2 z-[200] flex flex-col bg-bg rounded-lg shadow-[0_2px_10px_rgba(0,0,0,0.18)] overflow-hidden"
+      className="fixed top-1/2 left-7 -translate-y-1/2 z-[200] flex flex-col bg-bg rounded-2 shadow-[0_2px_10px_rgba(0,0,0,0.18)] overflow-hidden"
       animate={{ opacity: isOpen ? 1 : 0 }}
       transition={{ duration: 0.45, ease: 'easeOut', delay: isOpen ? 0.3 : 0 }}
       style={{ pointerEvents: isOpen ? 'auto' : 'none' }}

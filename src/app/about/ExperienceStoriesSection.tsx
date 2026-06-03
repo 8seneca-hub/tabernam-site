@@ -18,7 +18,7 @@ export default function ExperienceStoriesSection({ texts }: Props) {
   if (!title && !body && !videoTitle && !videoUrl) return null;
 
   return (
-    <section className="bg-gray-70 py-20 md:py-24">
+    <section className="bg-gray-40 py-20 md:py-24">
       <div className="w-[80%] mx-auto">
         {(title || body) && (
           <FadeIn delay={0.05} className="mb-12 md:mb-16 flex flex-col gap-6 max-w-3xl">

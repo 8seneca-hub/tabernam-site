@@ -3,15 +3,12 @@
 import { useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from '@/components/ui/Image';
 import { useI18n } from '@/app/hook/useI18n';
-import { useTheme } from '@/lib/theme-context';
+import Logo from './Logo';
 import LangSwitcher from './LangSwitcher';
-import ActivityLink from './activity/ActivityLink';
 
 export default function Header() {
   const { t } = useI18n();
-  const { logoImage, logoText } = useTheme();
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -89,27 +86,23 @@ export default function Header() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  const linkClass = (href: string) =>
-    `relative text-base font-medium px-2 py-2 transition-colors duration-200 ${isActive(href)
-      ? 'text-brand after:absolute after:left-2 after:right-2 after:-bottom-0.5 after:h-[2px] after:bg-brand after:content-[""]'
-      : 'text-text hover:text-brand'
+  const linkClass = (href: string) => {
+    const active = isActive(href);
+    return `relative !text-dark text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:bg-dark after:content-[""] after:transition-opacity after:duration-200 ${
+      active
+        ? 'after:opacity-100'
+        : 'after:opacity-0 hover:after:opacity-100'
     }`;
+  };
 
   return (
     <header
       ref={headerRef}
-      className="site-header fixed top-0 left-0 right-0 z-100 bg-header grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
     >
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center" aria-label="Tabernam home">
-          <Image
-            src={logoImage}
-            alt={logoText}
-            width={150}
-            height={150}
-            priority
-            className="max-w-[150px] object-contain"
-          />
+          <Logo size={36} className="!text-brand" />
         </Link>
       </div>
 
@@ -118,7 +111,7 @@ export default function Header() {
         className="nav flex items-center justify-center gap-8 max-md:gap-0"
         id="primary-nav"
       >
-        <Link href="/" className={linkClass('/')}>{t('nav.home')}</Link>
+        <Link href="/" className={linkClass('/')} onClick={closeNav}>{t('nav.home')}</Link>
         <Link href="/about" className={linkClass('/about')} onClick={closeNav}>{t('nav.about')}</Link>
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>
