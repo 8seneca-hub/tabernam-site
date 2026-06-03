@@ -10,6 +10,7 @@ import LangSwitcher from './LangSwitcher';
 
 export default function Header() {
   const { t } = useI18n();
+  const { logoImage, logoText } = useTheme();
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
