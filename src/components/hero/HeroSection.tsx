@@ -41,8 +41,19 @@ export default function HeroSection({ slides }: Props) {
 
   return (
     <section className="hero relative" style={{ paddingBottom: '60px' }}>
+      {/* Top region — full-bleed gradient backdrop. It contains the header-clearance
+          padding (pt), the hero text, and the gap (pb), so it auto-sizes to its own
+          content; its bottom edge therefore always lands exactly at the top of the
+          image regardless of how the text wraps at different screen sizes. The
+          gradient fades from a soft brand tint at the page top down to the page
+          background where the image begins. */}
       <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] pt-[250px] pb-[200px]">
+        {/* Centering frame, capped at 1320px to align with the other sections. */}
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
+          {/* Title + description block — hugs content so the body wraps to the
+              title's width.
+              Title:       64px / leading 52px / -3% tracking / bold per spec.
+              Description: 28px / leading 32px / -3% tracking / medium per spec. */}
           <div className="flex flex-col items-center gap-[30px] text-center">
             <motion.h1
               className="text-[64px] font-bold tracking-[-0.03em] leading-[52px] text-brand max-[1100px]:text-[48px] max-[1100px]:leading-[44px] max-md:text-[36px] max-md:leading-[36px]"
@@ -65,6 +76,9 @@ export default function HeroSection({ slides }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
+          All slides are stacked; the active one cross-fades in via opacity. */}
       <div className="px-[40px]">
         <div className="feathered-image relative w-full max-w-[1320px] mx-auto aspect-[16/9] rounded-5 overflow-hidden bg-surface">
           {items.map((slide, idx) => (

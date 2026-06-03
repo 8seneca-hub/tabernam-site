@@ -10,7 +10,6 @@ import LangSwitcher from './LangSwitcher';
 
 export default function Header() {
   const { t } = useI18n();
-  const { logoImage, logoText } = useTheme();
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -90,10 +89,11 @@ export default function Header() {
 
   const linkClass = (href: string) => {
     const active = isActive(href);
-    return `relative !text-dark text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:bg-dark after:content-[""] after:transition-opacity after:duration-200 ${active
-      ? 'after:opacity-100'
-      : 'after:opacity-0 hover:after:opacity-100'
-      }`;
+    return `relative !text-dark text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:bg-dark after:content-[""] after:transition-opacity after:duration-200 ${
+      active
+        ? 'after:opacity-100'
+        : 'after:opacity-0 hover:after:opacity-100'
+    }`;
   };
 
   return (

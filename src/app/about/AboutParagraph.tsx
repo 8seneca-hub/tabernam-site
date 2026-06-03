@@ -2,7 +2,6 @@
 
 import { Fragment } from 'react';
 import NextLink from 'next/link';
-import FadeIn from '@/animations/FadeIn';
 import VideoCard from '@/components/ui/VideoCard';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/app/hook/useI18n';
@@ -10,6 +9,23 @@ import { PageTexts } from '@/lib/data';
 
 interface Props {
   texts: PageTexts;
+  /** Explicit body text (e.g. from a CMS block). Falls back to about_paragraph_body. */
+  text?: string;
+  /** Slice of the body paragraphs to render (e.g. end={2} for the intro). Ignored when `text` is set. */
+  start?: number;
+  end?: number;
+  /** Render the inline CV "..BUTTON.." token as plain text instead of a button. */
+  cvAsText?: boolean;
+  /** Typography classes for each paragraph (size/leading/weight/etc). */
+  paragraphClassName?: string;
+  /**
+   * Split the FIRST selected CMS paragraph into two visual paragraphs after the
+   * Nth sentence — lets a single CMS paragraph render as two spaced blocks
+   * without editing the CMS body. No-op if it has fewer than N+1 sentences.
+   */
+  splitAfterSentence?: number;
+  /** Drop inline YouTube embeds (used when the video is shown as a block instead). */
+  suppressVideos?: boolean;
 }
 
 const TOKEN_RE = /(\.{2,}\s*BUTTON\s*\.{2,}|https?:\/\/[^\s)]+|www\.[^\s)]+)/g;
@@ -53,7 +69,7 @@ function Link({ url }: { url: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-brand underline-offset-2 hover:underline break-words"
+      className="text-dark underline underline-offset-2 hover:text-brand break-words"
     >
       {url}
     </a>
@@ -83,7 +99,7 @@ function CvButton({ label }: { label: string }) {
   );
 }
 
-function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: string) {
+function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: string, cvAsText = false, suppressVideos = false) {
   const parts = text.split(TOKEN_RE);
   for (let i = 1; i < parts.length; i += 2) {
     if (!YT_RE.test(parts[i])) continue;
@@ -92,8 +108,9 @@ function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: s
   }
   return parts.map((part, i) => {
     if (i % 2 === 1) {
-      if (BUTTON_RE.test(part)) return <CvButton key={i} label={cvLabel} />;
+      if (BUTTON_RE.test(part)) return cvAsText ? <Fragment key={i}>{cvLabel}</Fragment> : <CvButton key={i} label={cvLabel} />;
       if (YT_RE.test(part)) {
+        if (suppressVideos) return null;
         const id = getYouTubeId(part);
         const title = id ? titleMap.get(id) : undefined;
         return <InlineYouTube key={i} url={part} title={title} />;
@@ -105,40 +122,53 @@ function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: s
   });
 }
 
-export default function AboutParagraph({ texts }: Props) {
+/** Split a single paragraph into two after the Nth sentence (period-delimited). */
+function splitParagraphAfterSentence(paragraph: string, after: number): string[] {
+  const sentences = paragraph.split(/(?<=\.)\s+/);
+  if (sentences.length <= after) return [paragraph];
+  return [sentences.slice(0, after).join(' '), sentences.slice(after).join(' ')];
+}
+
+/**
+ * Renders just the About intro paragraphs (heading + image + section live in
+ * SubpageHero, which composes this as its body content).
+ */
+export default function AboutParagraph({
+  texts,
+  text,
+  start = 0,
+  end,
+  cvAsText = false,
+  paragraphClassName = 'text-[20px] font-medium tracking-[-0.02rem] text-dark leading-relaxed',
+  splitAfterSentence,
+  suppressVideos = false,
+}: Props) {
   const { t } = useI18n();
-  const body = texts.about_paragraph_body;
-  const eyebrow = texts.about_eyebrow;
+  const body = text ?? texts.about_paragraph_body;
   if (!body) return null;
 
   const titleMap = buildTitleMap(texts);
   const cvLabel = t('btn.viewCV');
-  const paragraphs = body
+  const allParagraphs = body
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean);
+  // Explicit `text` (a CMS block) renders whole; otherwise slice the shared body.
+  let paragraphs = text != null ? allParagraphs : allParagraphs.slice(start, end);
+  if (paragraphs.length === 0) return null;
+  // Optionally break the first selected paragraph into two at a sentence boundary.
+  if (splitAfterSentence && paragraphs.length > 0) {
+    const [first, ...rest] = paragraphs;
+    paragraphs = [...splitParagraphAfterSentence(first, splitAfterSentence), ...rest];
+  }
 
   return (
-    <section className="py-16 md:py-20">
-      <div className="w-[80%] max-w-3xl mx-auto flex flex-col gap-5">
-        <FadeIn delay={0.05} className="flex flex-col gap-4 items-center text-center">
-          {eyebrow && (
-            <span className="block text-xs font-semibold text-brand uppercase tracking-[0.2em]">
-              {eyebrow}
-            </span>
-          )}
-          <h1 className="text-5xl md:text-6xl font-bold text-text tracking-tight leading-tight max-md:text-4xl">
-            {t('heading.aboutMe')}
-          </h1>
-        </FadeIn>
-        {paragraphs.map((p, i) => (
-          <FadeIn key={i} delay={0.03 + i * 0.02}>
-            <div className="text-lg font-normal text-text leading-relaxed whitespace-pre-line">
-              {renderParagraph(p, titleMap, cvLabel)}
-            </div>
-          </FadeIn>
-        ))}
-      </div>
-    </section>
+    <div className="flex flex-col gap-[24px]">
+      {paragraphs.map((p, i) => (
+        <div key={i} className={`${paragraphClassName} whitespace-pre-line`}>
+          {renderParagraph(p, titleMap, cvLabel, cvAsText, suppressVideos)}
+        </div>
+      ))}
+    </div>
   );
 }

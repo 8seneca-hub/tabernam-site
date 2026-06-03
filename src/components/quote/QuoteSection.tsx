@@ -46,8 +46,8 @@ export default function QuoteSection({ imageUrl }: Props) {
             custom={0}
             variants={fadeUp}
           >
-            <span className="text-accent">Build on trust</span>
-            <span>, not transactions</span>
+            <span className="text-accent">Build on trust,</span>
+            <span> not transactions</span>
           </motion.h2>
           <motion.p
             className="text-[24px] leading-[30px] tracking-[-0.01em] font-medium text-text text-left"
