@@ -22,6 +22,7 @@ export interface ContactOffice {
   phone: string;
   websiteUrl: string;
   whatsapp: string;
+  wechat: string;
   workEmail: string;
   personalEmail: string;
   bankCredentials: LabeledRow[];

@@ -283,7 +283,7 @@ export async function getContactOffice(): Promise<ContactOffice | null> {
       slug: string; region: string; label: string; icon: string;
       org_name: string; zone: string; role_label: string; role_name: string;
       address: string; corporate_ids: string;
-      phone: string; website_url: string; whatsapp: string;
+      phone: string; website_url: string; whatsapp: string; wechat: string;
       work_email: string; personal_email: string;
       bank_credentials: string;
       maps?: Array<{ directus_files_id: string }>;
@@ -302,6 +302,7 @@ export async function getContactOffice(): Promise<ContactOffice | null> {
       phone: o.phone,
       websiteUrl: o.website_url,
       whatsapp: o.whatsapp,
+      wechat: o.wechat,
       workEmail: o.work_email,
       personalEmail: o.personal_email,
       bankCredentials: parseLabeledRows(o.bank_credentials),

@@ -2,17 +2,18 @@
 
 import Link from 'next/link';
 import { useI18n } from '@/app/hook/useI18n';
+import { useTheme } from '@/lib/theme-context';
 import type { ContactOffice } from '@/lib/data';
 import ActivityLink from './activity/ActivityLink';
+import Image from './ui/Image';
 import { Mail, MapPin } from 'lucide-react';
 
-const colHeaderClass = 'block text-[18px] font-normal tracking-[-0.01em] text-gray-60 mb-2.5';
 // Button-like link with the same hover-underline treatment as the header nav
 // links. The negative left margin offsets the px-5 padding so the link text
 // still aligns with the column label.
-const linkClass = 'relative -ml-5 inline-flex w-fit items-center px-5 py-[14px] text-[18px] font-semibold tracking-[-0.007em] text-white whitespace-nowrap after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:bg-white after:content-[""] after:opacity-0 after:transition-opacity after:duration-200 hover:after:opacity-100';
+const linkClass = 'relative -ml-5 inline-flex w-fit items-center px-5 py-[14px] text-[18px] font-semibold tracking-[-0.007em] text-text whitespace-nowrap after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:bg-text after:content-[""] after:opacity-0 after:transition-opacity after:duration-200 hover:after:opacity-100';
 // Presence email — a plain link (no button/underline treatment).
-const emailLinkClass = 'text-[18px] text-white hover:text-accent transition-colors';
+const emailLinkClass = 'text-[18px] text-text hover:text-accent transition-colors';
 
 interface Props {
   office: ContactOffice | null;
@@ -20,6 +21,7 @@ interface Props {
 
 export default function Footer({ office }: Props) {
   const { t } = useI18n();
+  const { logoImage, logoText } = useTheme();
   const email = office?.workEmail || 'hello@tabernam.com';
   const mailHref = `mailto:${email}`;
   const location = office?.addressLines && office.addressLines.length > 0
@@ -27,19 +29,24 @@ export default function Footer({ office }: Props) {
     : t('footer.location');
 
   return (
-    <footer className="bg-brand text-white px-[var(--side-padding)] pt-20 pb-10">
+    <footer className="bg-gray-40 text-text px-[var(--side-padding)] pt-20 pb-10">
       <div className="max-w-[1320px] mx-auto">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-20 pb-16">
-          {/* Quote block — takes ~half the frame on large screens. */}
-          <div className="flex flex-col gap-5 lg:flex-1">
-            <p className="text-[36px] leading-tight font-semibold tracking-[-0.01em] text-accent">
-              &ldquo;{t('footer.quote')}&rdquo;
-            </p>
-            {/* TODO: ", CEO Tabernam" is hardcoded — wire the role to an i18n
-                key if it needs localizing. */}
-            <p className="text-[20px] italic tracking-[-0.01em] text-gray-40">
-              <span className="font-semibold">{t('footer.quoteAuthor')}</span>, CEO Tabernam
-            </p>
+          {/* Quote block — logo, then quote + author. Takes ~half on large screens. */}
+          <div className="flex flex-col gap-10 lg:flex-1">
+            <Link href="/" className="flex items-center w-fit" aria-label={`${logoText || 'Tabernam'} home`}>
+              <Image src={logoImage} alt={logoText || 'Tabernam'} height={40} className="w-auto" style={{ height: '40px', width: 'auto', filter: 'brightness(0)' }} />
+            </Link>
+            <div className="flex flex-col gap-2">
+              <p className="text-[20px] font-semibold tracking-[-0.01em] text-text">
+                {t('footer.quote')}
+              </p>
+              {/* TODO: "— CEO Tabernam" is hardcoded — wire the role to an i18n
+                  key if it needs localizing. */}
+              <p className="text-[16px] font-light italic tracking-[-0.01em] text-muted">
+                {t('footer.quoteAuthor')} — CEO Tabernam
+              </p>
+            </div>
           </div>
 
           {/* Explore + Presence — share the other half on large screens. They sit
@@ -48,7 +55,6 @@ export default function Footer({ office }: Props) {
           <div className="flex flex-col gap-12 sm:flex-row sm:gap-16 lg:flex-1">
             {/* EXPLORE */}
             <nav className="flex flex-col" aria-label={t('footer.exploreHeading')}>
-              <span className={colHeaderClass}>{t('footer.exploreHeading')}</span>
               <ul className="flex flex-col gap-0 list-none">
                 <li><Link href="/about" className={linkClass}>{t('nav.about')}</Link></li>
                 <li><ActivityLink className={linkClass}>{t('nav.activity')}</ActivityLink></li>
@@ -58,23 +64,22 @@ export default function Footer({ office }: Props) {
 
             {/* PRESENCE */}
             <div className="flex flex-col">
-              <span className={colHeaderClass}>{t('footer.presenceHeading')}</span>
               <ul className="flex flex-col gap-0 list-none">
                 <li className="flex items-center gap-3 py-[14px]">
-                  <Mail className="w-[18px] h-[18px] shrink-0 text-white" aria-hidden />
+                  <Mail className="w-[18px] h-[18px] shrink-0 text-text" aria-hidden />
                   <a href={mailHref} className={emailLinkClass}>{email}</a>
                 </li>
                 <li className="flex items-center gap-3 py-[14px]">
-                  <MapPin className="w-[18px] h-[18px] shrink-0 text-white" aria-hidden />
-                  <span className="text-[18px] text-white">{location}</span>
+                  <MapPin className="w-[18px] h-[18px] shrink-0 text-text" aria-hidden />
+                  <span className="text-[18px] text-text">{location}</span>
                 </li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/15 pt-6">
-          <p className="text-sm text-white/60">{t('footer.copyright')}</p>
+        <div className="border-t border-border pt-6">
+          <p className="text-sm text-muted">{t('footer.copyright')}</p>
         </div>
       </div>
     </footer>

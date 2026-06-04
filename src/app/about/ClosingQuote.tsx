@@ -2,7 +2,12 @@
 
 import { useRef, useState } from 'react';
 import FadeIn from '@/animations/FadeIn';
+import { useI18n } from '@/app/hook/useI18n';
 import type { PageTexts } from '@/lib/directus';
+
+// Fixed Latin slogan — never changes with the selected language.
+const LATIN = 'Honeste lucra, nobiliter dona';
+const TRANSLATION_FALLBACK = 'Earn honestly, give generously';
 
 const QuoteIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="w-14 h-14 opacity-40">
@@ -15,15 +20,16 @@ interface Props {
 }
 
 export default function ClosingQuote({ texts }: Props) {
-  const quote = texts.closing_quote;
+  const { t } = useI18n();
   const author = texts.closing_quote_author;
-  const cta = texts.closing_cta;
   const backgroundImage = texts.closing_background || '/carousel/photo-12.jpg';
+
+  const translated = t('quote.motto.translation');
+  const translation =
+    translated && translated !== 'quote.motto.translation' ? translated : TRANSLATION_FALLBACK;
 
   const sectionRef = useRef<HTMLElement>(null);
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: -1000, y: -1000 });
-
-  if (!quote && !cta) return null;
 
   return (
     <section
@@ -53,20 +59,18 @@ export default function ClosingQuote({ texts }: Props) {
         <FadeIn delay={0.05} className="text-brand/80">
           <QuoteIcon />
         </FadeIn>
-        {quote && (
-          <FadeIn delay={0.1} className="w-full max-w-3xl flex flex-col gap-6">
-            <h2 className="text-2xl md:text-4xl font-semibold italic leading-snug">
-              &ldquo;{quote}&rdquo;
-            </h2>
-            {author && (
-              <p className="self-end text-sm md:text-base font-medium italic tracking-wide text-white/80">
-                — {author}
-              </p>
-            )}
-          </FadeIn>
-        )}
-        <FadeIn delay={0.15}>
-          <div className="w-24 h-px bg-white/20" aria-hidden="true" />
+        <FadeIn delay={0.1} className="w-full max-w-3xl flex flex-col items-center gap-6 text-center">
+          <h2 className="text-2xl md:text-4xl font-semibold italic leading-snug">
+            &ldquo;{LATIN}&rdquo;
+          </h2>
+          <p className="text-[24px] italic leading-snug text-white/90">
+            ({translation})
+          </p>
+          {author && (
+            <p className="text-sm md:text-base font-medium italic tracking-wide text-white/80">
+              — {author}
+            </p>
+          )}
         </FadeIn>
       </div>
     </section>
