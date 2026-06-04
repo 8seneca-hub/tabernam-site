@@ -78,7 +78,10 @@ export default function AboutContent({ texts: bundle, heroImage }: Props) {
         >
           {t('btn.viewCV')}
         </Button>
-      </div> */}
+      </SubpageHero>
+      <ContentBlocks texts={texts} blocks={blocks} />
+
+      <ClosingQuote texts={texts} />
     </main>
   );
 }
