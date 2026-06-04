@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import Image from '@/components/ui/Image';
+import MottoQuote from '@/components/MottoQuote';
 import { useI18n } from '@/app/hook/useI18n';
 
 const FALLBACK_EN = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
@@ -30,10 +31,10 @@ export default function QuoteSection({ imageUrl }: Props) {
 
   return (
     <section className="quote w-full px-[60px] py-[150px]">
-      <div className="max-w-[1320px] mx-auto grid grid-cols-[3fr_2fr] gap-[100px] items-start max-md:grid-cols-1 max-md:gap-[40px]">
-        {/* Left column — title + body, top-aligned, text left-aligned. */}
+      <div className="max-w-[1320px] mx-auto flex flex-col gap-[100px] lg:flex-row lg:items-start max-md:gap-[40px]">
+        {/* Left column — title + body, fills the remaining width, top-aligned, text left-aligned. */}
         <motion.div
-          className="flex flex-col items-start gap-[30px] pt-[40px]"
+          className="w-full lg:flex-1 flex flex-col items-start gap-[30px] pt-[40px]"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -58,20 +59,23 @@ export default function QuoteSection({ imageUrl }: Props) {
           </motion.p>
         </motion.div>
 
-        {/* Right column — 3:4 portrait image, fills its 2-of-5 grid column. */}
+        {/* Right column — square portrait image + motto, fixed 45% of the frame. */}
         <motion.div
-          className="feathered-image relative w-full aspect-[3/4] rounded-4 overflow-hidden bg-surface"
+          className="w-full lg:w-[45%]"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <Image
-            src={imageUrl || '/tibor_image.png'}
-            alt="Portrait photograph"
-            fill
-            className="object-cover"
-          />
+          <div className="feathered-image relative aspect-square rounded-4 overflow-hidden bg-surface">
+            <Image
+              src={imageUrl || '/tibor_image.png'}
+              alt="Portrait photograph"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <MottoQuote />
         </motion.div>
       </div>
     </section>

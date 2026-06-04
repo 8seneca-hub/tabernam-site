@@ -237,6 +237,10 @@
       "page": "contact",
       "field": "contact_websiteLabel"
     },
+    "contact.wechatLabel": {
+      "page": "contact",
+      "field": "contact_wechatLabel"
+    },
     "heading.contact": {
       "page": "contact",
       "field": "heading_contact"

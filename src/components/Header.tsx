@@ -16,6 +16,23 @@ export default function Header() {
   const navRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
+  // Keep the global --header-height in sync with the header's real rendered
+  // height. The CMS-provided value (inline style on <html>) is only an SSR
+  // guess; the actual height is driven by the header's content, so without this
+  // the content offset can be too small and the header overlaps the page.
+  useEffect(() => {
+    const headerEl = headerRef.current;
+    if (!headerEl) return;
+    const setVar = () => {
+      const h = Math.round(headerEl.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--header-height', `${h}px`);
+    };
+    setVar();
+    const ro = new ResizeObserver(setVar);
+    ro.observe(headerEl);
+    return () => ro.disconnect();
+  }, []);
+
   // Auto-hide header on scroll down
   useEffect(() => {
     const headerEl = headerRef.current;
@@ -90,10 +107,10 @@ export default function Header() {
 
   const linkClass = (href: string) => {
     const active = isActive(href);
-    return `relative !text-dark text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:bg-dark after:content-[""] after:transition-opacity after:duration-200 ${
+    return `relative text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 ${
       active
-        ? 'after:opacity-100'
-        : 'after:opacity-0 hover:after:opacity-100'
+        ? '!text-brand after:bg-brand after:opacity-100'
+        : '!text-dark after:bg-dark after:opacity-0 hover:after:opacity-100'
     }`;
   };
 
@@ -104,7 +121,7 @@ export default function Header() {
     >
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center" aria-label={`${logoText || 'Tabernam'} home`}>
-          <Image src={logoImage} alt={logoText || 'Tabernam'} priority width={150} height={150} />
+          <Image src={logoImage} alt={logoText || 'Tabernam'} priority width={150} height={150} style={{ filter: 'brightness(0)' }} />
         </Link>
       </div>
 

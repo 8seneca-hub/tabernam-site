@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import Image from '@/components/ui/Image';
+import MottoQuote from '@/components/MottoQuote';
 
 interface Props {
   heading: string;
@@ -23,19 +24,20 @@ export default function SubpageHero({ heading, image, imageAlt = '', children }:
   return (
     <section className="px-[60px] py-20">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
-        {/* Text column — 55% of the frame on large screens. */}
-        <div className="w-full lg:w-[55%] flex flex-col gap-[30px] pt-[20px]">
+        {/* Text column — fills the remaining width on large screens. */}
+        <div className="w-full lg:flex-1 flex flex-col gap-[30px] pt-[20px]">
           <h1 className="text-5xl md:text-6xl font-bold text-brand tracking-tight leading-tight max-md:text-4xl">
             {heading}
           </h1>
           {children}
         </div>
 
-        {/* Image column — fills the remaining width; 3:4 portrait. */}
-        <div className="w-full lg:flex-1">
-          <div className="feathered-image relative w-full aspect-[3/4] rounded-4 overflow-hidden bg-surface">
+        {/* Image column — fixed 45% of the frame; square portrait + motto. */}
+        <div className="w-full lg:w-[45%]">
+          <div className="feathered-image relative aspect-square rounded-4 overflow-hidden bg-surface">
             <Image src={image} alt={imageAlt} fill priority className="object-cover" />
           </div>
+          <MottoQuote />
         </div>
       </div>
     </section>

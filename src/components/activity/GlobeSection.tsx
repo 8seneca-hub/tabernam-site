@@ -12,6 +12,8 @@ import type { GlobeCity } from '@/lib/type';
 import {
   IDLE_CENTER,
   IDLE_ZOOM,
+  WORLD_CENTER,
+  WORLD_ZOOM,
   MIN_ZOOM,
   MAX_ZOOM,
   cityZoom,
@@ -160,6 +162,8 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     if (!isOpen) {
       spinRef.current = true;
+      // Back to the 3D globe when the detail view is closed.
+      map.setProjection({ name: 'globe' });
       map.dragPan.disable();
       map.scrollZoom.disable();
       map.touchZoomRotate.disable();
@@ -178,6 +182,9 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     spinRef.current = false;
     map.stop();
+
+    // Flatten the globe into a 2D map for the detail/explore view.
+    map.setProjection({ name: 'mercator' });
 
     map.dragPan.enable();
     map.scrollZoom.enable();
@@ -214,12 +221,21 @@ export default function GlobeSection({ cities = [] }: Props) {
         duration: 1200,
         essential: true,
       });
+    } else {
+      // No pin selected yet — show the whole flat map with all (inactive) pins.
+      map.flyTo({
+        center: WORLD_CENTER,
+        zoom: WORLD_ZOOM,
+        bearing: 0,
+        duration: 1200,
+        essential: true,
+      });
     }
   }, [activeIdx, isOpen, cityViews, cardsPhotos]);
 
   function zoomBy(delta: number) {
     const map = mapRef.current;
-    if (!map || activeIdx === null) return;
+    if (!map || !isOpen) return;
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, map.getZoom() + delta));
     if (next === map.getZoom()) return;
     map.flyTo({ zoom: next, duration: 400, essential: true });
@@ -385,14 +401,14 @@ export default function GlobeSection({ cities = [] }: Props) {
         <button
           type="button"
           className="ga-cta"
-          onClick={() => { setIsOpen(true); setActiveIdx(0); }}
+          onClick={() => { setIsOpen(true); setActiveIdx(null); }}
           disabled={cityViews.length === 0}
         >
           View cities
         </button>
       </div>
 
-      <aside className={`ga-panel${isOpen ? ' in' : ''}`} aria-hidden={!isOpen}>
+      <aside className={`ga-panel${isOpen && activeView ? ' in' : ''}`} aria-hidden={!(isOpen && activeView)}>
         {activeView && activeCards && (
           <article className="ga-card">
             <div className="ga-thumb">

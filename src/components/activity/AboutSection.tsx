@@ -1,7 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { useI18n } from '@/app/hook/useI18n';
 import FadeIn from '@/animations/FadeIn';
 import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
@@ -17,23 +15,14 @@ export default function AboutSection({ texts: bundle }: Props) {
   const texts = pickPageTexts(bundle, lang);
   const eyebrow = texts.about_eyebrow;
   const bodies = [texts.about_body_1, texts.about_body_2].filter(Boolean) as string[];
-  const [bodyIndex, setBodyIndex] = useState(0);
-
-  useEffect(() => {
-    if (bodies.length < 2) return;
-    const interval = setInterval(() => {
-      setBodyIndex((i) => (i + 1) % bodies.length);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [bodies.length]);
 
   return (
     <>
-      <section className="w-full bg-brand px-[60px] py-[120px] max-md:px-[40px]">
+      <section className="w-full bg-white px-[60px] py-[120px] max-md:px-[40px]">
         <div className="max-w-[1320px] mx-auto flex flex-col items-center justify-center gap-10">
           <FadeIn delay={0.05} className="flex flex-col gap-4 items-center text-center">
             {eyebrow && (
-              <span className="block text-[20px] leading-[24px] font-medium text-white tracking-[-0.01em]">
+              <span className="block text-[20px] leading-[24px] font-medium text-text tracking-[-0.01em]">
                 {eyebrow}
               </span>
             )}
@@ -42,19 +31,15 @@ export default function AboutSection({ texts: bundle }: Props) {
             </h1>
           </FadeIn>
           <FadeIn delay={0.1} className="w-full max-w-[50vw] mx-auto max-[1100px]:max-w-none">
-            <div className="relative min-h-[12rem] text-center">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.p
-                  key={bodyIndex}
-                  initial={{ y: 40, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -40, opacity: 0 }}
-                  transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="text-[24px] font-medium text-white italic leading-[30px] max-[1100px]:text-[22px]"
+            <div className="flex flex-col gap-6 text-center">
+              {bodies.map((body, i) => (
+                <p
+                  key={i}
+                  className="text-[24px] font-medium text-text italic leading-[30px] max-[1100px]:text-[22px]"
                 >
-                  {`"${bodies[bodyIndex] || ''}"`}
-                </motion.p>
-              </AnimatePresence>
+                  {`${i === 0 ? '"' : ''}${body}${i === bodies.length - 1 ? '"' : ''}`}
+                </p>
+              ))}
             </div>
             <div className="mt-6 flex justify-center">
               <Button
@@ -63,7 +48,7 @@ export default function AboutSection({ texts: bundle }: Props) {
                 variant="primary"
                 size="md"
                 shape="pill"
-                className="!text-[20px] font-semibold !bg-white !text-brand hover:!bg-white/90 px-8 py-4"
+                className="!text-[18px] font-medium !text-white !bg-brand !px-[28px] !py-[16px] !gap-[10px]"
               >
                 {t('btn.getToKnowMore')}
               </Button>

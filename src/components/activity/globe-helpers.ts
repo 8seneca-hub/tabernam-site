@@ -4,6 +4,11 @@ export const IDLE_ZOOM = 1.4;
 export const MIN_ZOOM = 1.2;
 export const MAX_ZOOM = 14;
 
+// Whole-world view shown in the flat (mercator) detail map before any pin is
+// selected. Slightly north-of-equator center frames the populated continents.
+export const WORLD_CENTER: [number, number] = [10, 25];
+export const WORLD_ZOOM = 1.3;
+
 const CITY_ZOOM_CLOSE = 10;
 const CITY_ZOOM_MED = 8;
 
