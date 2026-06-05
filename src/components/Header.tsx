@@ -117,7 +117,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] py-2.5"
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] max-md:px-[16px] py-2.5"
     >
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center" aria-label={`${logoText || 'Tabernam'} home`}>
@@ -135,8 +135,21 @@ export default function Header() {
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>
 
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end gap-1">
         <LangSwitcher />
+        <button
+          ref={toggleRef}
+          type="button"
+          className="nav-toggle relative w-[38px] h-[38px] hidden max-md:block"
+          aria-label="Toggle menu"
+          aria-controls="primary-nav"
+          aria-expanded="false"
+          onClick={toggleNav}
+        >
+          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" />
+        </button>
       </div>
     </header>
   );

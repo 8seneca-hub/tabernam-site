@@ -23,9 +23,9 @@ export default function MottoQuote({ className = '' }: Props) {
   return (
     <figure className={`mt-8 text-center ${className}`}>
       <blockquote className="text-[24px] font-medium text-text leading-snug">
-        {LATIN}
+        {LATIN} <span className="font-normal italic">— Tibor Buček</span>
       </blockquote>
-      <figcaption className="mt-2 text-text italic">({translation})</figcaption>
+      <figcaption className="mt-2 text-text">({translation})</figcaption>
     </figure>
   );
 }

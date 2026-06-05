@@ -30,7 +30,7 @@ export default function QuoteSection({ imageUrl }: Props) {
       : FALLBACK_EN;
 
   return (
-    <section className="quote w-full px-[60px] py-[150px]">
+    <section className="quote w-full px-[60px] py-[150px] max-md:px-[16px] max-md:py-[80px]">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[100px] lg:flex-row lg:items-start max-md:gap-[40px]">
         {/* Left column — title + body, fills the remaining width, top-aligned, text left-aligned. */}
         <motion.div
@@ -61,13 +61,13 @@ export default function QuoteSection({ imageUrl }: Props) {
 
         {/* Right column — square portrait image + motto, fixed 45% of the frame. */}
         <motion.div
-          className="w-full lg:w-[45%]"
+          className="w-full lg:w-[45%] max-lg:max-w-[440px] max-lg:mx-auto"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <div className="feathered-image relative aspect-square rounded-4 overflow-hidden bg-surface">
+          <div className="feathered-image relative aspect-square rounded-6 overflow-hidden bg-surface">
             <Image
               src={imageUrl || '/tibor_image.png'}
               alt="Portrait photograph"

@@ -47,7 +47,7 @@ export default function HeroSection({ slides }: Props) {
           image regardless of how the text wraps at different screen sizes. The
           gradient fades from a soft brand tint at the page top down to the page
           background where the image begins. */}
-      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] pt-[250px] pb-[200px]">
+      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px]">
         {/* Centering frame, capped at 1320px to align with the other sections. */}
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
           {/* Title + description block — hugs content so the body wraps to the
@@ -79,8 +79,8 @@ export default function HeroSection({ slides }: Props) {
 
       {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
           All slides are stacked; the active one cross-fades in via opacity. */}
-      <div className="px-[40px]">
-        <div className="feathered-image relative w-full max-w-[1320px] mx-auto aspect-[16/9] rounded-5 overflow-hidden bg-surface">
+      <div className="px-[40px] max-md:px-[16px]">
+        <div className="feathered-image relative w-full max-w-[1320px] mx-auto aspect-[16/9] rounded-6 overflow-hidden bg-surface">
           {items.map((slide, idx) => (
             <div
               key={slide.image}

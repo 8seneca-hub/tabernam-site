@@ -89,7 +89,7 @@ function renderBlock(block: ContentBlock, texts: PageTexts): ReactNode {
     // Two 16:9 images, full width, 40px gap.
     case 'two_images':
       return (
-        <div className="grid grid-cols-2 gap-[40px]">
+        <div className="grid grid-cols-2 gap-[40px] max-md:grid-cols-1 max-md:gap-[20px]">
           <ImageFrame src={block.images[0]} aspect="aspect-[16/9]" />
           <ImageFrame src={block.images[1]} aspect="aspect-[16/9]" />
         </div>
@@ -114,7 +114,7 @@ function renderBlock(block: ContentBlock, texts: PageTexts): ReactNode {
     // Text left, image or video right — both fill their half, 40px gap.
     case 'horizontal':
       return (
-        <div className="grid grid-cols-2 gap-[40px] items-start">
+        <div className="grid grid-cols-2 gap-[40px] items-start max-md:grid-cols-1 max-md:gap-[24px]">
           <AboutParagraph
             texts={texts}
             text={block.text}
@@ -140,7 +140,7 @@ function renderBlock(block: ContentBlock, texts: PageTexts): ReactNode {
 
 export default function ContentBlocks({ texts, blocks }: Props) {
   return (
-    <section className="px-[60px] pt-[100px] pb-[100px]">
+    <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[16px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col">
         {blocks.map((block, i) => {
           const content = renderBlock(block, texts);

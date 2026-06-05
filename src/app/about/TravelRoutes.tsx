@@ -23,7 +23,7 @@ export default function TravelRoutes() {
   return (
     // Full-bleed gray band: escapes the parent's max-width to span the viewport.
     // Safe here because scrollbars are hidden site-wide (no 100vw scrollbar gap).
-    <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-20 px-[60px] py-[80px]">
+    <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-20 px-[60px] py-[80px] max-md:px-[16px] max-md:py-[56px]">
       {/* Inner content capped at the site-wide 1320px and centered. */}
       <div className="mx-auto max-w-[1320px]">
         {/* Heading + copy — centered, 20px apart. */}
@@ -61,7 +61,7 @@ export default function TravelRoutes() {
 
         {/* Picture of the selected place. */}
         <div className="mt-[32px]">
-          <div className="feathered-image-gray relative w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40">
+          <div className="relative w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40">
             <Image src={current.image} alt={current.name} fill className="object-cover" />
           </div>
         </div>

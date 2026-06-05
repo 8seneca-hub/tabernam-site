@@ -55,7 +55,7 @@ export default function ClosingQuote({ texts }: Props) {
 
       <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-brand/15 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-[var(--side-padding)] text-center flex flex-col items-center gap-10">
+      <div className="relative z-10 max-w-4xl mx-auto px-[var(--side-padding)] max-md:px-[16px] text-center flex flex-col items-center gap-10">
         <FadeIn delay={0.05} className="text-brand/80">
           <QuoteIcon />
         </FadeIn>

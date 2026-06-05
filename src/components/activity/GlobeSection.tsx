@@ -6,7 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './globe-section.css';
 import { useI18n } from '@/app/hook/useI18n';
-import { Move, ZoomIn, MapPin } from 'lucide-react';
+import { Move, ZoomIn, MapPin, X } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
 import type { GlobeCity } from '@/lib/type';
 import {
@@ -16,6 +16,7 @@ import {
   WORLD_ZOOM,
   MIN_ZOOM,
   MAX_ZOOM,
+  REGIONS,
   cityZoom,
   pickRandom,
   createMarkerEl,
@@ -36,11 +37,16 @@ export default function GlobeSection({ cities = [] }: Props) {
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const spinRef = useRef(true);
   const isCameraMovingRef = useRef(false);
+  const edgeTimerRef = useRef<number | undefined>(undefined);
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const [regionKey, setRegionKey] = useState('world');
+  const [zoomEdge, setZoomEdge] = useState<'in' | 'out' | null>(null);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [tokenMissing, setTokenMissing] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
+  const restoredRef = useRef(false);
 
   const cityViews = useMemo(
     () =>
@@ -68,12 +74,18 @@ export default function GlobeSection({ cities = [] }: Props) {
     mapboxgl.accessToken = MAPBOX_TOKEN;
     const map = new mapboxgl.Map({
       container,
-      style: 'mapbox://styles/mapbox/satellite-v9',
+      style: 'mapbox://styles/mapbox/satellite-streets-v12',
       projection: { name: 'globe' },
       center: IDLE_CENTER,
       zoom: IDLE_ZOOM,
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
+      // Don't tile infinite copies of the world horizontally in the flat
+      // (mercator) detail view — otherwise dragging sideways wraps forever.
+      renderWorldCopies: false,
+      // Lock panning to a single world so you can't drag off the edges into
+      // empty space. ±85 lat is the mercator pole limit.
+      maxBounds: [[-180, -85], [180, 85]],
       attributionControl: false,
       interactive: false,
       pitchWithRotate: false,
@@ -85,11 +97,26 @@ export default function GlobeSection({ cities = [] }: Props) {
       (window as unknown as { __tabMap?: mapboxgl.Map }).__tabMap = map;
     }
 
+    map.on('load', () => setMapReady(true));
     map.on('movestart', () => { isCameraMovingRef.current = true; });
     map.on('moveend', () => {
       // Small grace period after moveend in case the cursor is parked on a
       // marker that just slid under it — don't immediately fire.
       window.setTimeout(() => { isCameraMovingRef.current = false; }, 200);
+    });
+
+    // Flash a transient "can't zoom further" message when the user reaches the
+    // min/max zoom limit (via wheel, pinch, or the +/- buttons).
+    map.on('zoom', () => {
+      const z = map.getZoom();
+      let edge: 'in' | 'out' | null = null;
+      if (z >= MAX_ZOOM - 0.02) edge = 'in';
+      else if (z <= MIN_ZOOM + 0.02) edge = 'out';
+      setZoomEdge(edge);
+      if (edge) {
+        if (edgeTimerRef.current) window.clearTimeout(edgeTimerRef.current);
+        edgeTimerRef.current = window.setTimeout(() => setZoomEdge(null), 2200);
+      }
     });
 
     map.on('style.load', () => {
@@ -101,17 +128,6 @@ export default function GlobeSection({ cities = [] }: Props) {
         'horizon-blend': 0.01,
         'space-color': 'rgb(247, 247, 247)',
         'star-intensity': 0,
-      });
-
-      // Hide every Mapbox-provided text label (country, place, road, POI,
-      // transit, water, natural). Our red active pin marker is the only
-      // label we want — Mapbox's labels would clutter the satellite
-      // imagery and overlap our pins.
-      const styleDef = map.getStyle();
-      styleDef?.layers?.forEach((layer) => {
-        if (layer.type === 'symbol') {
-          map.setLayoutProperty(layer.id, 'visibility', 'none');
-        }
       });
 
       if (!map.getSource('mapbox-dem')) {
@@ -128,6 +144,7 @@ export default function GlobeSection({ cities = [] }: Props) {
     });
 
     return () => {
+      if (edgeTimerRef.current) window.clearTimeout(edgeTimerRef.current);
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
       map.remove();
@@ -164,6 +181,10 @@ export default function GlobeSection({ cities = [] }: Props) {
       spinRef.current = true;
       // Back to the 3D globe when the detail view is closed.
       map.setProjection({ name: 'globe' });
+      // Restore terrain relief for the globe (disabled in the flat view).
+      if (map.getSource('mapbox-dem')) {
+        map.setTerrain({ source: 'mapbox-dem', exaggeration: 0.9 });
+      }
       map.dragPan.disable();
       map.scrollZoom.disable();
       map.touchZoomRotate.disable();
@@ -185,6 +206,12 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     // Flatten the globe into a 2D map for the detail/explore view.
     map.setProjection({ name: 'mercator' });
+
+    // Disable 3D terrain in the flat view. With terrain on, Mapbox offsets each
+    // marker by its ground elevation; at high zoom over high-altitude cities
+    // (e.g. Lhasa, ~3650m) that pushes the pin far off its coordinate / off
+    // screen. The flat detail map doesn't need terrain relief anyway.
+    map.setTerrain(null);
 
     map.dragPan.enable();
     map.scrollZoom.enable();
@@ -222,23 +249,79 @@ export default function GlobeSection({ cities = [] }: Props) {
         essential: true,
       });
     } else {
-      // No pin selected yet — show the whole flat map with all (inactive) pins.
-      map.flyTo({
-        center: WORLD_CENTER,
-        zoom: WORLD_ZOOM,
-        bearing: 0,
-        duration: 1200,
-        essential: true,
-      });
+      // No pin selected — show the chosen region (or the whole flat map) with
+      // all (inactive) pins.
+      const region = REGIONS.find((r) => r.key === regionKey);
+      if (region?.bounds) {
+        map.fitBounds(region.bounds, {
+          padding: 60,
+          bearing: 0,
+          duration: 1200,
+          essential: true,
+        });
+      } else {
+        map.flyTo({
+          center: WORLD_CENTER,
+          zoom: WORLD_ZOOM,
+          bearing: 0,
+          duration: 1200,
+          essential: true,
+        });
+      }
     }
-  }, [activeIdx, isOpen, cityViews, cardsPhotos]);
+  }, [activeIdx, isOpen, regionKey, cityViews, cardsPhotos, mapReady]);
+
+  // Restore the previously-opened city when returning from its detail page
+  // (e.g. globe → click city → "Explore now" → /activities → browser back).
+  useEffect(() => {
+    if (restoredRef.current || cityViews.length === 0) return;
+    let saved: string | null = null;
+    try { saved = sessionStorage.getItem('globe.restore'); } catch { /* private mode */ }
+    if (!saved) return;
+    restoredRef.current = true;
+    try { sessionStorage.removeItem('globe.restore'); } catch { /* private mode */ }
+    try {
+      const { slug, regionKey: rk } = JSON.parse(saved) as { slug: string; regionKey?: string };
+      const idx = cityViews.findIndex((v) => v.city.slug === slug);
+      if (idx >= 0) {
+        setIsOpen(true);
+        if (rk) setRegionKey(rk);
+        setActiveIdx(idx);
+      }
+    } catch { /* malformed */ }
+  }, [cityViews]);
+
+  function flashZoomEdge(edge: 'in' | 'out') {
+    setZoomEdge(edge);
+    if (edgeTimerRef.current) window.clearTimeout(edgeTimerRef.current);
+    edgeTimerRef.current = window.setTimeout(() => setZoomEdge(null), 2200);
+  }
 
   function zoomBy(delta: number) {
     const map = mapRef.current;
     if (!map || !isOpen) return;
-    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, map.getZoom() + delta));
-    if (next === map.getZoom()) return;
+    const cur = map.getZoom();
+    // maxBounds raises the real minimum zoom above MIN_ZOOM: you can't zoom out
+    // past the point where the whole world fills the viewport, i.e.
+    // log2(viewport / tileSize). That floor is viewport-dependent, so estimate
+    // it from the container — this lets us skip a flyTo that would just bounce.
+    const el = map.getContainer();
+    const boundsMin = Math.log2(Math.max(el.clientWidth, el.clientHeight) / 512);
+    const atFloor = delta < 0 && cur <= Math.max(MIN_ZOOM, boundsMin) + 0.1;
+    const atCeil = delta > 0 && cur >= MAX_ZOOM - 0.02;
+    if (atFloor || atCeil) {
+      flashZoomEdge(delta > 0 ? 'in' : 'out');
+      return;
+    }
+    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, cur + delta));
     map.flyTo({ zoom: next, duration: 400, essential: true });
+    // Exact backstop: if the estimate was off and the map didn't actually move
+    // (clamped by maxBounds), still surface the message.
+    map.once('moveend', () => {
+      if (Math.abs(map.getZoom() - cur) < 0.03) {
+        flashZoomEdge(delta > 0 ? 'in' : 'out');
+      }
+    });
   }
 
   useEffect(() => {
@@ -401,7 +484,7 @@ export default function GlobeSection({ cities = [] }: Props) {
         <button
           type="button"
           className="ga-cta"
-          onClick={() => { setIsOpen(true); setActiveIdx(null); }}
+          onClick={() => { setIsOpen(true); setActiveIdx(null); setRegionKey('world'); }}
           disabled={cityViews.length === 0}
         >
           View cities
@@ -434,7 +517,7 @@ export default function GlobeSection({ cities = [] }: Props) {
                 type="button"
                 aria-label={t('aria.close')}
                 className="ga-close"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setActiveIdx(null)}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6L6 18" />
@@ -462,13 +545,46 @@ export default function GlobeSection({ cities = [] }: Props) {
                 {t('panel.goToLocation')}
               </button>
               <p className="ga-desc">{activeView.desc}</p>
-              <Link href={`/activities?id=${activeView.city.slug}`} className="ga-button">
+              <Link
+                href={`/activities?id=${activeView.city.slug}`}
+                className="ga-button"
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem(
+                      'globe.restore',
+                      JSON.stringify({ slug: activeView.city.slug, regionKey }),
+                    );
+                  } catch { /* private mode */ }
+                }}
+              >
                 {t('btn.exploreNow')}
               </Link>
             </div>
           </article>
         )}
       </aside>
+
+      <div className={`ga-regions${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
+        {REGIONS.map((r) => (
+          <button
+            key={r.key}
+            type="button"
+            className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
+            onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        aria-label={t('aria.close')}
+        className={`ga-exit${isOpen ? ' visible' : ''}`}
+        onClick={() => { setIsOpen(false); setActiveIdx(null); setRegionKey('world'); }}
+      >
+        <X />
+      </button>
 
       <div className={`ga-zoom${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
         <button
@@ -508,6 +624,16 @@ export default function GlobeSection({ cities = [] }: Props) {
           <MapPin />
           <span>{'Click on city to view\ndetails'}</span>
         </div>
+      </div>
+
+      <div
+        className={`ga-zoom-toast${isOpen && zoomEdge ? ' visible' : ''}`}
+        role="status"
+        aria-live="polite"
+      >
+        {zoomEdge === 'in'
+          ? "Maximum zoom — you can't zoom in any closer."
+          : "Minimum zoom — you can't zoom out any further."}
       </div>
 
     </section>

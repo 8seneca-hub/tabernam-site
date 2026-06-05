@@ -21,12 +21,13 @@
   --color-border: var(--color-border);
   --color-footer-bg: var(--color-footer-bg);
 
-  /* Border-radius scale (design tokens) → rounded-1 … rounded-5 utilities */
+  /* Border-radius scale (design tokens) → rounded-1 … rounded-6 utilities */
   --radius-1: 4px;
   --radius-2: 8px;
   --radius-3: 12px;
   --radius-4: 16px;
   --radius-5: 24px;
+  --radius-6: 36px;
 }
 
 /* ─────────── Palette + Directus CSS variable defaults ─────────── */
@@ -103,6 +104,18 @@ h2 {
   letter-spacing: -0.03em;
 }
 
+/* Responsive heading scale — shrink the fixed desktop sizes on tablet/phone.
+   These global element rules are unlayered, so they win over Tailwind size
+   utilities on h1/h2; scaling them here keeps every heading proportional. */
+@media (max-width: 1024px) {
+  h1 { font-size: 56px; line-height: 60px; }
+  h2 { font-size: 42px; line-height: 46px; }
+}
+@media (max-width: 640px) {
+  h1 { font-size: 40px; line-height: 44px; }
+  h2 { font-size: 32px; line-height: 36px; }
+}
+
 /* Homepage only: H2 headings default to the accent color. */
 .home-page h2 {
   color: var(--color-accent);
@@ -118,7 +131,18 @@ h2 {
   transform: translateY(-100%);
 }
 
-/* ─────────── Hamburger toggle bars ─────────── */
+/* ─────────── Hamburger toggle ─────────── */
+/* Hidden on desktop; the max-width:768px media query flips it to display:block. */
+.nav-toggle {
+  display: none;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
 .nav-toggle-bar {
   position: absolute;
   left: 9px;
@@ -336,19 +360,44 @@ h2 {
   z-index: 2;
   pointer-events: none;
   border-radius: inherit;
-  box-shadow:
-    inset 0 0 3.48px 2.61px #fff,
-    inset 0 0 8.71px 6.97px #fff,
-    inset 0 0 34.83px 31.35px #fff;
 }
-/* Smaller framed images use a lighter feather so the white edge stays
-   proportional and doesn't overwhelm the image. */
+/* Large feathered edge — 7 stacked inner shadows (per Figma spec). */
+.feathered-image::after {
+  box-shadow:
+    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px 18px rgba(255, 255, 255, 0.4),
+    inset 0 0 6px 7px rgba(255, 255, 255, 0.7),
+    inset 0 0 9px 11px rgba(255, 255, 255, 0.7),
+    inset 0 0 4px 4px #fff;
+}
+/* Smaller framed images (incl. marquee cells) use a lighter, proportionally
+   smaller feather than the large .feathered-image — strong enough to fade
+   darker photo edges, but not as wide/heavy as the full-size spec. */
 .feathered-image-sm::after,
 .marquee-cell::after {
   box-shadow:
-    inset 0 0 2px 1.5px #fff,
-    inset 0 0 5px 4px #fff,
-    inset 0 0 18px 16px #fff;
+    inset 0 0 3px 2px #fff,
+    inset 0 0 8px 6px #fff,
+    inset 0 0 26px 23px #fff;
+}
+/* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
+   gray-20 sections instead of showing a white halo. */
+.feathered-image-gray {
+  position: relative;
+}
+.feathered-image-gray::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 3.48px 2.61px var(--gray-20),
+    inset 0 0 8.71px 6.97px var(--gray-20),
+    inset 0 0 34.83px 31.35px var(--gray-20);
 }
 /* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
    gray-20 sections instead of showing a white halo. */
@@ -723,7 +772,7 @@ h2 {
 
 @media (max-width: 640px) {
   :root {
-    --side-padding: 24px;
+    --side-padding: 16px;
   }
 }
 
@@ -763,6 +812,11 @@ h2 {
     font-size: 16px;
     border-bottom: 1px solid var(--gray-40);
     width: 100%;
+  }
+  /* The desktop hover/active underline bar doesn't belong in the drawer —
+     the mobile active state is conveyed by the blue text + row divider. */
+  .nav a::after {
+    display: none;
   }
 
   .lang-switcher {
