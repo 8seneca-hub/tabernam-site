@@ -66,22 +66,6 @@ export default function AboutContent({ texts: bundle, heroImage }: Props) {
       <ContentBlocks texts={texts} blocks={blocks} />
 
       <ClosingQuote texts={texts} />
-      {/* <div className="w-[80%] mx-auto py-12 md:py-16 flex justify-center">
-        <Button
-          as={Link}
-          href="/cv"
-          variant="primary"
-          size="lg"
-          shape="pill"
-          icon="→"
-          className="text-sm font-semibold !text-white uppercase tracking-[0.2em] shadow-xl"
-        >
-          {t('btn.viewCV')}
-        </Button>
-      </SubpageHero>
-      <ContentBlocks texts={texts} blocks={blocks} />
-
-      <ClosingQuote texts={texts} />
     </main>
   );
 }

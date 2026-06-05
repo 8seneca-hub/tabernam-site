@@ -23,7 +23,7 @@ export default function TravelRoutes() {
   return (
     // Full-bleed gray band: escapes the parent's max-width to span the viewport.
     // Safe here because scrollbars are hidden site-wide (no 100vw scrollbar gap).
-    <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-20 px-[60px] py-[80px] max-md:px-[40px] max-md:py-[56px]">
+    <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-20 px-[60px] py-[80px] max-md:px-[16px] max-md:py-[56px]">
       {/* Inner content capped at the site-wide 1320px and centered. */}
       <div className="mx-auto max-w-[1320px]">
         {/* Heading + copy — centered, 20px apart. */}

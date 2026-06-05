@@ -140,7 +140,7 @@ function renderBlock(block: ContentBlock, texts: PageTexts): ReactNode {
 
 export default function ContentBlocks({ texts, blocks }: Props) {
   return (
-    <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[40px] max-md:pt-[60px] max-md:pb-[60px]">
+    <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[16px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col">
         {blocks.map((block, i) => {
           const content = renderBlock(block, texts);

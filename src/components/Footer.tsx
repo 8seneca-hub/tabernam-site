@@ -29,7 +29,7 @@ export default function Footer({ office }: Props) {
     : t('footer.location');
 
   return (
-    <footer className="bg-gray-40 text-text px-[var(--side-padding)] pt-20 pb-10">
+    <footer className="bg-gray-40 text-text px-[var(--side-padding)] max-md:px-[16px] pt-20 pb-10">
       <div className="max-w-[1320px] mx-auto">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-20 pb-16">
           {/* Quote block — logo, then quote + author. Takes ~half on large screens. */}

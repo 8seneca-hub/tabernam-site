@@ -45,6 +45,8 @@ export default function GlobeSection({ cities = [] }: Props) {
   const [zoomEdge, setZoomEdge] = useState<'in' | 'out' | null>(null);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [tokenMissing, setTokenMissing] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
+  const restoredRef = useRef(false);
 
   const cityViews = useMemo(
     () =>
@@ -95,6 +97,7 @@ export default function GlobeSection({ cities = [] }: Props) {
       (window as unknown as { __tabMap?: mapboxgl.Map }).__tabMap = map;
     }
 
+    map.on('load', () => setMapReady(true));
     map.on('movestart', () => { isCameraMovingRef.current = true; });
     map.on('moveend', () => {
       // Small grace period after moveend in case the cursor is parked on a
@@ -266,7 +269,27 @@ export default function GlobeSection({ cities = [] }: Props) {
         });
       }
     }
-  }, [activeIdx, isOpen, regionKey, cityViews, cardsPhotos]);
+  }, [activeIdx, isOpen, regionKey, cityViews, cardsPhotos, mapReady]);
+
+  // Restore the previously-opened city when returning from its detail page
+  // (e.g. globe → click city → "Explore now" → /activities → browser back).
+  useEffect(() => {
+    if (restoredRef.current || cityViews.length === 0) return;
+    let saved: string | null = null;
+    try { saved = sessionStorage.getItem('globe.restore'); } catch { /* private mode */ }
+    if (!saved) return;
+    restoredRef.current = true;
+    try { sessionStorage.removeItem('globe.restore'); } catch { /* private mode */ }
+    try {
+      const { slug, regionKey: rk } = JSON.parse(saved) as { slug: string; regionKey?: string };
+      const idx = cityViews.findIndex((v) => v.city.slug === slug);
+      if (idx >= 0) {
+        setIsOpen(true);
+        if (rk) setRegionKey(rk);
+        setActiveIdx(idx);
+      }
+    } catch { /* malformed */ }
+  }, [cityViews]);
 
   function flashZoomEdge(edge: 'in' | 'out') {
     setZoomEdge(edge);
@@ -522,7 +545,18 @@ export default function GlobeSection({ cities = [] }: Props) {
                 {t('panel.goToLocation')}
               </button>
               <p className="ga-desc">{activeView.desc}</p>
-              <Link href={`/activities?id=${activeView.city.slug}`} className="ga-button">
+              <Link
+                href={`/activities?id=${activeView.city.slug}`}
+                className="ga-button"
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem(
+                      'globe.restore',
+                      JSON.stringify({ slug: activeView.city.slug, regionKey }),
+                    );
+                  } catch { /* private mode */ }
+                }}
+              >
                 {t('btn.exploreNow')}
               </Link>
             </div>

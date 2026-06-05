@@ -96,6 +96,8 @@
   width: fit-content;
   max-width: 1320px;
   margin-inline: auto;
+  padding-inline: var(--side-padding);
+  box-sizing: border-box;
   text-align: center;
   color: #1a1a1a;
   z-index: 10;
