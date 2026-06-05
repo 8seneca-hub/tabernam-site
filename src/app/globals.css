@@ -399,6 +399,23 @@ h2 {
     inset 0 0 8.71px 6.97px var(--gray-20),
     inset 0 0 34.83px 31.35px var(--gray-20);
 }
+/* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
+   gray-20 sections instead of showing a white halo. */
+.feathered-image-gray {
+  position: relative;
+}
+.feathered-image-gray::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 3.48px 2.61px var(--gray-20),
+    inset 0 0 8.71px 6.97px var(--gray-20),
+    inset 0 0 34.83px 31.35px var(--gray-20);
+}
 
 @keyframes marquee-scroll-left {
   from {
