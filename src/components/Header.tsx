@@ -135,8 +135,21 @@ export default function Header() {
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
       </nav>
 
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end gap-1">
         <LangSwitcher />
+        <button
+          ref={toggleRef}
+          type="button"
+          className="nav-toggle"
+          aria-label="Toggle menu"
+          aria-controls="primary-nav"
+          aria-expanded="false"
+          onClick={toggleNav}
+        >
+          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" />
+        </button>
       </div>
     </header>
   );

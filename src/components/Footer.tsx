@@ -33,9 +33,9 @@ export default function Footer({ office }: Props) {
       <div className="max-w-[1320px] mx-auto">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-20 pb-16">
           {/* Quote block — logo, then quote + author. Takes ~half on large screens. */}
-          <div className="flex flex-col gap-10 lg:flex-1">
+          <div className="flex flex-col gap-5 lg:flex-1">
             <Link href="/" className="flex items-center w-fit" aria-label={`${logoText || 'Tabernam'} home`}>
-              <Image src={logoImage} alt={logoText || 'Tabernam'} height={40} className="w-auto" style={{ height: '40px', width: 'auto', filter: 'brightness(0)' }} />
+              <Image src={logoImage} alt={logoText || 'Tabernam'} height={80} className="w-auto" style={{ height: '80px', width: 'auto', filter: 'brightness(0)' }} />
             </Link>
             <div className="flex flex-col gap-2">
               <p className="text-[20px] font-semibold tracking-[-0.01em] text-text">

@@ -20,7 +20,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
   if (!active) {
     return (
       <main className="contact-page pt-[var(--header-height)] pb-20">
-        <section className="px-[60px] py-20 max-w-[1320px] mx-auto">
+        <section className="px-[60px] py-20 max-w-[1320px] mx-auto max-md:px-[40px]">
           <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
         </section>
       </main>
@@ -44,7 +44,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
 
   return (
     <main className="contact-page pt-[var(--header-height)]">
-      <section className="px-[60px] pt-12 pb-16">
+      <section className="px-[60px] pt-12 pb-16 max-md:px-[40px]">
         <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
           {/* Text column — fills the remaining width: heading, intro, and contact details. */}
           <FadeIn delay={0.15} className="w-full lg:flex-1 flex flex-col gap-[30px] pt-[20px]">
@@ -159,7 +159,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
           </FadeIn>
 
           {/* Image column — fixed 45% of the frame: portrait + quotation. */}
-          <FadeIn delay={0.15} className="w-full lg:w-[45%] lg:pt-[20px]">
+          <FadeIn delay={0.15} className="w-full lg:w-[45%] lg:pt-[20px] max-lg:max-w-[440px] max-lg:mx-auto">
             <div className="feathered-image relative aspect-square rounded-4 overflow-hidden bg-surface">
               <Image
                 src={texts.portrait_image || '/tibor_image.png'}
