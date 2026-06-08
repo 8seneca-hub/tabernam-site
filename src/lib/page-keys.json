@@ -9,6 +9,14 @@
       "page": "home",
       "field": "hero_body"
     },
+    "quote.titleAccent": {
+      "page": "home",
+      "field": "quote_title_accent"
+    },
+    "quote.titleRest": {
+      "page": "home",
+      "field": "quote_title_rest"
+    },
     "quote.primary": {
       "page": "home",
       "field": "quote_primary"

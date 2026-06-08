@@ -90,9 +90,6 @@ export function pickPageTexts(bundle: PageTextsBundle, lang: string): PageTexts 
   return { ...(bundle['en'] ?? {}), ...(bundle[lang] ?? {}) };
 }
 
-// Build a PageTextsBundle for any page singleton. Per-page fetchers
-// (`getHomeTexts`, `getAboutTexts`, etc.) call this with their own page name.
-// Returns {} on failure so callers fall back to empty maps without crashing.
 export async function composePageBundle(
   page: 'home' | 'about' | 'contact' | 'cv',
 ): Promise<PageTextsBundle> {
@@ -106,8 +103,6 @@ export async function composePageBundle(
   try {
     const { assets, byLang } = await readPageSingleton(
       page,
-      // Some singletons store fields under renamed names (e.g. contact's
-      // heading_title vs the heading_title alias). Translate when querying.
       textFields.map((f) => fieldRename[f] ?? f),
       assetFields,
     );
@@ -124,8 +119,6 @@ export async function composePageBundle(
         const outKey = reverseRename[storedField] ?? storedField;
         if (value) entry[outKey] = value;
       }
-      // Asset URLs aren't language-specific — repeat them under each lang
-      // so the existing pickPageTexts/texts.X access pattern keeps working.
       for (const [f, v] of Object.entries(assets)) {
         if (v) entry[f] = v;
       }
