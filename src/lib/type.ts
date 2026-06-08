@@ -32,11 +32,21 @@ export interface CMSHeroSlide {
     sort: number;
 }
 
-// Page singletons — one row per page. The translatable fields live on the
-// matching `<page>_translations` O2M; assets/operational data live as flat
-// fields on the singleton itself. The TypeScript index signatures let us
-// read any of the runtime-defined fields without re-declaring each one;
-// the canonical list of fields lives in src/lib/page-keys.json.
+export interface CMSHomeMarquee {
+    id: number;
+    image: string;
+    alt: string;
+    row: 1 | 2 | 3;
+    sort: number;
+}
+
+export interface CMSTravelRouteMap {
+    id: number;
+    slug: string;
+    image: string | null;
+    sort: number | null;
+}
+
 export interface CMSPageSingleton {
     id: number;
     translations: CMSPageTranslation[];
@@ -92,6 +102,8 @@ export interface CMSSchema {
     activities_translations: CMSActivityTranslation[];
     activities_files: CMSActivityFile[];
     hero_slides: CMSHeroSlide[];
+    home_marquee: CMSHomeMarquee[];
+    travel_route_map: CMSTravelRouteMap[];
     home: CMSPageSingleton;
     home_translations: CMSPageTranslation[];
     about: CMSPageSingleton;

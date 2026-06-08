@@ -460,7 +460,7 @@ async function migrateContact(languages) {
 async function migrateHome(languages) {
   console.log('\n==> Migrating home');
   const keys = [
-    'hero.title', 'hero.titleAccent', 'hero.body', 'btn.exploreNow',
+    'hero.title', 'hero.titleAccent', 'hero.body',
     'quote.primary', 'quote.secondary',
     'globeIntro.heading', 'globeIntro.body',
   ];
@@ -473,7 +473,6 @@ async function migrateHome(languages) {
   const mapping = {
     'hero.title': 'hero_title',
     'hero.body': 'hero_body',
-    'btn.exploreNow': 'hero_cta_label',
     'quote.primary': 'quote_primary',
     'globeIntro.heading': 'globe_intro_heading',
     'globeIntro.body': 'globe_intro_body',

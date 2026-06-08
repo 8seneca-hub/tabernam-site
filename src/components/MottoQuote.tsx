@@ -10,10 +10,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * Motto block shown directly beneath the portrait image. The Latin line is
- * fixed; the parenthetical translation follows the currently selected language.
- */
 export default function MottoQuote({ className = '' }: Props) {
   const { t } = useI18n();
   const translated = t('quote.motto.translation');

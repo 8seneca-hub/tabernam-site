@@ -6,33 +6,38 @@ import MottoQuote from '@/components/MottoQuote';
 
 interface Props {
   heading: string;
+  /** Small label rendered above the heading. */
+  eyebrow?: string;
+  /** Secondary line rendered below the heading (e.g. a person's name). */
+  subheading?: string;
   image: string;
   imageAlt?: string;
   children: ReactNode;
 }
 
-/**
- * Shared hero layout for sub-pages (About, Contact). Distinct from the homepage
- * hero, but reuses its gray-20 → white gradient fill.
- *
- * - Content capped at 1320px (site-wide max width), 60px left/right padding.
- * - Two columns: text takes 55% of the frame, the image fills the rest.
- * - 40px spacing between content (column gap + the left-column stack).
- * - Image is a 3:4 portrait that fills its frame, with the brand feather edge.
- */
-export default function SubpageHero({ heading, image, imageAlt = '', children }: Props) {
+export default function SubpageHero({ heading, eyebrow, subheading, image, imageAlt = '', children }: Props) {
   return (
     <section className="px-[60px] py-20 max-md:px-[16px]">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
-        {/* Text column — fills the remaining width on large screens. */}
         <div className="w-full lg:flex-1 flex flex-col gap-[30px] pt-[20px]">
-          <h1 className="text-5xl md:text-6xl font-bold text-brand tracking-tight leading-tight max-md:text-4xl">
-            {heading}
-          </h1>
+          <div className="flex flex-col gap-[12px]">
+            {eyebrow && (
+              <span className="text-sm font-semibold text-brand uppercase tracking-[0.2em]">
+                {eyebrow}
+              </span>
+            )}
+            <h1 className="text-5xl md:text-6xl font-bold text-brand tracking-tight leading-tight max-md:text-4xl">
+              {heading}
+            </h1>
+            {subheading && (
+              <span className="text-2xl md:text-3xl font-medium text-text">
+                {subheading}
+              </span>
+            )}
+          </div>
           {children}
         </div>
 
-        {/* Image column — fixed 45% of the frame; square portrait + motto. */}
         <div className="w-full lg:w-[45%] max-lg:max-w-[440px] max-lg:mx-auto">
           <div className="feathered-image relative aspect-square rounded-6 overflow-hidden bg-surface">
             <Image src={image} alt={imageAlt} fill priority className="object-cover" />

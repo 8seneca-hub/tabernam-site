@@ -1,0 +1,611 @@
+.ga-section {
+  position: relative;
+  width: 100%;
+  height: 130vh;
+  background: var(--gray-20);
+  color: #1a1a1a;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.ga-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: none;
+  pointer-events: none;
+}
+.ga-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.ga-backdrop.visible {
+  opacity: 1;
+}
+.ga-globe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  transform: translateY(30%) scale(1);
+  transform-origin: center center;
+  transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1);
+  background: transparent;
+}
+.ga-globe.shifted {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  transform: none;
+  /* Snap to full-viewport immediately on open so the map's flyTo zoom plays
+     against a full-screen canvas — otherwise the 1.1s translate slide is still
+     running during the zoom-in and you see a cropped/trimmed view. The close
+     animation still uses the base .ga-globe transition. */
+  transition: none;
+}
+/* Mapbox renders into a child canvas; ensure full coverage. */
+.ga-globe .mapboxgl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.ga-globe .mapboxgl-ctrl-attrib,
+.ga-globe .mapboxgl-ctrl-logo {
+  display: none !important;
+}
+.ga-token-warn {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  max-width: 520px;
+  padding: 12px 18px;
+  background: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffe69c;
+  border-radius: var(--radius-3);
+  font-size: 13px;
+  line-height: 1.45;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+.ga-token-warn a {
+  color: #664d03;
+  text-decoration: underline;
+}
+.ga-token-warn code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: var(--radius-1);
+  font-size: 12px;
+}
+.ga-intro {
+  position: absolute;
+  top: 8vh;
+  left: 0;
+  right: 0;
+  width: fit-content;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: var(--side-padding);
+  box-sizing: border-box;
+  text-align: center;
+  color: #1a1a1a;
+  z-index: 10;
+  pointer-events: none;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1),
+    opacity 0.7s ease;
+}
+.ga-intro.out {
+  transform: translateY(-140%);
+  opacity: 0;
+}
+.ga-intro h2 {
+  margin: 0;
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 56px;
+}
+.ga-intro p {
+  /* Fill the parent frame: width:0 + min-width:100% lets the paragraph stretch
+     to the parent's width (set by the heading) and wrap within it, WITHOUT its
+     own long-text max-content forcing the hug parent any wider. */
+  width: 0;
+  min-width: 100%;
+  margin: 30px 0 0;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+.ga-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 10px;
+  padding: 16px 28px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--brand);
+  border: 0;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, filter 0.2s ease;
+}
+.ga-cta:hover {
+  filter: brightness(1.08);
+}
+.ga-cta:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ga-panel {
+  position: fixed;
+  top: 50%;
+  right: 48px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  z-index: 11;
+  color: #ffffff;
+  background: transparent;
+  transform: translate(120%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.9s cubic-bezier(0.65, 0.05, 0.36, 1),
+    opacity 0.5s ease;
+}
+.ga-panel.in {
+  transform: translate(0, -50%);
+  opacity: 1;
+  pointer-events: auto;
+}
+.ga-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  color: var(--dark);
+  border-radius: var(--radius-4);
+  overflow: hidden;
+  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+}
+.ga-progress {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  pointer-events: none;
+}
+.ga-progress-seg {
+  width: 30px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.28);
+  transition: background 0.3s ease;
+}
+.ga-progress-seg.active {
+  background: rgba(255, 255, 255, 0.85);
+}
+.ga-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--gray-40);
+}
+.ga-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.ga-thumb-img.active {
+  opacity: 1;
+}
+.ga-card-body {
+  padding: 24px 20px 28px;
+  display: flex;
+  flex-direction: column;
+}
+.ga-name {
+  margin: 0 0 6px;
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.ga-location {
+  align-self: flex-start;
+  margin: 0 0 18px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--brand);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.ga-location:hover {
+  color: var(--brand);
+  text-decoration: underline;
+}
+.ga-eyebrow {
+  margin: 0 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+.ga-desc {
+  margin: 0 0 24px;
+  padding: 0;
+  color: var(--color-text);
+  font-size: 18px;
+  line-height: 1.55;
+  font-weight: 400;
+}
+.ga-button {
+  margin: 0;
+  align-self: flex-start;
+  padding: 10px 24px;
+  background: var(--brand);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.ga-button:hover {
+  background: var(--brand);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.ga-regions {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  gap: 4px;
+  max-width: calc(100vw - 140px);
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  overflow-x: auto;
+  scrollbar-width: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease 0.3s;
+}
+.ga-regions::-webkit-scrollbar {
+  display: none;
+}
+.ga-regions.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ga-region-btn {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: #1a1a1a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.ga-region-btn:hover:not(.active) {
+  background: rgba(0, 0, 0, 0.06);
+}
+.ga-region-btn.active {
+  background: var(--brand);
+  color: #ffffff;
+}
+.ga-exit {
+  position: fixed;
+  top: 28px;
+  right: 28px;
+  z-index: 200;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: none;
+  border-radius: var(--radius-2);
+  color: #1a1a1a;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease 0.3s;
+}
+.ga-exit.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ga-exit svg {
+  width: 18px;
+  height: 18px;
+}
+.ga-zoom {
+  position: fixed;
+  top: 50%;
+  left: 28px;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: var(--radius-2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease 0.3s;
+}
+.ga-zoom.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ga-zoom-btn {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  padding: 0;
+  transition: background 0.18s ease;
+}
+.ga-zoom-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.ga-zoom-btn + .ga-zoom-btn {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+.ga-zoom-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.ga-hints {
+  position: fixed;
+  bottom: 28px;
+  /* Align the left edge with the zoom button stack (left: 28px). */
+  left: 28px;
+  z-index: 200;
+  display: flex;
+  gap: 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease 0.3s;
+}
+.ga-hints.visible {
+  opacity: 1;
+}
+.ga-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: 0;
+  /* Soft dark shadow keeps the white text legible over bright satellite
+     imagery (snow, sand, clouds, light city blocks). */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.ga-hint span {
+  /* Preserve newlines from translation values for 2-line hint layout. */
+  white-space: pre-line;
+}
+/* Transient toast shown when the user hits the min/max zoom limit. */
+.ga-zoom-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 210;
+  padding: 10px 20px;
+  background: rgba(26, 26, 26, 0.88);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.ga-zoom-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.ga-hint svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+@media (max-width: 720px) {
+  .ga-intro h2 {
+    font-size: 36px;
+    line-height: 40px;
+  }
+  .ga-hints {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .ga-hint {
+    font-size: 11px;
+  }
+}
+/* Matches the map's .ga-exit button: white rounded-square, same size/shadow. */
+.ga-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: none;
+  border-radius: var(--radius-2);
+  color: #1a1a1a;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+.ga-close svg {
+  width: 18px;
+  height: 18px;
+}
+.globe-marker {
+  /* Do NOT set position here — Mapbox applies position:absolute and a
+     translate() transform on the marker element to place it at the marker's
+     lng/lat. Overriding position breaks placement. */
+  cursor: pointer;
+  pointer-events: auto;
+  padding: 4px;
+}
+.globe-marker.is-active {
+  z-index: 5;
+}
+.globe-marker-shape {
+  width: 18px;
+  height: 22.5px;
+  display: block;
+  color: #1a1a1a;
+  /* Do NOT add will-change/translateZ here — it lifts the shape into its own
+     GPU layer and makes it lag the parent's transform updates during Mapbox's
+     zoom/pan animations (pins appear to drift). */
+  transition: color 0.2s ease;
+}
+.globe-marker-shape svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.globe-marker.is-active .globe-marker-shape {
+  color: #ef4444;
+  transform: scale(1.55);
+}
+.globe-marker-preview {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 4;
+}
+.globe-marker-preview img {
+  /* 4:3 landscape, ~doubled from the previous 96×60. */
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-3);
+  background: #e5e7eb;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.22),
+    0 2px 6px rgba(15, 23, 42, 0.10);
+}
+.globe-marker-name {
+  margin-top: 0;
+  padding: 8px 18px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: left;
+  border-radius: 0 0 var(--radius-1) var(--radius-1);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+.globe-marker.is-hover:not(.is-active) .globe-marker-preview {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+/* City-name label under the active pin: red text inside a white pill frame
+   that hugs the text. Hidden unless the pin is active. */
+.globe-marker-label {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, 8px);
+  display: none;
+  white-space: nowrap;
+  padding: 6px 18px;
+  background: #ffffff;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ef4444;
+  pointer-events: none;
+}
+.globe-marker.is-active .globe-marker-label {
+  display: block;
+}

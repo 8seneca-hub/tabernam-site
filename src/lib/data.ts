@@ -3,6 +3,17 @@ export interface HeroSlide {
   alt: string;
 }
 
+export interface MarqueeImage {
+  image: string;
+  alt: string;
+  row: 1 | 2 | 3;
+}
+
+export interface TravelRouteMap {
+  slug: string;
+  image: string;
+}
+
 export interface LabeledRow {
   label: string;
   value: string;

@@ -21,33 +21,9 @@
       "page": "home",
       "field": "globe_intro_body"
     },
-    "panel.viewDetails": {
-      "page": "home",
-      "field": "panel_viewDetails"
-    },
-    "panel.goToLocation": {
-      "page": "home",
-      "field": "panel_goToLocation"
-    },
-    "btn.exploreNow": {
-      "page": "home",
-      "field": "btn_exploreNow"
-    },
     "btn.getToKnowMore": {
       "page": "home",
       "field": "btn_getToKnowMore"
-    },
-    "btn.getStarted": {
-      "page": "home",
-      "field": "btn_getStarted"
-    },
-    "btn.learnMore": {
-      "page": "home",
-      "field": "btn_learnMore"
-    },
-    "btn.viewCities": {
-      "page": "home",
-      "field": "btn_viewCities"
     },
     "nav.about": {
       "page": "nav",
@@ -61,45 +37,17 @@
       "page": "nav",
       "field": "nav_contact"
     },
-    "footer.connectHeading": {
-      "page": "footer",
-      "field": "footer_connectHeading"
-    },
-    "footer.contact": {
-      "page": "footer",
-      "field": "footer_contact"
-    },
     "footer.copyright": {
       "page": "footer",
       "field": "footer_copyright"
-    },
-    "footer.established": {
-      "page": "footer",
-      "field": "footer_established"
     },
     "footer.exploreHeading": {
       "page": "footer",
       "field": "footer_exploreHeading"
     },
-    "footer.globalOffices": {
-      "page": "footer",
-      "field": "footer_globalOffices"
-    },
     "footer.location": {
       "page": "footer",
       "field": "footer_location"
-    },
-    "footer.navigation": {
-      "page": "footer",
-      "field": "footer_navigation"
-    },
-    "footer.presenceHeading": {
-      "page": "footer",
-      "field": "footer_presenceHeading"
-    },
-    "footer.privacy": {
-      "page": "footer",
-      "field": "footer_privacy"
     },
     "footer.quote": {
       "page": "footer",
@@ -109,85 +57,61 @@
       "page": "footer",
       "field": "footer_quote_author"
     },
-    "footer.terms": {
-      "page": "footer",
-      "field": "footer_terms"
-    },
-    "aria.cities": {
-      "page": "home",
-      "field": "aria_cities"
-    },
-    "aria.close": {
-      "page": "home",
-      "field": "aria_close"
-    },
-    "aria.footerNav": {
-      "page": "home",
-      "field": "aria_footerNav"
-    },
-    "aria.nextCity": {
-      "page": "home",
-      "field": "aria_nextCity"
-    },
-    "aria.prevCity": {
-      "page": "home",
-      "field": "aria_prevCity"
-    },
-    "aria.tabernamHome": {
-      "page": "home",
-      "field": "aria_tabernamHome"
-    },
-    "aria.zoomIn": {
-      "page": "home",
-      "field": "aria_zoomIn"
-    },
-    "aria.zoomOut": {
-      "page": "home",
-      "field": "aria_zoomOut"
-    },
-    "globe.intro.cta": {
+    "globeIntro.cta": {
       "page": "home",
       "field": "globe_intro_cta"
     },
-    "globe.intro.heading": {
+    "panel.goToLocation": {
       "page": "home",
-      "field": "globe_intro_heading"
+      "field": "panel_goToLocation"
     },
-    "globe.panel.close": {
+    "btn.exploreNow": {
       "page": "home",
-      "field": "globe_panel_close"
+      "field": "btn_exploreNow"
     },
-    "globe.panel.viewDetails": {
+    "globeHint.drag": {
       "page": "home",
-      "field": "globe_panel_viewDetails"
+      "field": "globe_hint_drag"
     },
-    "globe.zoom.in": {
+    "globeHint.zoom": {
       "page": "home",
-      "field": "globe_zoom_in"
+      "field": "globe_hint_zoom"
     },
-    "globe.zoom.out": {
+    "globeHint.clickCity": {
       "page": "home",
-      "field": "globe_zoom_out"
+      "field": "globe_hint_clickCity"
     },
-    "page.title.home": {
+    "globeZoom.maxToast": {
       "page": "home",
-      "field": "page_title_home"
+      "field": "globe_zoom_maxToast"
     },
-    "page.title.about": {
+    "globeZoom.minToast": {
       "page": "home",
-      "field": "page_title_about"
+      "field": "globe_zoom_minToast"
     },
-    "page.title.activity": {
+    "region.world": {
       "page": "home",
-      "field": "page_title_activity"
+      "field": "region_world"
     },
-    "page.title.contact": {
+    "region.europe": {
       "page": "home",
-      "field": "page_title_contact"
+      "field": "region_europe"
     },
-    "page.title.business": {
+    "region.asia": {
       "page": "home",
-      "field": "page_title_business"
+      "field": "region_asia"
+    },
+    "region.africa": {
+      "page": "home",
+      "field": "region_africa"
+    },
+    "region.americas": {
+      "page": "home",
+      "field": "region_americas"
+    },
+    "region.oceania": {
+      "page": "home",
+      "field": "region_oceania"
     },
     "btn.viewCV": {
       "page": "about",
@@ -197,37 +121,13 @@
       "page": "about",
       "field": "heading_aboutMe"
     },
-    "contact.address1": {
-      "page": "contact",
-      "field": "contact_address1"
-    },
-    "contact.address2": {
-      "page": "contact",
-      "field": "contact_address2"
-    },
-    "contact.address3": {
-      "page": "contact",
-      "field": "contact_address3"
-    },
     "contact.addressLabel": {
       "page": "contact",
       "field": "contact_addressLabel"
     },
-    "contact.bankCredentials": {
-      "page": "contact",
-      "field": "contact_bankCredentials"
-    },
-    "contact.corporateIdsLabel": {
-      "page": "contact",
-      "field": "contact_corporateIdsLabel"
-    },
     "contact.emailLabel": {
       "page": "contact",
       "field": "contact_emailLabel"
-    },
-    "contact.identifiersLabel": {
-      "page": "contact",
-      "field": "contact_identifiersLabel"
     },
     "contact.phoneLabel": {
       "page": "contact",
@@ -273,22 +173,6 @@
       "page": "cv",
       "field": "section_skills"
     },
-    "cv.hero.address": {
-      "page": "cv",
-      "field": "hero_address"
-    },
-    "cv.hero.nationality.label": {
-      "page": "cv",
-      "field": "hero_nationality_label"
-    },
-    "cv.hero.nationality.value": {
-      "page": "cv",
-      "field": "hero_nationality_value"
-    },
-    "cv.hero.wechat.label": {
-      "page": "cv",
-      "field": "hero_wechat_label"
-    },
     "cv.contact.intro": {
       "page": "cv",
       "field": "contact_intro"
@@ -300,18 +184,6 @@
     "cv.contact.cta": {
       "page": "cv",
       "field": "contact_cta"
-    },
-    "cv.contact.address": {
-      "page": "cv",
-      "field": "contact_address"
-    },
-    "cv.contact.email": {
-      "page": "cv",
-      "field": "contact_email"
-    },
-    "cv.contact.phone": {
-      "page": "cv",
-      "field": "contact_phone"
     },
     "cv.modal.title": {
       "page": "cv",
@@ -444,60 +316,52 @@
         "hero_name",
         "about_eyebrow",
         "about_paragraph_body",
-        "leadership_title",
-        "leadership_description",
-        "leadership_body_1",
-        "leadership_body_2",
-        "leadership_body_3",
-        "leadership_body_4",
-        "leadership_body_5",
-        "leadership_body_6",
         "experience_eyebrow",
         "experience_title",
         "experience_body",
         "experience_video_title",
         "experience_video_url",
-        "philanthropy_title",
-        "philanthropy_body",
         "philanthropy_story_1_title",
-        "philanthropy_story_1_desc",
         "philanthropy_story_1_video_url",
         "philanthropy_story_2_title",
-        "philanthropy_story_2_desc",
         "philanthropy_story_2_video_url",
         "closing_quote",
         "closing_quote_author",
-        "closing_cta"
+        "closing_cta",
+        "travel_routes_heading",
+        "travel_routes_body",
+        "travel_routes_china_name",
+        "travel_routes_america_name",
+        "travel_routes_europe_name"
       ],
       "assets": [
         "portrait_image",
         "closing_background",
-        "leadership_body_1_image",
-        "leadership_body_2_image",
-        "leadership_body_3_image",
-        "leadership_body_4_image",
-        "leadership_body_5_image",
-        "leadership_body_6_image"
+        "body_image_1",
+        "body_image_2",
+        "body_image_3"
       ]
     },
     "contact": {
       "text": [
         "contact_heading_title",
-        "contact_subheading",
-        "contact_maps_title",
-        "contact_quote_text",
-        "contact_quote_author"
+        "contact_subheading"
       ],
       "assets": [
         "portrait_image"
       ],
       "_fieldRename": {
         "contact_heading_title": "heading_title",
-        "contact_subheading": "subheading",
-        "contact_maps_title": "maps_title",
-        "contact_quote_text": "quote_text",
-        "contact_quote_author": "quote_author"
+        "contact_subheading": "subheading"
       }
+    },
+    "cv": {
+      "text": [
+        "hero_name"
+      ],
+      "assets": [
+        "portrait_image"
+      ]
     }
   }
 }

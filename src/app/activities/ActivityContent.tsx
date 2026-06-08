@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '@/app/hook/useI18n';
 import { pickTranslation } from '@/lib/directus';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from '@/components/ui/Image';
 import type { GlobeCity } from '@/lib/type';
 
 interface Props {
@@ -65,8 +66,7 @@ export default function ActivityContent({ cities }: Props) {
                     key={i}
                     className="feathered-image relative w-full shrink-0 aspect-[16/9] rounded-6 overflow-hidden bg-surface"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img className="w-full h-full object-cover" src={src} alt={`${name} — ${i + 1}`} />
+                    <Image fill className="object-cover" src={src} alt={`${name} — ${i + 1}`} />
                   </div>
                 ))}
               </div>
