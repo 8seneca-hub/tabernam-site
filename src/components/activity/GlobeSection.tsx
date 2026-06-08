@@ -31,6 +31,19 @@ const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 export default function GlobeSection({ cities = [] }: Props) {
   const { t, lang } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
+  const sheetRef = useRef<HTMLElement>(null);
+  const sheetDragRef = useRef<{ startY: number; collapsedPx: number; dragging: boolean }>({
+    startY: 0,
+    collapsedPx: 0,
+    dragging: false,
+  });
+  // Collapsed translate (px) for the bottom sheet — measured from each city's
+  // actual content height so the expanded sheet hugs its content instead of a
+  // fixed height. Kept in sync via a ResizeObserver (see effect below).
+  const sheetCollapsedRef = useRef(0);
+  // Drag is throttled to one transform write per animation frame for smoothness.
+  const sheetRafRef = useRef(0);
+  const sheetLastYRef = useRef(0);
   const starsRef = useRef<HTMLCanvasElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -46,7 +59,24 @@ export default function GlobeSection({ cities = [] }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
   const [tokenMissing, setTokenMissing] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+  // On touch devices (mobile/tablet) the interaction is a tap, not a click.
+  // Resolved after mount to stay hydration-safe.
+  const [isTouch, setIsTouch] = useState(false);
+  // Mobile bottom-sheet expansion state (collapsed peek vs. full height).
+  const [sheetExpanded, setSheetExpanded] = useState(false);
   const restoredRef = useRef(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
+  // On tablet/phone the detail card is a bottom sheet covering the lower ~50vh,
+  // so the selected pin is flown to the center of the top 50vh (≈25vh from the
+  // top) instead of dead-center. Must match the CSS breakpoint (≤1024px).
+  const sheetFlyOffset = (): [number, number] =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches
+      ? [0, -window.innerHeight * 0.25]
+      : [0, 0];
 
   const cityViews = useMemo(
     () =>
@@ -121,10 +151,11 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     map.on('style.load', () => {
       map.setFog({
-        // gray-20 (#F7F7F7) so the space/haze around the globe matches the
-        // section background instead of painting it white.
-        color: 'rgb(247, 247, 247)',
-        'high-color': 'rgb(190, 210, 240)',
+        // Semi-transparent gray-20 (#F7F7F7) atmosphere: blends the globe's edge
+        // into the section background without washing a near-white haze over the
+        // whole disk (which read especially strong on smaller mobile globes).
+        color: 'rgba(247, 247, 247, 0.35)',
+        'high-color': 'rgba(190, 210, 240, 0.5)',
         'horizon-blend': 0.01,
         'space-color': 'rgb(247, 247, 247)',
         'star-intensity': 0,
@@ -247,6 +278,7 @@ export default function GlobeSection({ cities = [] }: Props) {
         bearing: 0,
         duration: 1200,
         essential: true,
+        offset: sheetFlyOffset(),
       });
     } else {
       // No pin selected — show the chosen region (or the whole flat map) with
@@ -358,6 +390,32 @@ export default function GlobeSection({ cities = [] }: Props) {
 
   useEffect(() => {
     setPhotoIdx(0);
+    setSheetExpanded(false);
+  }, [activeIdx]);
+
+  // Measure the bottom sheet's natural content height and derive the collapsed
+  // peek: the sheet hugs its content (capped at 90vh by CSS), peeks at most 50vh
+  // when collapsed, and the expanded position is the content height itself. The
+  // collapsed translate is published as a CSS var so .ga-panel.in can use it,
+  // and stored in a ref for the drag handlers. Re-runs on content/size changes.
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    if (!sheet || activeIdx === null) return;
+    const measure = () => {
+      const h = sheet.getBoundingClientRect().height;
+      const peek = Math.min(h, 0.5 * window.innerHeight);
+      const collapsed = Math.max(0, h - peek);
+      sheet.style.setProperty('--sheet-collapsed', `${collapsed}px`);
+      sheetCollapsedRef.current = collapsed;
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(sheet);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, [activeIdx]);
 
   // Stars animation kept for the section's white-to-black backdrop strip
@@ -445,8 +503,84 @@ export default function GlobeSection({ cities = [] }: Props) {
   const activeView = activeIdx !== null ? cityViews[activeIdx] : null;
   const activeCards = activeIdx !== null ? cardsPhotos[activeIdx] : null;
 
+  // ── Mobile bottom-sheet drag ──────────────────────────────────────────────
+  // The sheet rests at a collapsed peek (CSS translateY, derived from the
+  // measured content height) and drags up to its content height. We track the
+  // drag in px and snap to the nearest state on release.
+  const collapsedOffsetPx = () => sheetCollapsedRef.current;
+
+  const onSheetDragStart = (e: React.PointerEvent) => {
+    const sheet = sheetRef.current;
+    if (!sheet) return;
+    sheetDragRef.current = {
+      startY: e.clientY,
+      collapsedPx: collapsedOffsetPx(),
+      dragging: true,
+    };
+    sheetLastYRef.current = e.clientY;
+    // No transition while the finger is down so the sheet tracks 1:1, and hint
+    // the compositor so the per-frame transforms stay on the GPU.
+    sheet.style.transition = 'none';
+    sheet.style.willChange = 'transform';
+    // Capture on the handle (the listener target), NOT the sheet — capturing on
+    // the sheet would redirect pointermove/up away from the handle's handlers
+    // and the drag would stall after it starts.
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+
+  // Apply the latest drag position once per frame (rAF-throttled) for smoothness.
+  const renderSheetDrag = () => {
+    sheetRafRef.current = 0;
+    const drag = sheetDragRef.current;
+    const sheet = sheetRef.current;
+    if (!drag.dragging || !sheet) return;
+    const base = sheetExpanded ? 0 : drag.collapsedPx;
+    const next = Math.max(0, Math.min(drag.collapsedPx, base + (sheetLastYRef.current - drag.startY)));
+    sheet.style.transform = `translate3d(0, ${next}px, 0)`;
+  };
+
+  const onSheetDragMove = (e: React.PointerEvent) => {
+    if (!sheetDragRef.current.dragging) return;
+    sheetLastYRef.current = e.clientY;
+    if (!sheetRafRef.current) {
+      sheetRafRef.current = requestAnimationFrame(renderSheetDrag);
+    }
+  };
+
+  const onSheetDragEnd = (e: React.PointerEvent) => {
+    const drag = sheetDragRef.current;
+    const sheet = sheetRef.current;
+    if (!drag.dragging || !sheet) return;
+    drag.dragging = false;
+    if (sheetRafRef.current) {
+      cancelAnimationFrame(sheetRafRef.current);
+      sheetRafRef.current = 0;
+    }
+    const base = sheetExpanded ? 0 : drag.collapsedPx;
+    const ended = Math.max(0, Math.min(drag.collapsedPx, base + (e.clientY - drag.startY)));
+    const willExpand = ended < drag.collapsedPx / 2;
+    const target = willExpand ? 0 : drag.collapsedPx;
+    // Animate to the snap target inline, then hand control back to the CSS class
+    // (which now matches `sheetExpanded`) once the transition settles.
+    sheet.style.transition = 'transform 0.42s cubic-bezier(0.32, 0.72, 0, 1)';
+    sheet.style.transform = `translate3d(0, ${target}px, 0)`;
+    setSheetExpanded(willExpand);
+    const clear = () => {
+      sheet.style.transition = '';
+      sheet.style.transform = '';
+      sheet.style.willChange = '';
+      sheet.removeEventListener('transitionend', clear);
+    };
+    sheet.addEventListener('transitionend', clear);
+    window.setTimeout(clear, 480);
+  };
+
   return (
-    <section id="activity" ref={sectionRef} className="ga-section">
+    <section
+      id="activity"
+      ref={sectionRef}
+      className={`ga-section${activeView ? ' city-open' : ''}`}
+    >
       <canvas ref={starsRef} className="ga-stars" />
       <div className={`ga-backdrop${isOpen ? ' visible' : ''}`} aria-hidden="true" />
       <div
@@ -491,9 +625,24 @@ export default function GlobeSection({ cities = [] }: Props) {
         </button>
       </div>
 
-      <aside className={`ga-panel${isOpen && activeView ? ' in' : ''}`} aria-hidden={!(isOpen && activeView)}>
+      <aside
+        ref={sheetRef}
+        className={`ga-panel${isOpen && activeView ? ' in' : ''}${sheetExpanded ? ' expanded' : ''}`}
+        aria-hidden={!(isOpen && activeView)}
+      >
         {activeView && activeCards && (
           <article className="ga-card">
+            {/* Drag grip — only shown on mobile, where the card is a bottom sheet. */}
+            <div
+              className="ga-sheet-handle"
+              onPointerDown={onSheetDragStart}
+              onPointerMove={onSheetDragMove}
+              onPointerUp={onSheetDragEnd}
+              onPointerCancel={onSheetDragEnd}
+              aria-hidden="true"
+            >
+              <span className="ga-sheet-grip" />
+            </div>
             <div className="ga-thumb">
               {activeCards.map((p, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -539,6 +688,7 @@ export default function GlobeSection({ cities = [] }: Props) {
                     bearing: 0,
                     duration: 1000,
                     essential: true,
+                    offset: sheetFlyOffset(),
                   });
                 }}
               >
@@ -564,27 +714,29 @@ export default function GlobeSection({ cities = [] }: Props) {
         )}
       </aside>
 
-      <div className={`ga-regions${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
-        {REGIONS.map((r) => (
-          <button
-            key={r.key}
-            type="button"
-            className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
-            onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
-          >
-            {r.label}
-          </button>
-        ))}
-      </div>
+      <div className="ga-topbar">
+        <div className={`ga-regions${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
+          {REGIONS.map((r) => (
+            <button
+              key={r.key}
+              type="button"
+              className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
+              onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
 
-      <button
-        type="button"
-        aria-label={t('aria.close')}
-        className={`ga-exit${isOpen ? ' visible' : ''}`}
-        onClick={() => { setIsOpen(false); setActiveIdx(null); setRegionKey('world'); }}
-      >
-        <X />
-      </button>
+        <button
+          type="button"
+          aria-label={t('aria.close')}
+          className={`ga-exit${isOpen ? ' visible' : ''}`}
+          onClick={() => { setIsOpen(false); setActiveIdx(null); setRegionKey('world'); }}
+        >
+          <X />
+        </button>
+      </div>
 
       <div className={`ga-zoom${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
         <button
@@ -622,7 +774,7 @@ export default function GlobeSection({ cities = [] }: Props) {
         </div>
         <div className="ga-hint">
           <MapPin />
-          <span>{'Click on city to view\ndetails'}</span>
+          <span>{`${isTouch ? 'Tap' : 'Click'} on city to view\ndetails`}</span>
         </div>
       </div>
 

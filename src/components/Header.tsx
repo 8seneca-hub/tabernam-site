@@ -45,6 +45,14 @@ export default function Header() {
 
     function tick() {
       raf = 0;
+      // Never auto-hide while the mobile menu is open — the drawer hangs off the
+      // header, so hiding it would slide the header bar (logo + close) away and
+      // leave the menu floating on its own. Keep it pinned and visible.
+      if (navRef.current?.classList.contains('is-open')) {
+        header.classList.remove('is-hidden');
+        lastY = window.scrollY;
+        return;
+      }
       const y = window.scrollY;
       const dy = y - lastY;
       if (Math.abs(dy) < DELTA) return;
@@ -107,17 +115,17 @@ export default function Header() {
 
   const linkClass = (href: string) => {
     const active = isActive(href);
-    return `relative text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 ${
+    return `relative text-[18px] tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 ${
       active
-        ? '!text-brand after:bg-brand after:opacity-100'
-        : '!text-dark after:bg-dark after:opacity-0 hover:after:opacity-100'
+        ? 'nav-link-active font-semibold !text-brand after:bg-brand after:opacity-100'
+        : 'font-normal !text-dark after:bg-dark after:opacity-0 hover:after:opacity-100'
     }`;
   };
 
   return (
     <header
       ref={headerRef}
-      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] items-center gap-6 px-[var(--side-padding)] max-md:px-[16px] py-2.5"
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] max-[769px]:grid-cols-[1fr_auto] items-center gap-6 px-[var(--side-padding)] max-md:px-[16px] py-2.5"
     >
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center" aria-label={`${logoText || 'Tabernam'} home`}>
@@ -127,20 +135,27 @@ export default function Header() {
 
       <nav
         ref={navRef}
-        className="nav flex items-center justify-center gap-8 max-md:gap-0"
+        className="nav flex items-center justify-center gap-8 max-[769px]:gap-0"
         id="primary-nav"
       >
         <Link href="/" className={linkClass('/')} onClick={closeNav}>{t('nav.home')}</Link>
         <Link href="/about" className={linkClass('/about')} onClick={closeNav}>{t('nav.about')}</Link>
         <Link href="/contact" className={linkClass('/contact')} onClick={closeNav}>{t('nav.contact')}</Link>
+        {/* Language options live inside the drawer on mobile; hidden on desktop
+            where the switcher sits in the header controls instead. */}
+        <div className="hidden max-[769px]:block">
+          <LangSwitcher />
+        </div>
       </nav>
 
       <div className="flex items-center justify-end gap-1">
-        <LangSwitcher />
+        <div className="max-[769px]:hidden">
+          <LangSwitcher />
+        </div>
         <button
           ref={toggleRef}
           type="button"
-          className="nav-toggle relative w-[38px] h-[38px] hidden max-md:block"
+          className="nav-toggle relative w-[38px] h-[38px] hidden max-[769px]:block"
           aria-label="Toggle menu"
           aria-controls="primary-nav"
           aria-expanded="false"

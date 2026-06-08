@@ -34,8 +34,8 @@ export default function SubpageHero({ heading, image, imageAlt = '', children }:
 
         {/* Image column — fixed 45% of the frame; square portrait + motto. */}
         <div className="w-full lg:w-[45%] max-lg:max-w-[440px] max-lg:mx-auto">
-          <div className="feathered-image relative aspect-square rounded-6 overflow-hidden bg-surface">
-            <Image src={image} alt={imageAlt} fill priority className="object-cover" />
+          <div className="feathered-image relative rounded-6 overflow-hidden bg-surface">
+            <Image src={image} alt={imageAlt} priority className="w-full h-auto" />
           </div>
           <MottoQuote />
         </div>

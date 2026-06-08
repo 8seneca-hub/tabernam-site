@@ -59,10 +59,17 @@ export default function TravelRoutes() {
           </div>
         </div>
 
-        {/* Picture of the selected place. */}
+        {/* Picture of the selected place. Desktop keeps the contained 2:1 crop;
+            mobile + tablet (<lg) go full-bleed and show the whole map at the
+            screen width. */}
         <div className="mt-[32px]">
-          <div className="relative w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40">
+          {/* Desktop (≥lg): contained, cropped to 2:1. */}
+          <div className="relative hidden w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40 lg:block">
             <Image src={current.image} alt={current.name} fill className="object-cover" />
+          </div>
+          {/* Mobile + tablet (<lg): full-screen-width, complete map. */}
+          <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-40 lg:hidden">
+            <Image src={current.image} alt={current.name} className="block w-full h-auto" />
           </div>
         </div>
       </div>

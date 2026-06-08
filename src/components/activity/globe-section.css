@@ -125,7 +125,7 @@
   width: 0;
   min-width: 100%;
   margin: 30px 0 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 30px;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -187,6 +187,10 @@
   overflow: hidden;
   box-shadow: 0 14px 44px rgba(15, 23, 42, 0.12),
     0 2px 8px rgba(15, 23, 42, 0.06);
+}
+/* Drag grip is only used by the mobile bottom-sheet variant (see media query). */
+.ga-sheet-handle {
+  display: none;
 }
 .ga-progress {
   position: absolute;
@@ -479,6 +483,134 @@
   .ga-intro h2 {
     font-size: 36px;
     line-height: 40px;
+  }
+  /* The intro copy wraps to many lines on phones, so the globe's default 30%
+     drop overlaps the paragraph. Push it further down to leave a clear gap
+     between the text and the globe. */
+  .ga-globe {
+    transform: translateY(42%) scale(1);
+  }
+}
+
+/* Tablet intro: a larger globe sitting closer to the copy than the desktop
+   default (the wider viewport leaves room, so it can scale up and move up). */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .ga-globe {
+    transform: translateY(28%) scale(1.45);
+  }
+}
+
+/* Tablet + phone (≤1024px): the opened-map controls and the city card become a
+   full-width bottom sheet. The right-side desktop card is reserved for larger
+   (≥1025px) viewports where there's room beside the map. */
+@media (max-width: 1024px) {
+  /* Top bar fills the frame (16px gutters): the destination picker stretches to
+     fill, then a 16px gap, then the close button. */
+  .ga-topbar {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    /* Let the children manage their own interactivity via .visible. */
+    pointer-events: none;
+  }
+  .ga-topbar .ga-regions {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .ga-topbar .ga-exit {
+    position: static;
+    top: auto;
+    right: auto;
+    flex-shrink: 0;
+  }
+  /* Zoom controls hug the left frame edge, sitting just above the collapsed
+     drawer (≈50vh peek). They render *below* the drawer (z-index < .ga-panel's
+     11) so dragging the drawer up slides it over the buttons. */
+  .ga-zoom {
+    left: 16px;
+    top: auto;
+    bottom: calc(50vh + 16px);
+    transform: none;
+    z-index: 9;
+  }
+
+  /* ── City detail card → bottom sheet ──────────────────────────────────────
+     On phones the right-hand card becomes a full-width drawer that rises from
+     the bottom. It hugs its content (capped at 90vh, then the body scrolls),
+     peeks at most 50vh when collapsed, and drags up to its content height.
+     --sheet-collapsed (the collapsed translate) is measured in the TSX from the
+     real content height; the 50vh fallback covers the first paint. */
+  .ga-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .ga-panel.in {
+    transform: translateY(var(--sheet-collapsed, 50vh));
+  }
+  .ga-panel.in.expanded {
+    transform: translateY(0);
+  }
+  .ga-card {
+    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  .ga-card-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .ga-sheet-handle {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 26px;
+    z-index: 6;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+  }
+  .ga-sheet-grip {
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+  /* Keep the image's close button tappable above the drag grip. */
+  .ga-close {
+    z-index: 8;
+  }
+  /* Once the detail sheet is open the bottom hints would sit under the drawer —
+     hide them. The zoom controls stay visible above the collapsed drawer; the
+     drawer slides over them when expanded (see z-index below). */
+  .ga-section.city-open .ga-hints {
+    display: none;
   }
   .ga-hints {
     left: 16px;

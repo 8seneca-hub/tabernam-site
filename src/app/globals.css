@@ -340,6 +340,15 @@ h2 {
   display: block;
 }
 
+/* On phones the full-size cells fill the viewport one at a time; shrink them
+   (keeping 16:9) so more of the marquee is visible at once. */
+@media (max-width: 768px) {
+  .marquee-cell {
+    width: 280px;
+    height: 158px;
+  }
+}
+
 /* ─────────── Feathered image edges (brand identity) ───────────
    Every framed image gets a soft white vignette feathering inward from its
    edges — a stack of white inset shadows per the design spec. It's painted by
@@ -350,6 +359,9 @@ h2 {
 .feathered-image-sm,
 .marquee-cell {
   position: relative;
+  /* Square corners for the standard feathered frames (overrides their
+     rounded-* utilities). The .feathered-image-gray variant keeps its radius. */
+  border-radius: 0;
 }
 .feathered-image::after,
 .feathered-image-sm::after,
@@ -361,26 +373,19 @@ h2 {
   pointer-events: none;
   border-radius: inherit;
 }
-/* Large feathered edge — 7 stacked inner shadows (per Figma spec). */
+/* Large feathered edge — 3 stacked inner shadows (per Figma spec). */
 .feathered-image::after {
   box-shadow:
-    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
-    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
-    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
-    inset 0 0 12px 18px rgba(255, 255, 255, 0.4),
-    inset 0 0 6px 7px rgba(255, 255, 255, 0.7),
-    inset 0 0 9px 11px rgba(255, 255, 255, 0.7),
-    inset 0 0 4px 4px #fff;
+    inset 0 0 34px 34px #fff,
+    inset 0 0 12px 12px #fff,
+    inset 0 0 5px 5px #fff;
 }
-/* Smaller framed images (incl. marquee cells) use a lighter, proportionally
-   smaller feather than the large .feathered-image — strong enough to fade
-   darker photo edges, but not as wide/heavy as the full-size spec. */
+/* Smaller framed images (incl. marquee cells) use a lighter feather. */
 .feathered-image-sm::after,
 .marquee-cell::after {
   box-shadow:
-    inset 0 0 3px 2px #fff,
-    inset 0 0 8px 6px #fff,
-    inset 0 0 26px 23px #fff;
+    inset 0 0 15px 15px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px 12px #fff;
 }
 /* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
    gray-20 sections instead of showing a white halo. */
@@ -807,20 +812,34 @@ h2 {
     border-bottom-width: 1px;
   }
 
+  /* The drawer clips its content (overflow:hidden) for the open/close height
+     animation, which also hides the language picker's dropdown. When that
+     dropdown is open, let it escape the clip so the options are visible. */
+  .nav.is-open:has(.lang-switcher.is-open) {
+    overflow: visible;
+  }
+
   .nav a {
     padding: 16px 0;
     font-size: 16px;
-    border-bottom: 1px solid var(--gray-40);
     width: 100%;
   }
-  /* The desktop hover/active underline bar doesn't belong in the drawer —
-     the mobile active state is conveyed by the blue text + row divider. */
+  /* The desktop hover underline bar doesn't belong in the drawer; the active
+     state is shown via semibold (linkClass) + a text underline here. */
   .nav a::after {
     display: none;
   }
+  .nav a.nav-link-active {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+  }
 
-  .lang-switcher {
+  /* Align the language picker's text with the nav links (no left inset). */
+  .nav .lang-switcher {
     margin: 8px 0 0;
+  }
+  .nav .lang-switcher > button {
+    padding-left: 0;
   }
 
   .lang-trigger {

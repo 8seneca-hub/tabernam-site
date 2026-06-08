@@ -67,12 +67,11 @@ export default function QuoteSection({ imageUrl }: Props) {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 0.61, 0.36, 1] }}
         >
-          <div className="feathered-image relative aspect-square rounded-6 overflow-hidden bg-surface">
+          <div className="feathered-image relative rounded-6 overflow-hidden bg-surface">
             <Image
               src={imageUrl || '/tibor_image.png'}
               alt="Portrait photograph"
-              fill
-              className="object-cover"
+              className="w-full h-auto"
             />
           </div>
           <MottoQuote />

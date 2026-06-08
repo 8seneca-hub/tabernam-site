@@ -47,7 +47,7 @@ export default function HeroSection({ slides }: Props) {
           image regardless of how the text wraps at different screen sizes. The
           gradient fades from a soft brand tint at the page top down to the page
           background where the image begins. */}
-      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px]">
+      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-md:pt-[150px] max-md:pb-[100px]">
         {/* Centering frame, capped at 1320px to align with the other sections. */}
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
           {/* Title + description block — hugs content so the body wraps to the
