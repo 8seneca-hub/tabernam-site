@@ -221,6 +221,21 @@ export default function GlobeSection({ cities = [] }: Props) {
     const map = mapRef.current;
     if (!map) return;
 
+    // Several operations below (setProjection / setTerrain) mutate the style
+    // and throw "Style is not done loading" if the style isn't ready yet. This
+    // effect can fire before the map finishes loading (e.g. when cityViews /
+    // cardsPhotos arrive from the data fetch first), so defer the whole sync
+    // until the style has loaded, and re-run once it does.
+    if (!map.isStyleLoaded()) {
+      const onStyleLoad = () => syncMapState(map);
+      map.once('style.load', onStyleLoad);
+      return () => { map.off('style.load', onStyleLoad); };
+    }
+
+    syncMapState(map);
+    return;
+
+    function syncMapState(map: mapboxgl.Map) {
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
@@ -359,6 +374,7 @@ export default function GlobeSection({ cities = [] }: Props) {
     // Track activeIdx so the next run can detect the overview→city transition
     // (when to capture the pre-card view).
     prevActiveIdxRef.current = activeIdx;
+    }
   }, [activeIdx, isOpen, regionKey, cityViews, cardsPhotos, mapReady]);
 
   // Keep the idle globe both sized AND positioned to the viewport.
