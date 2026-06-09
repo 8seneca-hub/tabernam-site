@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import type { HeroSlide } from '@/lib/directus';
+import type { HeroSlide, HeroBundle } from '@/lib/directus';
 import { useI18n } from '@/app/hook/useI18n';
 
 interface Props {
   slides?: HeroSlide[];
+  hero?: HeroBundle;
 }
 
 const FALLBACK_SLIDES: HeroSlide[] = [
@@ -14,6 +15,14 @@ const FALLBACK_SLIDES: HeroSlide[] = [
   { image: '/carousel/photo-20.jpg', alt: '' },
   { image: '/carousel/photo-22.jpg', alt: '' },
 ];
+
+// Last-resort English fallback if Directus is unreachable AND no English row
+// was loaded. The hardcoded values previously lived in i18n.ts as dictionary
+// entries — we keep them here so the section never renders empty.
+const FALLBACK_TEXT = {
+  title: 'Tabernam',
+  body: '',
+};
 
 const SLIDE_INTERVAL = 5000;
 
@@ -26,10 +35,16 @@ const fadeUp = {
   }),
 };
 
-export default function HeroSection({ slides }: Props) {
-  const { t } = useI18n();
+export default function HeroSection({ slides, hero }: Props) {
+  const { lang } = useI18n();
   const items = slides && slides.length > 0 ? slides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Active language → English → hardcoded constant.
+  const text =
+    hero?.byLang[lang] ??
+    hero?.byLang['en'] ??
+    FALLBACK_TEXT;
 
   useEffect(() => {
     if (items.length <= 1) return;
@@ -39,18 +54,9 @@ export default function HeroSection({ slides }: Props) {
     return () => window.clearInterval(id);
   }, [items.length]);
 
-  const current = items[activeIndex] ?? items[0];
-
   return (
     <section className="hero relative" style={{ paddingBottom: '60px' }}>
-      {/* Top region — full-bleed gradient backdrop. It contains the header-clearance
-          padding (pt), the hero text, and the gap (pb), so it auto-sizes to its own
-          content; its bottom edge therefore always lands exactly at the top of the
-          image regardless of how the text wraps at different screen sizes. The
-          gradient fades from a soft brand tint at the page top down to the page
-          background where the image begins. */}
       <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-[1025px]:pt-[150px] max-[1025px]:pb-[60px]">
-        {/* Centering frame, capped at 1320px to align with the other sections. */}
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
           <div className="flex flex-col items-center gap-[30px] text-center">
             <motion.h1
@@ -60,7 +66,7 @@ export default function HeroSection({ slides }: Props) {
               animate="visible"
               variants={fadeUp}
             >
-              {t('hero.title')}
+              {text.title}
             </motion.h1>
             <motion.p
               className="text-[28px] leading-[32px] max-md:text-[24px] max-md:leading-[28px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
@@ -69,14 +75,12 @@ export default function HeroSection({ slides }: Props) {
               animate="visible"
               variants={fadeUp}
             >
-              {t('hero.body')}
+              {text.body}
             </motion.p>
           </div>
         </div>
       </div>
 
-      {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
-          All slides are stacked; the active one cross-fades in via opacity. */}
       <div className="px-[40px] max-md:px-[16px]">
         <div className="feathered-image relative w-full max-w-[1320px] mx-auto aspect-[16/9] rounded-6 overflow-hidden bg-surface">
           {items.map((slide, idx) => (
@@ -91,7 +95,6 @@ export default function HeroSection({ slides }: Props) {
               aria-label={slide.alt || undefined}
             />
           ))}
-
         </div>
       </div>
     </section>
