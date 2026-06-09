@@ -761,25 +761,3 @@
   background: #ef4444;
   color: #ffffff;
 }
-/* City-name label under the active pin: red text inside a white pill frame
-   that hugs the text. Hidden unless the pin is active. */
-.globe-marker-label {
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  transform: translate(-50%, 8px);
-  display: none;
-  white-space: nowrap;
-  padding: 6px 18px;
-  background: #ffffff;
-  border-radius: var(--radius-full);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #ef4444;
-  pointer-events: none;
-}
-.globe-marker.is-active .globe-marker-label {
-  display: block;
-}
