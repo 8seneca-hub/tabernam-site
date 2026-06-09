@@ -132,8 +132,8 @@ await ensureRelation('hero_translations', 'hero_id', 'hero', 'translations');
 await ensureRelation('hero_translations', 'language', 'languages', null);
 
 // 6) Ensure the singleton row exists.
-// Singletons return `data: {id, ...}` (object), not an array — and may
-// 404 / return null before the row is created.
+// Singletons don't accept POST /items/<col>; use PATCH (upsert) instead.
+// GET returns `data: {id, ...}` once the row exists, or 404s / nulls before.
 let heroId;
 try {
   const heroRowsRes = await api('/items/hero?fields=id');
@@ -142,7 +142,7 @@ try {
   heroId = null;
 }
 if (!heroId) {
-  const created = await api('/items/hero', 'POST', {});
+  const created = await api('/items/hero', 'PATCH', {});
   heroId = created.data.id;
   console.log(`  hero: inserted singleton row (id=${heroId})`);
 } else {
