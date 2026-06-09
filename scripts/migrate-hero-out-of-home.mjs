@@ -108,7 +108,7 @@ await ensureField('hero_translations', {
   field: 'hero_id', type: 'integer', interface: 'select-dropdown-m2o', special: ['m2o'], hidden: true,
 });
 await ensureField('hero_translations', {
-  field: 'language', type: 'string', interface: 'select-dropdown-m2o', special: ['m2o'],
+  field: 'language', type: 'integer', interface: 'select-dropdown-m2o', special: ['m2o'],
 });
 await ensureField('hero_translations', {
   field: 'title', type: 'string', interface: 'input', note: 'Hero headline.',
@@ -149,7 +149,12 @@ if (!heroId) {
   console.log(`  hero: singleton row exists (id=${heroId})`);
 }
 
-// 7) Copy values from home_translations
+// 7) Copy values from home_translations.
+// languages.id (integer) is the actual FK target — `code` is just a label.
+// Build a code→id map so we send integer FKs, matching home_translations.language.
+const langRes = await api('/items/languages?fields=id,code&limit=-1');
+const langIdByCode = Object.fromEntries((langRes.data || []).map((l) => [l.code, l.id]));
+
 const homeRows = await api('/items/home_translations?fields=id,language.code,hero_title,hero_body');
 const existingHeroTrRes = await api(`/items/hero_translations?fields=id,language.code&filter%5Bhero_id%5D%5B_eq%5D=${heroId}`);
 const existingByLang = Object.fromEntries(
@@ -159,9 +164,14 @@ const existingByLang = Object.fromEntries(
 for (const row of homeRows.data || []) {
   const code = row.language?.code;
   if (!code) continue;
+  const langId = langIdByCode[code];
+  if (!langId) {
+    console.log(`  skip ${code}: language row not found in languages collection`);
+    continue;
+  }
   const payload = {
     hero_id: heroId,
-    language: code,
+    language: langId,
     title: row.hero_title ?? '',
     body: row.hero_body ?? '',
   };
