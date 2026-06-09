@@ -30,7 +30,7 @@ export default function QuoteSection({ imageUrl }: Props) {
       : FALLBACK_EN;
 
   return (
-    <section className="quote w-full px-[60px] py-[150px] max-md:px-[16px] max-md:py-[80px]">
+    <section className="quote w-full px-[60px] py-[150px] max-md:px-[16px] max-[1025px]:py-[40px]">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[100px] lg:flex-row lg:items-start max-md:gap-[40px]">
         {/* Left column — title + body, fills the remaining width, top-aligned, text left-aligned. */}
         <motion.div
@@ -51,7 +51,7 @@ export default function QuoteSection({ imageUrl }: Props) {
             <span> not transactions</span>
           </motion.h2>
           <motion.p
-            className="text-[24px] leading-[30px] tracking-[-0.01em] font-medium text-text text-left"
+            className="text-[24px] leading-[30px] max-md:text-[20px] max-md:leading-[26px] tracking-[-0.01em] font-medium text-text text-left"
             custom={0.15}
             variants={fadeUp}
           >

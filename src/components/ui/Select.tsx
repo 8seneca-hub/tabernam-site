@@ -66,7 +66,7 @@ export default function Select({ value, onChange, options, ariaLabel, className 
       {open && (
         <ul
           role="listbox"
-          className="absolute top-[calc(100%+2px)] left-0 m-0 p-0 bg-white list-none flex flex-col gap-1 shadow-[0_4px_12px_rgba(16,24,35,0.12)] z-110 min-w-full w-max"
+          className="absolute top-[calc(100%+6px)] left-0 m-0 p-0 bg-white list-none flex flex-col overflow-hidden rounded-[12px] border border-black/10 shadow-[0_8px_24px_rgba(16,24,35,0.14)] z-110 w-max"
         >
           {options.map((o) => (
             <li key={o.value} className="list-none">
@@ -74,10 +74,10 @@ export default function Select({ value, onChange, options, ariaLabel, className 
                 type="button"
                 role="option"
                 aria-selected={o.value === value}
-                className="flex items-center gap-2 w-full px-5 py-2.5 bg-transparent border-0 font-[inherit] text-base text-text text-left cursor-pointer hover:bg-gray-40 focus-visible:bg-gray-40 focus-visible:outline-none"
+                className="flex items-center gap-[10px] w-full px-5 py-2.5 bg-transparent border-0 font-[inherit] text-base text-text text-left cursor-pointer hover:bg-gray-40 focus-visible:bg-gray-40 focus-visible:outline-none"
                 onClick={() => { onChange(o.value); close(); }}
               >
-                <span className="flex-1 whitespace-nowrap">{o.label}</span>
+                <span className="whitespace-nowrap">{o.label}</span>
                 {o.icon && (
                   <span className="text-base leading-none normal-case shrink-0" aria-hidden="true">
                     {o.icon}

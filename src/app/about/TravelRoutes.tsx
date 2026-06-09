@@ -39,7 +39,7 @@ export default function TravelRoutes() {
 
         {/* Place tabs. */}
         <div className="mt-[32px] flex justify-center">
-          <div className="inline-flex items-center gap-1 rounded-full bg-white p-1.5">
+          <div className="inline-flex items-center gap-1 rounded-full bg-white px-1.5 py-0.5">
             {PLACES.map((p) => {
               const isActive = p.id === active;
               return (
@@ -48,7 +48,7 @@ export default function TravelRoutes() {
                   type="button"
                   onClick={() => setActive(p.id)}
                   aria-pressed={isActive}
-                  className={`rounded-full px-7 py-2.5 text-[16px] font-medium transition-colors ${
+                  className={`rounded-full px-7 py-1.5 text-[16px] font-medium transition-colors ${
                     isActive ? 'bg-brand text-white' : 'text-gray-80 hover:text-dark'
                   }`}
                 >

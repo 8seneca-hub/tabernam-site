@@ -4,6 +4,18 @@ export const IDLE_ZOOM = 1.4;
 export const MIN_ZOOM = 1.2;
 export const MAX_ZOOM = 18;
 
+// The globe's on-screen pixel diameter is set by the zoom level alone — it does
+// NOT grow with the canvas size. So a low idle zoom fills a narrow phone but
+// leaves a small disk (big side whitespace) on a wide desktop. We raise the
+// idle zoom on larger viewports so the globe is drawn bigger *natively* — and
+// stays crisp — instead of CSS-scaling the canvas, which only upscales the
+// already-rendered bitmap and looks blurry.
+export function idleZoomFor(width: number): number {
+  if (width >= 1025) return 2.0; // desktop
+  if (width >= 721) return 1.9; // tablet
+  return IDLE_ZOOM; // phone (1.4)
+}
+
 // Whole-world view shown in the flat (mercator) detail map before any pin is
 // selected. Slightly north-of-equator center frames the populated continents.
 export const WORLD_CENTER: [number, number] = [10, 25];

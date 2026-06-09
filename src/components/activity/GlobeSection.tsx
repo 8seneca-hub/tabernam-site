@@ -11,7 +11,7 @@ import { pickTranslation } from '@/lib/directus';
 import type { GlobeCity } from '@/lib/type';
 import {
   IDLE_CENTER,
-  IDLE_ZOOM,
+  idleZoomFor,
   WORLD_CENTER,
   WORLD_ZOOM,
   MIN_ZOOM,
@@ -31,6 +31,7 @@ const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 export default function GlobeSection({ cities = [] }: Props) {
   const { t, lang } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLElement>(null);
   const sheetDragRef = useRef<{ startY: number; collapsedPx: number; dragging: boolean }>({
     startY: 0,
@@ -51,6 +52,16 @@ export default function GlobeSection({ cities = [] }: Props) {
   const spinRef = useRef(true);
   const isCameraMovingRef = useRef(false);
   const edgeTimerRef = useRef<number | undefined>(undefined);
+  // The map view the user was at right before opening a city card, captured so
+  // closing the card can restore exactly that view (instead of re-framing the
+  // region). prevActiveIdxRef detects the null→city transition (when to capture).
+  // restoreOnCloseRef is an explicit intent set by the card-close button: only
+  // then does deselecting restore the pre-card view; region-tab clicks leave it
+  // false so they re-frame the region instead. Read (not mutated) by the sync
+  // effect so it stays correct even if the effect runs twice for one gesture.
+  const preCityCameraRef = useRef<{ center: [number, number]; zoom: number; bearing: number } | null>(null);
+  const prevActiveIdxRef = useRef<number | null>(null);
+  const restoreOnCloseRef = useRef(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
@@ -107,7 +118,7 @@ export default function GlobeSection({ cities = [] }: Props) {
       style: 'mapbox://styles/mapbox/satellite-streets-v12',
       projection: { name: 'globe' },
       center: IDLE_CENTER,
-      zoom: IDLE_ZOOM,
+      zoom: idleZoomFor(window.innerWidth),
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
       // Don't tile infinite copies of the world horizontally in the flat
@@ -224,11 +235,15 @@ export default function GlobeSection({ cities = [] }: Props) {
       map.stop();
       map.flyTo({
         center: IDLE_CENTER,
-        zoom: IDLE_ZOOM,
+        zoom: idleZoomFor(window.innerWidth),
         bearing: map.getBearing(),
         duration: 1200,
         essential: true,
       });
+      // Reset the close-restore tracking so the next open starts fresh.
+      prevActiveIdxRef.current = null;
+      restoreOnCloseRef.current = false;
+      preCityCameraRef.current = null;
       return;
     }
 
@@ -271,6 +286,16 @@ export default function GlobeSection({ cities = [] }: Props) {
     });
 
     if (activeIdx !== null && cityViews[activeIdx]) {
+      // Entering city-view from the overview (not switching city→city): remember
+      // the current view so closing the card can return here.
+      if (prevActiveIdxRef.current === null) {
+        const cc = map.getCenter();
+        preCityCameraRef.current = {
+          center: [cc.lng, cc.lat],
+          zoom: map.getZoom(),
+          bearing: map.getBearing(),
+        };
+      }
       const c = cityViews[activeIdx].city;
       map.flyTo({
         center: [c.lng, c.lat],
@@ -279,6 +304,17 @@ export default function GlobeSection({ cities = [] }: Props) {
         duration: 1200,
         essential: true,
         offset: sheetFlyOffset(),
+      });
+    } else if (restoreOnCloseRef.current && preCityCameraRef.current) {
+      // Card was closed via its close button — restore the exact view the user
+      // was at before opening it, rather than re-framing the region.
+      const cam = preCityCameraRef.current;
+      map.flyTo({
+        center: cam.center,
+        zoom: cam.zoom,
+        bearing: cam.bearing,
+        duration: 1200,
+        essential: true,
       });
     } else {
       // No pin selected — show the chosen region (or the whole flat map) with
@@ -291,6 +327,19 @@ export default function GlobeSection({ cities = [] }: Props) {
           duration: 1200,
           essential: true,
         });
+      } else if (cityViews.length > 0) {
+        // 'world' / default: open focused on the actual locations — fit a box
+        // around every city pin rather than the whole globe. The user can still
+        // zoom out to the full map from here.
+        const lngs = cityViews.map((v) => v.city.lng);
+        const lats = cityViews.map((v) => v.city.lat);
+        map.fitBounds(
+          [
+            [Math.min(...lngs), Math.min(...lats)],
+            [Math.max(...lngs), Math.max(...lats)],
+          ],
+          { padding: 80, bearing: 0, duration: 1200, essential: true, maxZoom: 6 },
+        );
       } else {
         map.flyTo({
           center: WORLD_CENTER,
@@ -301,7 +350,106 @@ export default function GlobeSection({ cities = [] }: Props) {
         });
       }
     }
+
+    // Track activeIdx so the next run can detect the overview→city transition
+    // (when to capture the pre-card view).
+    prevActiveIdxRef.current = activeIdx;
   }, [activeIdx, isOpen, regionKey, cityViews, cardsPhotos, mapReady]);
+
+  // Keep the idle globe both sized AND positioned to the viewport.
+  //
+  // Sizing: the right zoom is breakpoint-dependent (see idleZoomFor), so re-zoom
+  // on resize while the intro globe is shown.
+  //
+  // Positioning: the globe's disk and the intro button live in different
+  // reference frames — the disk is offset by a fraction of viewport *height*,
+  // while the button sits at the bottom of copy that wraps by viewport *width*
+  // (and language). No fixed percentage clears the button at every aspect ratio.
+  // So we measure where the intro actually ends and place the globe so its
+  // visible top edge sits a constant GAP below it.
+  //
+  // The globe is drawn with a *perspective* camera, so its on-screen silhouette
+  // is larger than transform.globeRadius (the geometric radius). We therefore
+  // measure the real silhouette by projecting a ring of near-limb surface points
+  // and taking the farthest from the projected center — that distance is the
+  // visible radius, and the disk is centered in the canvas, so the visible top
+  // is centerY − R. Published as --ga-globe-ty. (The opened detail map drives
+  // its own zoom/position and is left alone.)
+  useEffect(() => {
+    if (isOpen) return;
+    const map = mapRef.current;
+    const globe = mapContainerRef.current;
+    const intro = introRef.current;
+    const section = sectionRef.current;
+    if (!map || !globe || !intro || !section) return;
+
+    // Gap between the button's bottom and the globe's visible top. Desktop has
+    // far more room beside/below the copy, so it gets a more generous gap than
+    // the tighter mobile/tablet layouts. (Recomputed per recalc so it tracks
+    // breakpoint changes on resize.)
+    const gapFor = (w: number) => (w >= 1025 ? 88 : 28);
+
+    // Max screen distance from the projected center to a ring of near-limb
+    // surface points = the globe's visible silhouette radius (in canvas px).
+    const visibleRadius = (centerScreen: mapboxgl.Point) => {
+      const c = map.getCenter();
+      const R2D = 180 / Math.PI;
+      const D2R = Math.PI / 180;
+      const dest = (arcDeg: number, brgDeg: number) => {
+        const f1 = c.lat * D2R, l1 = c.lng * D2R, d = arcDeg * D2R, t = brgDeg * D2R;
+        const f2 = Math.asin(Math.sin(f1) * Math.cos(d) + Math.cos(f1) * Math.sin(d) * Math.cos(t));
+        const l2 = l1 + Math.atan2(Math.sin(t) * Math.sin(d) * Math.cos(f1), Math.cos(d) - Math.sin(f1) * Math.sin(f2));
+        return { lng: l2 * R2D, lat: f2 * R2D };
+      };
+      let maxDist = 0;
+      for (let arc = 70; arc <= 90; arc += 2) {
+        for (let brg = 0; brg < 360; brg += 45) {
+          const p = map.project(dest(arc, brg));
+          const dist = Math.hypot(p.x - centerScreen.x, p.y - centerScreen.y);
+          if (dist > maxDist) maxDist = dist;
+        }
+      }
+      return maxDist;
+    };
+
+    // Measure + position only — NEVER moves the camera. (Camera zoom is owned by
+    // the sync effect's open/close flyTo and the resize handler below; if this
+    // also drove zoom it would fight that flyTo and strand the map mid-close.)
+    // Bails unless the map is settled at the idle zoom, so it never measures the
+    // radius mid-flight (e.g. while the close flyTo is still zooming out from a
+    // deep city view) — the flyTo's final moveend re-runs it at the right zoom.
+    const recalc = () => {
+      if (Math.abs(map.getZoom() - idleZoomFor(window.innerWidth)) > 0.05) return;
+      const center = map.project(map.getCenter());
+      const visibleTop = center.y - visibleRadius(center); // px from canvas top
+      const introBottom =
+        intro.getBoundingClientRect().bottom - section.getBoundingClientRect().top;
+      const ty = introBottom + gapFor(window.innerWidth) - visibleTop;
+      globe.style.setProperty('--ga-globe-ty', `${Math.round(ty)}px`);
+    };
+
+    // Resize is the only place the idle globe changes zoom (breakpoint switch).
+    // The easeTo's moveend then re-runs recalc to reposition at the new radius.
+    const onResize = () => {
+      const targetZoom = idleZoomFor(window.innerWidth);
+      if (Math.abs(map.getZoom() - targetZoom) > 0.01) {
+        map.easeTo({ zoom: targetZoom, duration: 300, essential: true });
+      } else {
+        recalc();
+      }
+    };
+
+    recalc();
+    map.on('moveend', recalc); // re-measure after a flyTo/easeTo settles, or each spin cycle
+    const ro = new ResizeObserver(recalc);
+    ro.observe(intro);
+    window.addEventListener('resize', onResize);
+    return () => {
+      map.off('moveend', recalc);
+      ro.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
+  }, [isOpen, lang, cityViews]);
 
   // Restore the previously-opened city when returning from its detail page
   // (e.g. globe → click city → "Explore now" → /activities → browser back).
@@ -598,7 +746,7 @@ export default function GlobeSection({ cities = [] }: Props) {
         </div>
       )}
 
-      <div className={`ga-intro${isOpen ? ' out' : ''}`}>
+      <div ref={introRef} className={`ga-intro${isOpen ? ' out' : ''}`}>
         <h2>
           {(() => {
             const heading = t('globeIntro.heading');
@@ -618,7 +766,7 @@ export default function GlobeSection({ cities = [] }: Props) {
         <button
           type="button"
           className="ga-cta"
-          onClick={() => { setIsOpen(true); setActiveIdx(null); setRegionKey('world'); }}
+          onClick={() => { restoreOnCloseRef.current = false; setIsOpen(true); setActiveIdx(null); setRegionKey('world'); }}
           disabled={cityViews.length === 0}
         >
           View cities
@@ -666,7 +814,7 @@ export default function GlobeSection({ cities = [] }: Props) {
                 type="button"
                 aria-label={t('aria.close')}
                 className="ga-close"
-                onClick={() => setActiveIdx(null)}
+                onClick={() => { restoreOnCloseRef.current = true; setActiveIdx(null); }}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6L6 18" />
@@ -721,7 +869,7 @@ export default function GlobeSection({ cities = [] }: Props) {
               key={r.key}
               type="button"
               className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
-              onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
+              onClick={() => { restoreOnCloseRef.current = false; setActiveIdx(null); setRegionKey(r.key); }}
             >
               {r.label}
             </button>

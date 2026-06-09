@@ -47,7 +47,7 @@ export default function HeroSection({ slides }: Props) {
           image regardless of how the text wraps at different screen sizes. The
           gradient fades from a soft brand tint at the page top down to the page
           background where the image begins. */}
-      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-md:pt-[150px] max-md:pb-[100px]">
+      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-[1025px]:pt-[150px] max-[1025px]:pb-[60px]">
         {/* Centering frame, capped at 1320px to align with the other sections. */}
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
           {/* Title + description block — hugs content so the body wraps to the
@@ -65,7 +65,7 @@ export default function HeroSection({ slides }: Props) {
               For decades of foreign trade
             </motion.h1>
             <motion.p
-              className="text-[28px] leading-[32px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
+              className="text-[28px] leading-[32px] max-md:text-[24px] max-md:leading-[28px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
               custom={0.2}
               initial="hidden"
               animate="visible"

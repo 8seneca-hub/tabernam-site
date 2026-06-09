@@ -40,9 +40,9 @@ export default function ActivityContent({ cities }: Props) {
   return (
     <main className="pt-[var(--header-height)] pb-[120px]">
       {/* Hero — heading + description, same treatment as the About / Contact heroes. */}
-      <section className="px-[60px] py-20 max-md:px-[16px] min-h-[50vh] flex items-center">
-        <div className="max-w-[1320px] mx-auto w-full flex flex-col gap-[30px]">
-          <h1 className="text-brand tracking-tight">{name}</h1>
+      <section className="px-[60px] py-20 max-md:px-[16px] max-[1025px]:pb-0">
+        <div className="max-w-[1320px] mx-auto w-full flex flex-col gap-[30px] pt-[20px]">
+          <h1 className="text-5xl md:text-6xl font-bold text-brand tracking-tight leading-tight max-md:text-4xl">{name}</h1>
           {desc && (
             <p className="text-[20px] font-medium tracking-[-0.02rem] text-dark leading-relaxed max-w-[760px]">
               {desc}

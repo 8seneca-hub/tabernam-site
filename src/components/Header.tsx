@@ -117,19 +117,19 @@ export default function Header() {
     const active = isActive(href);
     return `relative text-[18px] tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 ${
       active
-        ? 'nav-link-active font-semibold !text-brand after:bg-brand after:opacity-100'
-        : 'font-normal !text-dark after:bg-dark after:opacity-0 hover:after:opacity-100'
+        ? 'nav-link-active font-semibold !text-white after:bg-white after:opacity-100'
+        : 'font-normal !text-white after:bg-white after:opacity-0 hover:after:opacity-100'
     }`;
   };
 
   return (
     <header
       ref={headerRef}
-      className="site-header fixed top-0 left-0 right-0 z-100 bg-gray-20 grid grid-cols-[auto_1fr_auto] max-[769px]:grid-cols-[1fr_auto] items-center gap-6 px-[var(--side-padding)] max-md:px-[16px] py-2.5"
+      className="site-header fixed top-0 left-0 right-0 z-100 bg-brand grid grid-cols-[auto_1fr_auto] max-[769px]:grid-cols-[1fr_auto] items-center gap-6 px-[var(--side-padding)] max-md:px-[16px] py-2.5"
     >
       <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center" aria-label={`${logoText || 'Tabernam'} home`}>
-          <Image src={logoImage} alt={logoText || 'Tabernam'} priority width={150} height={150} style={{ filter: 'brightness(0)' }} />
+          <Image src={logoImage} alt={logoText || 'Tabernam'} priority width={150} height={150} style={{ filter: 'brightness(0) invert(1)' }} />
         </Link>
       </div>
 

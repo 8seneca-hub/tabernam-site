@@ -33,7 +33,11 @@
   width: 100vw;
   height: 100vh;
   z-index: 2;
-  transform: translateY(30%) scale(1);
+  /* Vertical offset is computed in JS (see GlobeSection) so the globe's disk
+     always sits a fixed gap below the intro button, regardless of how the copy
+     wraps at a given viewport size. The percentage is only an SSR/no-JS
+     fallback. */
+  transform: translateY(var(--ga-globe-ty, 30%));
   transform-origin: center center;
   transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1);
   background: transparent;
@@ -484,26 +488,22 @@
     font-size: 36px;
     line-height: 40px;
   }
-  /* The intro copy wraps to many lines on phones, so the globe's default 30%
-     drop overlaps the paragraph. Push it further down to leave a clear gap
-     between the text and the globe. */
-  .ga-globe {
-    transform: translateY(42%) scale(1);
-  }
 }
 
-/* Tablet intro: a larger globe sitting closer to the copy than the desktop
-   default (the wider viewport leaves room, so it can scale up and move up). */
-@media (min-width: 721px) and (max-width: 1024px) {
-  .ga-globe {
-    transform: translateY(28%) scale(1.45);
-  }
-}
+/* Globe size is handled natively via idleZoomFor() (a higher Mapbox zoom on
+   wider screens) rather than CSS scale, which would upscale the rendered bitmap
+   and look blurry. Vertical position is computed in JS via --ga-globe-ty so the
+   disk always clears the intro button by a fixed gap at any viewport size. */
 
 /* Tablet + phone (≤1024px): the opened-map controls and the city card become a
    full-width bottom sheet. The right-side desktop card is reserved for larger
    (≥1025px) viewports where there's room beside the map. */
 @media (max-width: 1024px) {
+  /* Match the page's reduced gutter (16px) on phone + tablet instead of the
+     larger --side-padding the intro inherits. */
+  .ga-intro {
+    padding-inline: 16px;
+  }
   /* Top bar fills the frame (16px gutters): the destination picker stretches to
      fill, then a 16px gap, then the close button. */
   .ga-topbar {
@@ -658,11 +658,17 @@
 .globe-marker.is-active {
   z-index: 5;
 }
+/* Hovered marker (and its photo/name preview) must sit above every other pin,
+   so the preview is never overlapped by neighbouring markers. Beats the active
+   pin's z-index too. */
+.globe-marker.is-hover {
+  z-index: 10;
+}
 .globe-marker-shape {
   width: 18px;
   height: 22.5px;
   display: block;
-  color: #1a1a1a;
+  color: #ef4444;
   /* Do NOT add will-change/translateZ here — it lifts the shape into its own
      GPU layer and makes it lag the parent's transform updates during Mapbox's
      zoom/pan animations (pins appear to drift). */
@@ -682,7 +688,13 @@
   position: absolute;
   left: calc(100% + 10px);
   top: 50%;
-  transform: translateY(-50%) translateX(-4px);
+  /* translateZ(0) promotes the preview to its own compositing layer so the
+     photo is rasterized crisply at full device resolution. Without it the image
+     inherits the marker's sub-pixel transform (Mapbox positions markers at
+     fractional px, plus translateY(-50%) of an odd-height box), which disables
+     pixel-snapping and renders the photo blurry on retina. Safe here because the
+     preview only shows on hover while the map is static (no per-frame drift). */
+  transform: translateY(-50%) translateX(-4px) translateZ(0);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -706,9 +718,10 @@
   margin-top: 0;
   padding: 8px 18px;
   background: #ffffff;
-  color: #1a1a1a;
+  /* Red + bold, matching the under-pin label style. */
+  color: #ef4444;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
   text-align: left;
@@ -717,16 +730,22 @@
 }
 .globe-marker.is-hover:not(.is-active) .globe-marker-preview {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
+  transform: translateY(-50%) translateX(0) translateZ(0);
 }
-/* City-name label under the active pin: red text inside a white pill frame
-   that hugs the text. Hidden unless the pin is active. */
+/* On hover the name lives in the preview card instead, so drop the under-pin
+   label to avoid showing the city name twice. */
+.globe-marker.is-hover:not(.is-active) .globe-marker-label {
+  display: none;
+}
+/* City-name label under every pin, in a pill frame that hugs the text.
+   Inactive: red text on a white fill. Active: the reverse — white text on a
+   red fill (see below). */
 .globe-marker-label {
   position: absolute;
   left: 50%;
   top: 100%;
   transform: translate(-50%, 8px);
-  display: none;
+  display: block;
   white-space: nowrap;
   padding: 6px 18px;
   background: #ffffff;
@@ -739,5 +758,6 @@
   pointer-events: none;
 }
 .globe-marker.is-active .globe-marker-label {
-  display: block;
+  background: #ef4444;
+  color: #ffffff;
 }

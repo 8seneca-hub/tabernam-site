@@ -22,7 +22,7 @@ interface Props {
  */
 export default function SubpageHero({ heading, image, imageAlt = '', children }: Props) {
   return (
-    <section className="px-[60px] py-20 max-md:px-[16px]">
+    <section className="px-[60px] py-20 max-md:px-[16px] max-[1025px]:pb-0">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
         {/* Text column — fills the remaining width on large screens. */}
         <div className="w-full lg:flex-1 flex flex-col gap-[30px] pt-[20px]">

@@ -18,11 +18,11 @@ export default function AboutSection({ texts: bundle }: Props) {
 
   return (
     <>
-      <section className="w-full bg-white px-[60px] py-[120px] max-md:px-[16px]">
+      <section className="w-full bg-white px-[60px] py-[120px] max-md:px-[16px] max-[1025px]:py-[60px]">
         <div className="max-w-[1320px] mx-auto flex flex-col items-center justify-center gap-10">
           <FadeIn delay={0.05} className="flex flex-col gap-4 items-center text-center">
             {eyebrow && (
-              <span className="block text-[20px] leading-[24px] font-medium text-text tracking-[-0.01em]">
+              <span className="block text-[20px] max-md:text-[16px] leading-[24px] font-medium text-text tracking-[-0.01em]">
                 {eyebrow}
               </span>
             )}
@@ -35,7 +35,7 @@ export default function AboutSection({ texts: bundle }: Props) {
               {bodies.map((body, i) => (
                 <p
                   key={i}
-                  className="text-[24px] font-medium text-text italic leading-[30px] max-[1100px]:text-[22px]"
+                  className="text-[24px] font-medium text-text italic leading-[30px] md:max-[1100px]:text-[22px] max-md:text-[20px]"
                 >
                   {`${i === 0 ? '"' : ''}${body}${i === bodies.length - 1 ? '"' : ''}`}
                 </p>

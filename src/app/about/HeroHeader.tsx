@@ -24,13 +24,12 @@ export default function HeroHeader({ texts }: Props) {
           )}
         </FadeIn>
         <FadeIn delay={0.1} className="flex-none w-full max-w-[280px] max-md:mx-auto">
-          <div className="feathered-image relative aspect-[1/1] rounded-full overflow-hidden shadow-2xl bg-white/10">
+          <div className="feathered-image relative overflow-hidden shadow-2xl bg-white/10">
             <Image
               src={texts.portrait_image || '/tibor_image.png'}
               alt="Portrait photograph"
-              fill
               priority
-              className="object-cover"
+              className="w-full h-auto"
             />
           </div>
         </FadeIn>
