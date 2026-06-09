@@ -101,6 +101,8 @@ export interface CMSSchema {
     activities: CMSActivity[];
     activities_translations: CMSActivityTranslation[];
     activities_files: CMSActivityFile[];
+    hero: CMSHero;
+    hero_translations: CMSHeroTranslation[];
     hero_slides: CMSHeroSlide[];
     home_marquee: CMSHomeMarquee[];
     travel_route_map: CMSTravelRouteMap[];
@@ -119,6 +121,18 @@ export interface CMSSchema {
     footer_translations: CMSPageTranslation[];
     languages: CMSLanguage[];
     site_settings: CMSSiteSettings;
+}
+
+export interface CMSHero {
+    id: number;
+    translations: CMSHeroTranslation[];
+}
+
+export interface CMSHeroTranslation {
+    id: number;
+    language: number | CMSLanguage | { code: string } | null;
+    title: string;
+    body: string;
 }
 
 export interface CMSSiteSettings {

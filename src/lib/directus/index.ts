@@ -3,6 +3,7 @@ export { assetUrl } from './client';
 
 export { pickTranslation, getActivities } from './activities';
 export { getHeroSlides, getHomeMarquee, getHomeTexts } from './home';
+export { getHero, type HeroBundle, type HeroText } from './hero';
 export { getTravelRouteMaps, getAboutTexts } from './about';
 export { getContactOffice, getContactTexts } from './contact';
 export { getCvTexts } from './cv';
