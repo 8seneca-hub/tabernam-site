@@ -40,10 +40,13 @@ export default function HeroSection({ slides, hero }: Props) {
   const items = slides && slides.length > 0 ? slides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Active language → English → hardcoded constant.
+  // Active language → English → hardcoded constant. A row exists but with an
+  // empty title counts as "no translation" so we still fall through.
+  const langText = hero?.byLang[lang];
+  const enText = hero?.byLang['en'];
   const text =
-    hero?.byLang[lang] ??
-    hero?.byLang['en'] ??
+    (langText && langText.title ? langText : null) ??
+    (enText && enText.title ? enText : null) ??
     FALLBACK_TEXT;
 
   useEffect(() => {
