@@ -34,7 +34,6 @@ const TOKEN_RE = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\{\{LATIN\}\}|\.{2,}\s*BUTT
 const MD_LINK_RE = /^\[([^\]]+)\]\(([^)]+)\)$/;
 const BOLD_RE = /^\*\*([^*]+)\*\*$/;
 const LATIN_TOKEN_RE = /^\{\{LATIN\}\}$/;
-const BUTTON_RE = /^\.{2,}\s*BUTTON\s*\.{2,}$/i;
 const URL_RE = /^(https?:\/\/[^\s)]+|www\.[^\s)]+)$/;
 const YT_RE = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i;
 // Fixed Latin slogan — rendered from this constant (never the CMS) so it stays
@@ -136,7 +135,6 @@ function renderParagraph(text: string, titleMap: Map<string, string>, cvLabel: s
       if (LATIN_TOKEN_RE.test(part)) return <QuoteEmphasis key={i}>{LATIN_SLOGAN}</QuoteEmphasis>;
       const bold = part.match(BOLD_RE);
       if (bold) return <QuoteEmphasis key={i}>{bold[1]}</QuoteEmphasis>;
-      if (BUTTON_RE.test(part)) return cvAsText ? <Fragment key={i}>{cvLabel}</Fragment> : <CvButton key={i} label={cvLabel} />;
       if (YT_RE.test(part)) {
         if (suppressVideos) return null;
         const id = getYouTubeId(part);
