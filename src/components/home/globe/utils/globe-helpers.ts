@@ -4,6 +4,18 @@ export const IDLE_ZOOM = 1.4;
 export const MIN_ZOOM = 1.2;
 export const MAX_ZOOM = 18;
 
+// The globe's on-screen pixel diameter is set by the zoom level alone — it does
+// NOT grow with the canvas size. So a low idle zoom fills a narrow phone but
+// leaves a small disk (big side whitespace) on a wide desktop. We raise the
+// idle zoom on larger viewports so the globe is drawn bigger *natively* — and
+// stays crisp — instead of CSS-scaling the canvas, which only upscales the
+// already-rendered bitmap and looks blurry.
+export function idleZoomFor(width: number): number {
+  if (width >= 1025) return 2.0; // desktop
+  if (width >= 721) return 1.9; // tablet
+  return IDLE_ZOOM; // phone (1.4)
+}
+
 // Whole-world view shown in the flat (mercator) detail map before any pin is
 // selected. Slightly north-of-equator center frames the populated continents.
 export const WORLD_CENTER: [number, number] = [10, 25];
@@ -30,6 +42,14 @@ export const REGIONS: RegionPreset[] = [
 
 const CITY_ZOOM_CLOSE = 16;
 const CITY_ZOOM_MED = 14;
+export interface RegionPreset {
+  key: string;
+  label: string;
+  // [[west, south], [east, north]] bounding box. `null` = whole-world overview
+  // (uses WORLD_CENTER / WORLD_ZOOM instead of fitBounds).
+  bounds: [[number, number], [number, number]] | null;
+}
+
 
 export function cityZoom(altitude: number): number {
   return altitude <= 0.6 ? CITY_ZOOM_CLOSE : CITY_ZOOM_MED;
@@ -76,14 +96,14 @@ export function createMarkerEl(
   img.setAttribute(
     'style',
     'width: 200px !important;' +
-      'height: 150px !important;' +
-      'min-width: 200px !important;' +
-      'min-height: 150px !important;' +
-      'max-width: 200px !important;' +
-      'max-height: 150px !important;' +
-      'object-fit: cover !important;' +
-      'display: block !important;' +
-      'border-radius: 4px 4px 0 0 !important;',
+    'height: 150px !important;' +
+    'min-width: 200px !important;' +
+    'min-height: 150px !important;' +
+    'max-width: 200px !important;' +
+    'max-height: 150px !important;' +
+    'object-fit: cover !important;' +
+    'display: block !important;' +
+    'border-radius: 4px 4px 0 0 !important;',
   );
   preview.appendChild(img);
   const nameEl = document.createElement('div');

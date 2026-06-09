@@ -64,9 +64,8 @@ export default function TravelRoutes({ texts, maps = [] }: Props) {
                   type="button"
                   onClick={() => setActive(p.id)}
                   aria-pressed={isActive}
-                  className={`rounded-full px-7 py-2.5 text-[16px] font-medium transition-colors ${
-                    isActive ? 'bg-brand text-white' : 'text-gray-80 hover:text-dark'
-                  }`}
+                  className={`rounded-full px-7 py-1.5 text-[16px] font-medium transition-colors ${isActive ? 'bg-brand text-white' : 'text-gray-80 hover:text-dark'
+                    }`}
                 >
                   {p.name}
                 </button>
@@ -78,6 +77,10 @@ export default function TravelRoutes({ texts, maps = [] }: Props) {
         <div className="mt-[32px]">
           <div className="relative w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40">
             <Image src={current.image} alt={current.name} fill className="object-cover" />
+          </div>
+          {/* Mobile + tablet (<lg): full-screen-width, complete map. */}
+          <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-40 lg:hidden">
+            <Image src={current.image} alt={current.name} className="block w-full h-auto" />
           </div>
         </div>
       </div>

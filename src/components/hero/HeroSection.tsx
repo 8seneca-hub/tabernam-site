@@ -43,7 +43,14 @@ export default function HeroSection({ slides }: Props) {
 
   return (
     <section className="hero relative" style={{ paddingBottom: '60px' }}>
-      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px]">
+      {/* Top region — full-bleed gradient backdrop. It contains the header-clearance
+          padding (pt), the hero text, and the gap (pb), so it auto-sizes to its own
+          content; its bottom edge therefore always lands exactly at the top of the
+          image regardless of how the text wraps at different screen sizes. The
+          gradient fades from a soft brand tint at the page top down to the page
+          background where the image begins. */}
+      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-[1025px]:pt-[150px] max-[1025px]:pb-[60px]">
+        {/* Centering frame, capped at 1320px to align with the other sections. */}
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
           <div className="flex flex-col items-center gap-[30px] text-center">
             <motion.h1
@@ -56,7 +63,7 @@ export default function HeroSection({ slides }: Props) {
               {t('hero.title')}
             </motion.h1>
             <motion.p
-              className="text-[28px] leading-[32px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
+              className="text-[28px] leading-[32px] max-md:text-[24px] max-md:leading-[28px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
               custom={0.2}
               initial="hidden"
               animate="visible"
@@ -67,6 +74,9 @@ export default function HeroSection({ slides }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Image / slideshow — 16:9 aspect, full-width, rounded corners.
+          All slides are stacked; the active one cross-fades in via opacity. */}
       <div className="px-[40px] max-md:px-[16px]">
         <div className="feathered-image relative w-full max-w-[1320px] mx-auto aspect-[16/9] rounded-6 overflow-hidden bg-surface">
           {items.map((slide, idx) => (

@@ -33,7 +33,11 @@
   width: 100vw;
   height: 100vh;
   z-index: 2;
-  transform: translateY(30%) scale(1);
+  /* Vertical offset is computed in JS (see GlobeSection) so the globe's disk
+     always sits a fixed gap below the intro button, regardless of how the copy
+     wraps at a given viewport size. The percentage is only an SSR/no-JS
+     fallback. */
+  transform: translateY(var(--ga-globe-ty, 30%));
   transform-origin: center center;
   transition: transform 1.1s cubic-bezier(0.65, 0.05, 0.36, 1);
   background: transparent;
@@ -125,7 +129,7 @@
   width: 0;
   min-width: 100%;
   margin: 30px 0 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 30px;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -187,6 +191,10 @@
   overflow: hidden;
   box-shadow: 0 14px 44px rgba(15, 23, 42, 0.12),
     0 2px 8px rgba(15, 23, 42, 0.06);
+}
+/* Drag grip is only used by the mobile bottom-sheet variant (see media query). */
+.ga-sheet-handle {
+  display: none;
 }
 .ga-progress {
   position: absolute;
@@ -480,6 +488,130 @@
     font-size: 36px;
     line-height: 40px;
   }
+}
+
+/* Globe size is handled natively via idleZoomFor() (a higher Mapbox zoom on
+   wider screens) rather than CSS scale, which would upscale the rendered bitmap
+   and look blurry. Vertical position is computed in JS via --ga-globe-ty so the
+   disk always clears the intro button by a fixed gap at any viewport size. */
+
+/* Tablet + phone (≤1024px): the opened-map controls and the city card become a
+   full-width bottom sheet. The right-side desktop card is reserved for larger
+   (≥1025px) viewports where there's room beside the map. */
+@media (max-width: 1024px) {
+  /* Match the page's reduced gutter (16px) on phone + tablet instead of the
+     larger --side-padding the intro inherits. */
+  .ga-intro {
+    padding-inline: 16px;
+  }
+  /* Top bar fills the frame (16px gutters): the destination picker stretches to
+     fill, then a 16px gap, then the close button. */
+  .ga-topbar {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    /* Let the children manage their own interactivity via .visible. */
+    pointer-events: none;
+  }
+  .ga-topbar .ga-regions {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+  .ga-topbar .ga-exit {
+    position: static;
+    top: auto;
+    right: auto;
+    flex-shrink: 0;
+  }
+  /* Zoom controls hug the left frame edge, sitting just above the collapsed
+     drawer (≈50vh peek). They render *below* the drawer (z-index < .ga-panel's
+     11) so dragging the drawer up slides it over the buttons. */
+  .ga-zoom {
+    left: 16px;
+    top: auto;
+    bottom: calc(50vh + 16px);
+    transform: none;
+    z-index: 9;
+  }
+
+  /* ── City detail card → bottom sheet ──────────────────────────────────────
+     On phones the right-hand card becomes a full-width drawer that rises from
+     the bottom. It hugs its content (capped at 90vh, then the body scrolls),
+     peeks at most 50vh when collapsed, and drags up to its content height.
+     --sheet-collapsed (the collapsed translate) is measured in the TSX from the
+     real content height; the 50vh fallback covers the first paint. */
+  .ga-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .ga-panel.in {
+    transform: translateY(var(--sheet-collapsed, 50vh));
+  }
+  .ga-panel.in.expanded {
+    transform: translateY(0);
+  }
+  .ga-card {
+    height: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  .ga-card-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .ga-sheet-handle {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 26px;
+    z-index: 6;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+  }
+  .ga-sheet-grip {
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  }
+  /* Keep the image's close button tappable above the drag grip. */
+  .ga-close {
+    z-index: 8;
+  }
+  /* Once the detail sheet is open the bottom hints would sit under the drawer —
+     hide them. The zoom controls stay visible above the collapsed drawer; the
+     drawer slides over them when expanded (see z-index below). */
+  .ga-section.city-open .ga-hints {
+    display: none;
+  }
   .ga-hints {
     left: 16px;
     right: 16px;
@@ -526,11 +658,17 @@
 .globe-marker.is-active {
   z-index: 5;
 }
+/* Hovered marker (and its photo/name preview) must sit above every other pin,
+   so the preview is never overlapped by neighbouring markers. Beats the active
+   pin's z-index too. */
+.globe-marker.is-hover {
+  z-index: 10;
+}
 .globe-marker-shape {
   width: 18px;
   height: 22.5px;
   display: block;
-  color: #1a1a1a;
+  color: #ef4444;
   /* Do NOT add will-change/translateZ here — it lifts the shape into its own
      GPU layer and makes it lag the parent's transform updates during Mapbox's
      zoom/pan animations (pins appear to drift). */
@@ -550,7 +688,13 @@
   position: absolute;
   left: calc(100% + 10px);
   top: 50%;
-  transform: translateY(-50%) translateX(-4px);
+  /* translateZ(0) promotes the preview to its own compositing layer so the
+     photo is rasterized crisply at full device resolution. Without it the image
+     inherits the marker's sub-pixel transform (Mapbox positions markers at
+     fractional px, plus translateY(-50%) of an odd-height box), which disables
+     pixel-snapping and renders the photo blurry on retina. Safe here because the
+     preview only shows on hover while the map is static (no per-frame drift). */
+  transform: translateY(-50%) translateX(-4px) translateZ(0);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -574,9 +718,10 @@
   margin-top: 0;
   padding: 8px 18px;
   background: #ffffff;
-  color: #1a1a1a;
+  /* Red + bold, matching the under-pin label style. */
+  color: #ef4444;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
   text-align: left;
@@ -585,16 +730,22 @@
 }
 .globe-marker.is-hover:not(.is-active) .globe-marker-preview {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
+  transform: translateY(-50%) translateX(0) translateZ(0);
 }
-/* City-name label under the active pin: red text inside a white pill frame
-   that hugs the text. Hidden unless the pin is active. */
+/* On hover the name lives in the preview card instead, so drop the under-pin
+   label to avoid showing the city name twice. */
+.globe-marker.is-hover:not(.is-active) .globe-marker-label {
+  display: none;
+}
+/* City-name label under every pin, in a pill frame that hugs the text.
+   Inactive: red text on a white fill. Active: the reverse — white text on a
+   red fill (see below). */
 .globe-marker-label {
   position: absolute;
   left: 50%;
   top: 100%;
   transform: translate(-50%, 8px);
-  display: none;
+  display: block;
   white-space: nowrap;
   padding: 6px 18px;
   background: #ffffff;
@@ -607,5 +758,6 @@
   pointer-events: none;
 }
 .globe-marker.is-active .globe-marker-label {
-  display: block;
+  background: #ef4444;
+  color: #ffffff;
 }
