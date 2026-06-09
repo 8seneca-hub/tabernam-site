@@ -1,7 +1,7 @@
-import { getPageTexts } from '@/lib/directus';
+import { getCvTexts } from '@/lib/directus';
 import CVContent from './CVContent';
 
 export default async function CVPage() {
-  const texts = await getPageTexts('about');
+  const texts = await getCvTexts();
   return <CVContent texts={texts} />;
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import Image from './Image';
 
 interface Props {
   videoUrl?: string;
@@ -36,11 +37,32 @@ export default function Video({
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoId = videoUrl ? getYouTubeId(videoUrl) : null;
-  // maxresdefault is native 16:9 (fills the card edge-to-edge); hqdefault is a
-  // 4:3 frame with baked-in black bars, used only as a fallback when there's no
-  // HD thumbnail.
-  const thumbnailSrc =
-    thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null);
+
+  // SSR with hqdefault (always exists, 480x360 with embedded 16:9 content +
+  // black bars; the `object-cover` on the rendered img crops the bars out).
+  // The client then probes maxresdefault.jpg and upgrades when it exists —
+  // YouTube returns either 404 OR a 120x90 gray placeholder (200 OK) when
+  // the HD thumbnail is unavailable, so we have to check natural dimensions
+  // instead of HTTP status.
+  const initialSrc = thumbnail
+    ? thumbnail
+    : videoId
+    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+    : null;
+  const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(initialSrc);
+
+  useEffect(() => {
+    if (thumbnail || !videoId) return;
+    const maxUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    const probe = new window.Image();
+    probe.onload = () => {
+      if (probe.naturalWidth >= 200) setThumbnailSrc(maxUrl);
+    };
+    probe.src = maxUrl;
+    return () => {
+      probe.onload = null;
+    };
+  }, [thumbnail, videoId]);
 
   if (isPlaying && videoId) {
     return (
@@ -65,18 +87,11 @@ export default function Video({
       className={`relative block w-full cursor-pointer group disabled:cursor-default text-left p-0 border-0 bg-transparent overflow-hidden ${className}`.trim()}
     >
       {thumbnailSrc && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={thumbnailSrc}
           alt=""
-          onError={(e) => {
-            const img = e.currentTarget;
-            if (videoId && !img.dataset.fallback) {
-              img.dataset.fallback = '1';
-              img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-            }
-          }}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
       )}
       {children}

@@ -8,50 +8,44 @@ import SubpageHero from '@/components/SubpageHero';
 import ContentBlocks, { type ContentBlock } from './ContentBlocks';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/app/hook/useI18n';
+import { TravelRouteMap } from '@/lib/directus/index';
 
 interface Props {
   texts: PageTextsBundle;
   heroImage: string;
+  travelRouteMaps: TravelRouteMap[];
 }
 
-export default function AboutContent({ texts: bundle, heroImage }: Props) {
+export default function AboutContent({ texts: bundle, heroImage, travelRouteMaps }: Props) {
   const { lang, t } = useI18n();
   const texts = pickPageTexts(bundle, lang);
 
-  // Content blocks for the section below the hero. Paragraph indices map to the
-  // blank-line-separated paragraphs of `about_paragraph_body`; `splitAfterSentence`
-  // breaks a single CMS paragraph into two visual paragraphs.
-  // TODO: replace with CMS-authored blocks (schema documented in ContentBlocks.tsx).
+  const bodyImage1 = texts.body_image_1 || '/carousel/photo-03.jpg';
+  const bodyImage2 = texts.body_image_2 || '/carousel/photo-07.jpg';
+  const bodyImage3 = texts.body_image_3 || '/carousel/photo-11.jpg';
+
   const blocks: ContentBlock[] = [
-    // Sub-section 1: the Ministry of Economy intro paragraph now lives in the hero
-    // (AboutParagraph end={3}). This section opens with the "trade missions" para
-    // (CMS para 3, split out of para 2), followed by the two photos.
-    { type: 'paragraph', start: 3, end: 4 },                          // trade missions intro
-    { type: 'two_images', images: ['/carousel/photo-03.jpg', '/carousel/photo-07.jpg'] },
-    { type: 'paragraph', start: 4, end: 5, splitAfterSentence: 4 },   // diplomatic service (split into 2)
-    { type: 'one_image', image: '/carousel/photo-11.jpg' },
-    { type: 'paragraph', start: 5, end: 7 },                          // China projects + return
-    // 2024–25 shop — text on top, "Innovation in Foreign Trade" video below.
-    // The paragraph links "this one" to the shop video; suppressVideos keeps the
-    // raw YouTube URL from embedding inline (the named link renders regardless).
+    { type: 'paragraph', start: 3, end: 4 },
+    { type: 'two_images', images: [bodyImage1, bodyImage2] },
+    { type: 'paragraph', start: 4, end: 5, splitAfterSentence: 4 },
+    { type: 'one_image', image: bodyImage3 },
+    { type: 'paragraph', start: 5, end: 7 },
     { type: 'paragraph', start: 7, end: 8, suppressVideos: true },
     { type: 'video', video: texts.experience_video_url, title: texts.experience_video_title },
-    // "My Travel Routes" — interactive section right after the experience video.
     { type: 'travel_routes' },
-    // Charity intro/orgs/hospital text (developing+charity merged, then Knights, hospital).
     { type: 'paragraph', start: 8, end: 11, suppressVideos: true },
-    { type: 'video', video: texts.philanthropy_story_1_video_url, title: texts.philanthropy_story_1_title }, // Hospital Construction in Kenya
-    // GMT + Lourdes text, then the Lourdes video as a full-width block (matches the hospital layout
-    // above — instead of the URL embedding inline at a smaller width inside the paragraph).
+    { type: 'video', video: texts.philanthropy_story_1_video_url, title: texts.philanthropy_story_1_title },
     { type: 'paragraph', start: 11, end: 13, suppressVideos: true },
-    { type: 'video', video: texts.philanthropy_story_2_video_url, title: texts.philanthropy_story_2_title }, // The Trip to Lourdes
-    { type: 'paragraph', start: 13 },                                 // Hong Kong, slogan, closing
+    { type: 'video', video: texts.philanthropy_story_2_video_url, title: texts.philanthropy_story_2_title },
+    { type: 'paragraph', start: 13 },
   ];
 
   return (
     <main className="cv-page pt-[var(--header-height)]">
       <SubpageHero
         heading={t('heading.aboutMe')}
+        eyebrow={texts.about_eyebrow}
+        subheading={texts.hero_name}
         image={heroImage}
         imageAlt="Portrait photograph"
       >
@@ -60,11 +54,7 @@ export default function AboutContent({ texts: bundle, heroImage }: Props) {
           {t('btn.viewCV')}
         </Button>
       </SubpageHero>
-
-      {/* Content section below the hero — CMS-selectable layout blocks
-          (paragraph / 2-images / 1-image / horizontal). */}
-      <ContentBlocks texts={texts} blocks={blocks} />
-
+      <ContentBlocks texts={texts} blocks={blocks} travelRouteMaps={travelRouteMaps} />
       <ClosingQuote texts={texts} />
     </main>
   );

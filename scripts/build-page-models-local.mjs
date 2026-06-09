@@ -153,6 +153,8 @@ const HOME_TRANSLATION_FIELDS = [
   str('hero_title', 'Hero headline'),
   txt('hero_body', 'Hero subtitle paragraph'),
   str('hero_cta_label', 'CTA button label below the hero'),
+  str('quote_title_accent', 'QuoteSection title - accent (colored) portion'),
+  str('quote_title_rest', 'QuoteSection title - default-color remainder'),
   txt('quote_primary', 'QuoteSection text'),
   str('globe_intro_heading', 'Heading shown over the globe before opening'),
   txt('globe_intro_body', 'Paragraph shown over the globe before opening'),
@@ -460,7 +462,8 @@ async function migrateContact(languages) {
 async function migrateHome(languages) {
   console.log('\n==> Migrating home');
   const keys = [
-    'hero.title', 'hero.titleAccent', 'hero.body', 'btn.exploreNow',
+    'hero.title', 'hero.titleAccent', 'hero.body',
+    'quote.titleAccent', 'quote.titleRest',
     'quote.primary', 'quote.secondary',
     'globeIntro.heading', 'globeIntro.body',
   ];
@@ -473,7 +476,8 @@ async function migrateHome(languages) {
   const mapping = {
     'hero.title': 'hero_title',
     'hero.body': 'hero_body',
-    'btn.exploreNow': 'hero_cta_label',
+    'quote.titleAccent': 'quote_title_accent',
+    'quote.titleRest': 'quote_title_rest',
     'quote.primary': 'quote_primary',
     'globeIntro.heading': 'globe_intro_heading',
     'globeIntro.body': 'globe_intro_body',

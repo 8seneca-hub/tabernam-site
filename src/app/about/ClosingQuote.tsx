@@ -1,7 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Link from 'next/link';
 import FadeIn from '@/animations/FadeIn';
+import Button from '@/components/ui/Button';
 import { useI18n } from '@/app/hook/useI18n';
 import type { PageTexts } from '@/lib/directus';
 
@@ -22,6 +24,7 @@ interface Props {
 export default function ClosingQuote({ texts }: Props) {
   const { t } = useI18n();
   const author = texts.closing_quote_author;
+  const cta = texts.closing_cta;
   const backgroundImage = texts.closing_background || '/carousel/photo-12.jpg';
 
   const translated = t('quote.motto.translation');
@@ -70,6 +73,11 @@ export default function ClosingQuote({ texts }: Props) {
             <p className="text-sm md:text-base font-medium italic tracking-wide text-white/80">
               — {author}
             </p>
+          )}
+          {cta && (
+            <Button as={Link} href="/contact" variant="primary" shape="pill" className="mt-2 !text-[18px] font-medium !text-white !bg-brand !px-[28px] !py-[16px] !gap-[10px]">
+              {cta}
+            </Button>
           )}
         </FadeIn>
       </div>

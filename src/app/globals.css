@@ -22,11 +22,13 @@
   --color-footer-bg: var(--color-footer-bg);
 
   /* Border-radius scale (design tokens) → rounded-1 … rounded-6 utilities */
+  /* Border-radius scale (design tokens) → rounded-1 … rounded-6 utilities */
   --radius-1: 4px;
   --radius-2: 8px;
   --radius-3: 12px;
   --radius-4: 16px;
   --radius-5: 24px;
+  --radius-6: 36px;
   --radius-6: 36px;
 }
 
@@ -108,12 +110,54 @@ h2 {
    These global element rules are unlayered, so they win over Tailwind size
    utilities on h1/h2; scaling them here keeps every heading proportional. */
 @media (max-width: 1024px) {
-  h1 { font-size: 56px; line-height: 60px; }
-  h2 { font-size: 42px; line-height: 46px; }
+  h1 {
+    font-size: 56px;
+    line-height: 60px;
+  }
+
+  h2 {
+    font-size: 42px;
+    line-height: 46px;
+  }
 }
+
 @media (max-width: 640px) {
-  h1 { font-size: 40px; line-height: 44px; }
-  h2 { font-size: 32px; line-height: 36px; }
+  h1 {
+    font-size: 40px;
+    line-height: 44px;
+  }
+
+  h2 {
+    font-size: 32px;
+    line-height: 36px;
+  }
+}
+
+/* Responsive heading scale — shrink the fixed desktop sizes on tablet/phone.
+   These global element rules are unlayered, so they win over Tailwind size
+   utilities on h1/h2; scaling them here keeps every heading proportional. */
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 56px;
+    line-height: 60px;
+  }
+
+  h2 {
+    font-size: 42px;
+    line-height: 46px;
+  }
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 40px;
+    line-height: 44px;
+  }
+
+  h2 {
+    font-size: 32px;
+    line-height: 36px;
+  }
 }
 
 /* Homepage only: H2 headings default to the accent color. */
@@ -143,6 +187,20 @@ h2 {
   border: 0;
   cursor: pointer;
 }
+
+/* ─────────── Hamburger toggle ─────────── */
+/* Hidden on desktop; the max-width:768px media query flips it to display:block. */
+.nav-toggle {
+  display: none;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 .nav-toggle-bar {
   position: absolute;
   left: 9px;
@@ -363,6 +421,7 @@ h2 {
      rounded-* utilities). The .feathered-image-gray variant keeps its radius. */
   border-radius: 0;
 }
+
 .feathered-image::after,
 .feathered-image-sm::after,
 .marquee-cell::after {
@@ -373,25 +432,64 @@ h2 {
   pointer-events: none;
   border-radius: inherit;
 }
+
+/* Large feathered edge — 7 stacked inner shadows (per Figma spec). */
+.feathered-image::after {}
+
 /* Large feathered edge — 3 stacked inner shadows (per Figma spec). */
 .feathered-image::after {
   box-shadow:
-    inset 0 0 34px 34px #fff,
-    inset 0 0 12px 12px #fff,
-    inset 0 0 5px 5px #fff;
+    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 12px 18px rgba(255, 255, 255, 0.4),
+    inset 0 0 6px 7px rgba(255, 255, 255, 0.7),
+    inset 0 0 9px 11px rgba(255, 255, 255, 0.7),
+    inset 0 0 4px 4px #fff;
+  inset 0 0 34px 34px #fff,
+  inset 0 0 12px 12px #fff,
+  inset 0 0 5px 5px #fff;
 }
+
+/* Smaller framed images (incl. marquee cells) use a lighter, proportionally
+   smaller feather than the large .feathered-image — strong enough to fade
+   darker photo edges, but not as wide/heavy as the full-size spec. */
 /* Smaller framed images (incl. marquee cells) use a lighter feather. */
 .feathered-image-sm::after,
 .marquee-cell::after {
   box-shadow:
-    inset 0 0 15px 15px rgba(255, 255, 255, 0.4),
-    inset 0 0 12px 12px #fff;
+    inset 0 0 3px 2px #fff,
+    inset 0 0 8px 6px #fff,
+    inset 0 0 26px 23px #fff;
 }
+
 /* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
    gray-20 sections instead of showing a white halo. */
 .feathered-image-gray {
   position: relative;
 }
+
+.feathered-image-gray::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 3.48px 2.61px var(--gray-20),
+    inset 0 0 8.71px 6.97px var(--gray-20),
+    inset 0 0 34.83px 31.35px var(--gray-20);
+  inset 0 0 15px 15px rgba(255, 255, 255, 0.4),
+  inset 0 0 12px 12px #fff;
+}
+
+/* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
+   gray-20 sections instead of showing a white halo. */
+.feathered-image-gray {
+  position: relative;
+}
+
 .feathered-image-gray::after {
   content: "";
   position: absolute;
@@ -404,11 +502,13 @@ h2 {
     inset 0 0 8.71px 6.97px var(--gray-20),
     inset 0 0 34.83px 31.35px var(--gray-20);
 }
+
 /* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
    gray-20 sections instead of showing a white halo. */
 .feathered-image-gray {
   position: relative;
 }
+
 .feathered-image-gray::after {
   content: "";
   position: absolute;
@@ -778,6 +878,7 @@ h2 {
 @media (max-width: 640px) {
   :root {
     --side-padding: 16px;
+    --side-padding: 16px;
   }
 }
 
@@ -824,219 +925,230 @@ h2 {
     font-size: 16px;
     width: 100%;
   }
-  /* The desktop hover underline bar doesn't belong in the drawer; the active
-     state is shown via semibold (linkClass) + a text underline here. */
+
+  /* The desktop hover/active underline bar doesn't belong in the drawer —
+     the mobile active state is conveyed by the blue text + row divider. */
   .nav a::after {
     display: none;
   }
-  .nav a.nav-link-active {
-    text-decoration: underline;
-    text-underline-offset: 6px;
+
+  .lang-switcher {
+
+    /* The desktop hover underline bar doesn't belong in the drawer; the active
+     state is shown via semibold (linkClass) + a text underline here. */
+    .nav a::after {
+      display: none;
+    }
+
+    .nav a.nav-link-active {
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+
+    /* Align the language picker's text with the nav links (no left inset). */
+    .nav .lang-switcher {
+      margin: 8px 0 0;
+    }
+
+    .nav .lang-switcher>button {
+      padding-left: 0;
+    }
+
+    .lang-trigger {
+      width: 100%;
+      padding: 14px 0;
+      font-size: 16px;
+    }
   }
 
-  /* Align the language picker's text with the nav links (no left inset). */
-  .nav .lang-switcher {
-    margin: 8px 0 0;
-  }
-  .nav .lang-switcher > button {
-    padding-left: 0;
-  }
+  /* ─────────── Mobile activity section ─────────── */
+  @media (max-width: 768px) {
+    .activity {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: auto;
+      padding: calc(var(--header-height) + 40px) var(--side-padding) 60px;
+      gap: 28px;
+    }
 
-  .lang-trigger {
-    width: 100%;
-    padding: 14px 0;
-    font-size: 16px;
-  }
-}
+    .activity.is-detail {
+      padding-top: var(--header-height);
+      gap: 0;
+    }
 
-/* ─────────── Mobile activity section ─────────── */
-@media (max-width: 768px) {
-  .activity {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    min-height: auto;
-    padding: calc(var(--header-height) + 40px) var(--side-padding) 60px;
-    gap: 28px;
-  }
+    .activity-intro {
+      display: contents;
+    }
 
-  .activity.is-detail {
-    padding-top: var(--header-height);
-    gap: 0;
-  }
+    .activity-intro-text {
+      order: 1;
+    }
 
-  .activity-intro {
-    display: contents;
-  }
+    .activity-intro h2 {
+      font-size: 28px;
+    }
 
-  .activity-intro-text {
-    order: 1;
-  }
+    .globe-stage,
+    .activity.is-revealed .globe-stage {
+      order: 2;
+      position: relative;
+      top: auto;
+      left: auto;
+      width: min(360px, 80vw);
+      height: min(360px, 80vw);
+      aspect-ratio: auto;
+      align-self: center;
+      margin: 0;
+      opacity: 1;
+      transform: none;
+    }
 
-  .activity-intro h2 {
-    font-size: 28px;
-  }
+    #view-cities {
+      order: 3;
+      align-self: center;
+      padding: 14px 32px;
+      font-size: 16px;
+      margin-top: 16px;
+      max-height: 80px;
+      overflow: hidden;
+      transition: opacity 0.3s ease,
+        max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-  .globe-stage,
-  .activity.is-revealed .globe-stage {
-    order: 2;
-    position: relative;
-    top: auto;
-    left: auto;
-    width: min(360px, 80vw);
-    height: min(360px, 80vw);
-    aspect-ratio: auto;
-    align-self: center;
-    margin: 0;
-    opacity: 1;
-    transform: none;
-  }
+    .activity-intro-text {
+      max-height: 600px;
+      overflow: hidden;
+      transition: opacity 0.3s ease,
+        max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-  #view-cities {
-    order: 3;
-    align-self: center;
-    padding: 14px 32px;
-    font-size: 16px;
-    margin-top: 16px;
-    max-height: 80px;
-    overflow: hidden;
-    transition: opacity 0.3s ease,
-      max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    .activity.is-detail .activity-intro-text {
+      opacity: 0;
+      max-height: 0;
+      margin: 0;
+      pointer-events: none;
+    }
 
-  .activity-intro-text {
-    max-height: 600px;
-    overflow: hidden;
-    transition: opacity 0.3s ease,
-      max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-      margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    .activity.is-detail #view-cities {
+      opacity: 0;
+      max-height: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      pointer-events: none;
+    }
 
-  .activity.is-detail .activity-intro-text {
-    opacity: 0;
-    max-height: 0;
-    margin: 0;
-    pointer-events: none;
-  }
+    .activity.is-detail .globe-stage {
+      width: 100vw;
+      max-width: 100vw;
+      margin: 0;
+      height: 62vw;
+      top: auto;
+      left: auto;
+      border-radius: 0;
+      overflow: hidden;
+    }
 
-  .activity.is-detail #view-cities {
-    opacity: 0;
-    max-height: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    pointer-events: none;
-  }
+    .globe-3d {
+      transition: top 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+        left 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+        width 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+        height 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    }
 
-  .activity.is-detail .globe-stage {
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0;
-    height: 62vw;
-    top: auto;
-    left: auto;
-    border-radius: 0;
-    overflow: hidden;
-  }
+    .activity.is-detail .globe-3d {
+      inset: auto;
+      top: -25vw;
+      left: -25vw;
+      width: 150vw;
+      height: 150vw;
+    }
 
-  .globe-3d {
-    transition: top 0.7s cubic-bezier(0.65, 0, 0.35, 1),
-      left 0.7s cubic-bezier(0.65, 0, 0.35, 1),
-      width 0.7s cubic-bezier(0.65, 0, 0.35, 1),
-      height 0.7s cubic-bezier(0.65, 0, 0.35, 1);
-  }
+    .city-panel {
+      order: 4;
+      display: flex;
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      padding-top: 8px;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(80px);
+      overflow: hidden;
+      pointer-events: none;
+      transition: max-height 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+        opacity 0.45s ease,
+        transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
 
-  .activity.is-detail .globe-3d {
-    inset: auto;
-    top: -25vw;
-    left: -25vw;
-    width: 150vw;
-    height: 150vw;
-  }
+    .activity.is-detail .city-panel {
+      max-height: 2000px;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
 
-  .city-panel {
-    order: 4;
-    display: flex;
-    position: relative;
-    top: auto;
-    left: auto;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    padding-top: 8px;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(80px);
-    overflow: hidden;
-    pointer-events: none;
-    transition: max-height 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
-      opacity 0.45s ease,
-      transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
+    .city-panel .btn-back {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--gray-40);
+      border: 1px solid var(--gray-60);
+      font-size: 0;
+      line-height: 0;
+      color: transparent;
+      cursor: pointer;
+      z-index: 5;
+    }
 
-  .activity.is-detail .city-panel {
-    max-height: 2000px;
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
+    .city-panel .btn-back::before {
+      content: '×';
+      display: block;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 34px;
+      color: var(--dark);
+    }
 
-  .city-panel .btn-back {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    border-radius: 50%;
-    background: var(--gray-40);
-    border: 1px solid var(--gray-60);
-    font-size: 0;
-    line-height: 0;
-    color: transparent;
-    cursor: pointer;
-    z-index: 5;
-  }
+    .city-card {
+      background: var(--gray-40);
+      border: 0;
+      border-radius: var(--radius-4);
+      padding: 16px;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      gap: 16px;
+    }
 
-  .city-panel .btn-back::before {
-    content: '×';
-    display: block;
-    font-size: 22px;
-    font-weight: 400;
-    line-height: 34px;
-    color: var(--dark);
-  }
+    .city-card-top {
+      gap: 16px;
+    }
 
-  .city-card {
-    background: var(--gray-40);
-    border: 0;
-    border-radius: var(--radius-4);
-    padding: 16px;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    gap: 16px;
-  }
+    .card-image {
+      height: 220px;
+    }
 
-  .city-card-top {
-    gap: 16px;
-  }
+    .card-text p {
+      -webkit-line-clamp: unset;
+      line-clamp: unset;
+      overflow: visible;
+      text-overflow: clip;
+    }
 
-  .card-image {
-    height: 220px;
+    .card-progress {
+      display: none;
+    }
   }
-
-  .card-text p {
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
-    overflow: visible;
-    text-overflow: clip;
-  }
-
-  .card-progress {
-    display: none;
-  }
-}

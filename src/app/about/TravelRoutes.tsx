@@ -2,45 +2,61 @@
 
 import { useState } from 'react';
 import Image from '@/components/ui/Image';
+import type { PageTexts, TravelRouteMap } from '@/lib/data';
+
+interface Props {
+  texts: PageTexts;
+  maps?: TravelRouteMap[];
+}
 
 interface Place {
   id: string;
   name: string;
-  /** Placeholder picture of the area — swap for real route imagery later. */
   image: string;
 }
 
-const PLACES: Place[] = [
-  { id: 'china', name: 'China', image: '/china-map.jpeg' },
-  { id: 'america', name: 'America', image: '/america-map.jpeg' },
-  { id: 'europe', name: 'Europe', image: '/europe-map.jpeg' },
-];
+const FALLBACK_IMAGES: Record<string, string> = {
+  china: '/china-map.jpeg',
+  america: '/america-map.jpeg',
+  europe: '/europe-map.jpeg',
+};
 
-export default function TravelRoutes() {
-  const [active, setActive] = useState(PLACES[0].id);
-  const current = PLACES.find((p) => p.id === active) ?? PLACES[0];
+const FALLBACK_NAMES: Record<string, string> = {
+  china: 'China',
+  america: 'America',
+  europe: 'Europe',
+};
+
+export default function TravelRoutes({ texts, maps = [] }: Props) {
+  const imageBySlug = new Map(maps.map((m) => [m.slug, m.image]));
+
+  const places: Place[] = ['china', 'america', 'europe'].map((slug) => ({
+    id: slug,
+    name: texts[`travel_routes_${slug}_name`] || FALLBACK_NAMES[slug],
+    image: imageBySlug.get(slug) || FALLBACK_IMAGES[slug],
+  }));
+
+  const heading = texts.travel_routes_heading || 'My Travel Routes';
+  const body =
+    texts.travel_routes_body ||
+    'My work and curiosity have carried me across continents — from long chapters in Asia to projects spanning Europe. Every destination left something behind: a partner, a lesson, a story worth telling. Explore where I’ve been, and reach out if any of these places speak to you.';
+
+  const [active, setActive] = useState(places[0].id);
+  const current = places.find((p) => p.id === active) ?? places[0];
 
   return (
-    // Full-bleed gray band: escapes the parent's max-width to span the viewport.
-    // Safe here because scrollbars are hidden site-wide (no 100vw scrollbar gap).
     <div className="relative left-1/2 w-screen -translate-x-1/2 bg-gray-20 px-[60px] py-[80px] max-md:px-[16px] max-md:py-[56px]">
-      {/* Inner content capped at the site-wide 1320px and centered. */}
       <div className="mx-auto max-w-[1320px]">
-        {/* Heading + copy — centered, 20px apart. */}
         <div className="flex flex-col items-center gap-[20px] text-center">
-          <h2 className="text-accent">My Travel Routes</h2>
+          <h2 className="text-accent">{heading}</h2>
           <p className="max-w-[640px] text-[18px] leading-[26px] font-medium text-dark">
-            My work and curiosity have carried me across continents — from long chapters in Asia
-            to projects spanning Europe. Every destination left something behind: a partner, a
-            lesson, a story worth telling. Explore where I&rsquo;ve been, and reach out if any of
-            these places speak to you.
+            {body}
           </p>
         </div>
 
-        {/* Place tabs. */}
         <div className="mt-[32px] flex justify-center">
-          <div className="inline-flex items-center gap-1 rounded-full bg-white px-1.5 py-0.5">
-            {PLACES.map((p) => {
+          <div className="inline-flex items-center gap-1 rounded-full bg-white p-1.5">
+            {places.map((p) => {
               const isActive = p.id === active;
               return (
                 <button
@@ -48,9 +64,8 @@ export default function TravelRoutes() {
                   type="button"
                   onClick={() => setActive(p.id)}
                   aria-pressed={isActive}
-                  className={`rounded-full px-7 py-1.5 text-[16px] font-medium transition-colors ${
-                    isActive ? 'bg-brand text-white' : 'text-gray-80 hover:text-dark'
-                  }`}
+                  className={`rounded-full px-7 py-1.5 text-[16px] font-medium transition-colors ${isActive ? 'bg-brand text-white' : 'text-gray-80 hover:text-dark'
+                    }`}
                 >
                   {p.name}
                 </button>
@@ -59,12 +74,8 @@ export default function TravelRoutes() {
           </div>
         </div>
 
-        {/* Picture of the selected place. Desktop keeps the contained 2:1 crop;
-            mobile + tablet (<lg) go full-bleed and show the whole map at the
-            screen width. */}
         <div className="mt-[32px]">
-          {/* Desktop (≥lg): contained, cropped to 2:1. */}
-          <div className="relative hidden w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40 lg:block">
+          <div className="relative w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40">
             <Image src={current.image} alt={current.name} fill className="object-cover" />
           </div>
           {/* Mobile + tablet (<lg): full-screen-width, complete map. */}

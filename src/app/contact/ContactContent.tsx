@@ -21,8 +21,9 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
     return (
       <main className="contact-page pt-[var(--header-height)] pb-20">
         <section className="px-[60px] py-20 max-w-[1320px] mx-auto max-md:px-[16px]">
-          <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
-        </section>
+          <section className="px-[60px] py-20 max-w-[1320px] mx-auto max-md:px-[16px]">
+            <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
+          </section>
       </main>
     );
   }
@@ -55,106 +56,106 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {subheadingTitle}
             </p>
             <div className="flex flex-col gap-8 mt-4">
-            {active.workEmail && active.personalEmail && (
-              <div className="flex items-start gap-5">
-                <span className="flex items-center h-6 text-text shrink-0">
-                  <Mail size={20} />
-                </span>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[16px] font-normal text-text leading-6">
-                    {workEmailLabel}
+              {active.workEmail && active.personalEmail && (
+                <div className="flex items-start gap-5">
+                  <span className="flex items-center h-6 text-text shrink-0">
+                    <Mail size={20} />
                   </span>
-                  <a
-                    href={workMailHref}
-                    className="text-[18px] font-semibold text-text hover:text-brand transition-colors break-all"
-                  >
-                    {active.workEmail}
-                  </a>
-                  <a
-                    href={personalMailHref}
-                    className="text-[18px] font-semibold text-text hover:text-brand transition-colors break-all"
-                  >
-                    {active.personalEmail}
-                  </a>
-                </div>
-              </div>
-            )}
-            {active.phone && (
-              <div className="flex items-start gap-5">
-                <span className="flex items-center h-6 text-text shrink-0">
-                  <Phone size={20} />
-                </span>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[16px] font-normal text-text leading-6">
-                    {phoneLabel}
-                  </span>
-                  <a
-                    href={phoneHref}
-                    className="text-[18px] font-semibold text-text hover:text-brand transition-colors"
-                  >
-                    {active.phone}
-                  </a>
-                </div>
-              </div>
-            )}
-            {active.wechat && (
-              <div className="flex items-start gap-5">
-                <span className="flex items-center h-6 text-text shrink-0">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    {/* Back bubble (upper-left), open on the lower-right where the front bubble overlaps. */}
-                    <path d="M14 9.5c0-3.04-2.91-5.5-6.5-5.5S1 6.46 1 9.5c0 1.78 1 3.36 2.55 4.38L3 16.5l2.66-1.4c.58.16 1.2.27 1.84.32" />
-                    <path d="M5.5 9h.01M9.5 9h.01" />
-                    {/* Front bubble (lower-right) with bottom-right tail. */}
-                    <path d="M10 15.5c0 2.49 2.46 4.5 5.5 4.5.65 0 1.27-.09 1.84-.26L20 21l-.6-1.96C21.31 18.13 21 16.86 21 15.5c0-2.49-2.46-4.5-5.5-4.5S10 13.01 10 15.5Z" />
-                    <path d="M14 15h.01M17.5 15h.01" />
-                  </svg>
-                </span>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[16px] font-normal text-text leading-6">
-                    {wechatLabel}
-                  </span>
-                  <span className="text-[18px] font-semibold text-text">
-                    {active.wechat}
-                  </span>
-                </div>
-              </div>
-            )}
-            {active.addressLines.length > 0 && (
-              <div className="flex items-start gap-5">
-                <span className="flex items-center h-6 text-text shrink-0">
-                  <MapPin size={20} />
-                </span>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[16px] font-normal text-text leading-6">
-                    {addressLabel}
-                  </span>
-                  <div className="flex flex-col">
-                    {active.addressLines.map((line, i) => (
-                      <span key={i} className="text-[18px] font-semibold text-text leading-snug">
-                        {line}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-            {active.websiteUrl && (
-              <div className="flex items-start gap-5">
-                <span className="flex items-center h-6 text-text shrink-0">
-                  <Globe size={20} />
-                </span>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[16px] font-normal text-text leading-6">
-                    {websiteLabel}
-                  </span>
-                  <div className="flex flex-col">
-                    <a href={websiteUrl} className="text-[18px] font-semibold text-text hover:text-brand transition-colors">
-                      {websiteUrl}
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[16px] font-normal text-text leading-6">
+                      {workEmailLabel}
+                    </span>
+                    <a
+                      href={workMailHref}
+                      className="text-[18px] font-semibold text-text hover:text-brand transition-colors break-all"
+                    >
+                      {active.workEmail}
+                    </a>
+                    <a
+                      href={personalMailHref}
+                      className="text-[18px] font-semibold text-text hover:text-brand transition-colors break-all"
+                    >
+                      {active.personalEmail}
                     </a>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+              {active.phone && (
+                <div className="flex items-start gap-5">
+                  <span className="flex items-center h-6 text-text shrink-0">
+                    <Phone size={20} />
+                  </span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[16px] font-normal text-text leading-6">
+                      {phoneLabel}
+                    </span>
+                    <a
+                      href={phoneHref}
+                      className="text-[18px] font-semibold text-text hover:text-brand transition-colors"
+                    >
+                      {active.phone}
+                    </a>
+                  </div>
+                </div>
+              )}
+              {active.wechat && (
+                <div className="flex items-start gap-5">
+                  <span className="flex items-center h-6 text-text shrink-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      {/* Back bubble (upper-left), open on the lower-right where the front bubble overlaps. */}
+                      <path d="M14 9.5c0-3.04-2.91-5.5-6.5-5.5S1 6.46 1 9.5c0 1.78 1 3.36 2.55 4.38L3 16.5l2.66-1.4c.58.16 1.2.27 1.84.32" />
+                      <path d="M5.5 9h.01M9.5 9h.01" />
+                      {/* Front bubble (lower-right) with bottom-right tail. */}
+                      <path d="M10 15.5c0 2.49 2.46 4.5 5.5 4.5.65 0 1.27-.09 1.84-.26L20 21l-.6-1.96C21.31 18.13 21 16.86 21 15.5c0-2.49-2.46-4.5-5.5-4.5S10 13.01 10 15.5Z" />
+                      <path d="M14 15h.01M17.5 15h.01" />
+                    </svg>
+                  </span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[16px] font-normal text-text leading-6">
+                      {wechatLabel}
+                    </span>
+                    <span className="text-[18px] font-semibold text-text">
+                      {active.wechat}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {active.addressLines.length > 0 && (
+                <div className="flex items-start gap-5">
+                  <span className="flex items-center h-6 text-text shrink-0">
+                    <MapPin size={20} />
+                  </span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[16px] font-normal text-text leading-6">
+                      {addressLabel}
+                    </span>
+                    <div className="flex flex-col">
+                      {active.addressLines.map((line, i) => (
+                        <span key={i} className="text-[18px] font-semibold text-text leading-snug">
+                          {line}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {active.websiteUrl && (
+                <div className="flex items-start gap-5">
+                  <span className="flex items-center h-6 text-text shrink-0">
+                    <Globe size={20} />
+                  </span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[16px] font-normal text-text leading-6">
+                      {websiteLabel}
+                    </span>
+                    <div className="flex flex-col">
+                      <a href={websiteUrl} className="text-[18px] font-semibold text-text hover:text-brand transition-colors">
+                        {websiteUrl}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </FadeIn>
 

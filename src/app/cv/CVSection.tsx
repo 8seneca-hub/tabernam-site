@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useI18n } from '@/app/hook/useI18n';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
-import EntryRow from '@/components/activity/component/EntryRow';
-import LanguageBar from '@/components/activity/component/LanguageBar';
+import EntryRow from '@/components/home/component/EntryRow';
+import LanguageBar from '@/components/home/component/LanguageBar';
 import RequestCvModal from './RequestCvModal';
 import ContactInfoCard from '../contact/ContactInfoCard';
 

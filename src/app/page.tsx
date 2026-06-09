@@ -1,16 +1,17 @@
-import { getActivities, getHeroSlides, getPageTexts } from '@/lib/directus';
+import { getActivities, getHeroSlides, getHomeMarquee, getHomeTexts } from '@/lib/directus';
 import HeroSection from '@/components/hero/HeroSection';
 import QuoteSection from '@/components/quote/QuoteSection';
-import HomeMarquee from '@/components/HomeMarquee';
-import GlobeSection from '@/components/activity/GlobeSection';
-import AboutSection from '../components/activity/AboutSection';
+import HomeMarquee from '@/components/home/component/HomeMarquee';
+import GlobeSection from '@/components/home/globe/GlobeSection';
+import AboutSection from '../components/home/AboutSection';
 
 export default async function HomePage() {
 
-  const [activities, heroSlides, texts] = await Promise.all([
+  const [activities, heroSlides, marqueeImages, texts] = await Promise.all([
     getActivities(),
     getHeroSlides(),
-    getPageTexts('home'),
+    getHomeMarquee(),
+    getHomeTexts(),
   ]);
 
   const quoteImage = texts.en?.quote_image ?? '';
@@ -20,7 +21,7 @@ export default async function HomePage() {
       <HeroSection slides={heroSlides} />
       <QuoteSection imageUrl={quoteImage} />
       <AboutSection texts={texts} />
-      <HomeMarquee />
+      <HomeMarquee images={marqueeImages} />
       <GlobeSection cities={activities} />
     </main>
   );

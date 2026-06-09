@@ -10,10 +10,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * Motto block shown directly beneath the portrait image. The Latin line is
- * fixed; the parenthetical translation follows the currently selected language.
- */
 export default function MottoQuote({ className = '' }: Props) {
   const { t } = useI18n();
   const translated = t('quote.motto.translation');
@@ -23,7 +19,7 @@ export default function MottoQuote({ className = '' }: Props) {
   return (
     <figure className={`mt-8 w-fit mx-auto text-center ${className}`}>
       <blockquote className="text-[24px] font-medium text-text leading-snug">
-        {LATIN}
+        {LATIN} <span className="font-normal italic">— Tibor Buček</span>
       </blockquote>
       <figcaption className="mt-2 text-text">({translation})</figcaption>
       <p className="mt-2 text-[24px] max-md:text-[18px] font-semibold italic text-text text-right">Tibor Buček</p>
