@@ -19,9 +19,9 @@ interface RawTranslation {
 export async function getHero(): Promise<HeroBundle> {
   try {
     const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       readSingleton('hero', {
         fields: [{ translations: ['title', 'body', { language: ['code'] }] }],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any),
     )) as { translations?: RawTranslation[] };
 
