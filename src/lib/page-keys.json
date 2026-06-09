@@ -1,14 +1,6 @@
 {
   "_comment": "Source-of-truth for which Directus page singleton owns each i18n key, page-text field, and asset. The schema-apply/migrate scripts AND the runtime directus.ts both read from this file. To add a new key, add it here and re-run scripts/build-page-models-local.mjs (idempotent).",
   "dictionary": {
-    "hero.title": {
-      "page": "home",
-      "field": "hero_title"
-    },
-    "hero.body": {
-      "page": "home",
-      "field": "hero_body"
-    },
     "quote.titleAccent": {
       "page": "home",
       "field": "quote_title_accent"
@@ -128,6 +120,10 @@
     "heading.aboutMe": {
       "page": "about",
       "field": "heading_aboutMe"
+    },
+    "quote.motto.translation": {
+      "page": "about",
+      "field": "quote_motto_translation"
     },
     "contact.addressLabel": {
       "page": "contact",
