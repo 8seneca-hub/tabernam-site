@@ -131,15 +131,21 @@ await ensureField('hero', {
 await ensureRelation('hero_translations', 'hero_id', 'hero', 'translations');
 await ensureRelation('hero_translations', 'language', 'languages', null);
 
-// 6) Ensure the singleton row exists
-const heroRowsRes = await api('/items/hero?fields=id');
+// 6) Ensure the singleton row exists.
+// Singletons return `data: {id, ...}` (object), not an array — and may
+// 404 / return null before the row is created.
 let heroId;
-if (!heroRowsRes.data || heroRowsRes.data.length === 0) {
+try {
+  const heroRowsRes = await api('/items/hero?fields=id');
+  heroId = heroRowsRes?.data?.id ?? null;
+} catch {
+  heroId = null;
+}
+if (!heroId) {
   const created = await api('/items/hero', 'POST', {});
   heroId = created.data.id;
   console.log(`  hero: inserted singleton row (id=${heroId})`);
 } else {
-  heroId = heroRowsRes.data[0].id;
   console.log(`  hero: singleton row exists (id=${heroId})`);
 }
 
