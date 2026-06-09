@@ -68,8 +68,6 @@ export default function GlobeSection({ cities = [] }: Props) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const [regionKey, setRegionKey] = useState('world');
   const [zoomEdge, setZoomEdge] = useState<'in' | 'out' | null>(null);
-  const [regionKey, setRegionKey] = useState('world');
-  const [zoomEdge, setZoomEdge] = useState<'in' | 'out' | null>(null);
   const [photoIdx, setPhotoIdx] = useState(0);
   const [tokenMissing, setTokenMissing] = useState(false);
   const [mapReady, setMapReady] = useState(false);
@@ -132,10 +130,8 @@ export default function GlobeSection({ cities = [] }: Props) {
       maxBounds: [[-180, -85], [180, 85]],
       // Don't tile infinite copies of the world horizontally in the flat
       // (mercator) detail view — otherwise dragging sideways wraps forever.
-      renderWorldCopies: false,
       // Lock panning to a single world so you can't drag off the edges into
       // empty space. ±85 lat is the mercator pole limit.
-      maxBounds: [[-180, -85], [180, 85]],
       attributionControl: false,
       interactive: false,
       pitchWithRotate: false,
@@ -148,26 +144,11 @@ export default function GlobeSection({ cities = [] }: Props) {
     }
 
     map.on('load', () => setMapReady(true));
-    map.on('load', () => setMapReady(true));
     map.on('movestart', () => { isCameraMovingRef.current = true; });
     map.on('moveend', () => {
       // Small grace period after moveend in case the cursor is parked on a
       // marker that just slid under it — don't immediately fire.
       window.setTimeout(() => { isCameraMovingRef.current = false; }, 200);
-    });
-
-    // Flash a transient "can't zoom further" message when the user reaches the
-    // min/max zoom limit (via wheel, pinch, or the +/- buttons).
-    map.on('zoom', () => {
-      const z = map.getZoom();
-      let edge: 'in' | 'out' | null = null;
-      if (z >= MAX_ZOOM - 0.02) edge = 'in';
-      else if (z <= MIN_ZOOM + 0.02) edge = 'out';
-      setZoomEdge(edge);
-      if (edge) {
-        if (edgeTimerRef.current) window.clearTimeout(edgeTimerRef.current);
-        edgeTimerRef.current = window.setTimeout(() => setZoomEdge(null), 2200);
-      }
     });
 
     // Flash a transient "can't zoom further" message when the user reaches the
@@ -211,7 +192,6 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     return () => {
       if (edgeTimerRef.current) window.clearTimeout(edgeTimerRef.current);
-      if (edgeTimerRef.current) window.clearTimeout(edgeTimerRef.current);
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
       map.remove();
@@ -252,10 +232,6 @@ export default function GlobeSection({ cities = [] }: Props) {
       if (map.getSource('mapbox-dem')) {
         map.setTerrain({ source: 'mapbox-dem', exaggeration: 0.9 });
       }
-      // Restore terrain relief for the globe (disabled in the flat view).
-      if (map.getSource('mapbox-dem')) {
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 0.9 });
-      }
       map.dragPan.disable();
       map.scrollZoom.disable();
       map.touchZoomRotate.disable();
@@ -281,12 +257,6 @@ export default function GlobeSection({ cities = [] }: Props) {
 
     // Flatten the globe into a 2D map for the detail/explore view.
     map.setProjection({ name: 'mercator' });
-
-    // Disable 3D terrain in the flat view. With terrain on, Mapbox offsets each
-    // marker by its ground elevation; at high zoom over high-altitude cities
-    // (e.g. Lhasa, ~3650m) that pushes the pin far off its coordinate / off
-    // screen. The flat detail map doesn't need terrain relief anyway.
-    map.setTerrain(null);
 
     // Disable 3D terrain in the flat view. With terrain on, Mapbox offsets each
     // marker by its ground elevation; at high zoom over high-altitude cities
@@ -529,28 +499,7 @@ export default function GlobeSection({ cities = [] }: Props) {
       return;
     }
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, cur + delta));
-    const cur = map.getZoom();
-    // maxBounds raises the real minimum zoom above MIN_ZOOM: you can't zoom out
-    // past the point where the whole world fills the viewport, i.e.
-    // log2(viewport / tileSize). That floor is viewport-dependent, so estimate
-    // it from the container — this lets us skip a flyTo that would just bounce.
-    const el = map.getContainer();
-    const boundsMin = Math.log2(Math.max(el.clientWidth, el.clientHeight) / 512);
-    const atFloor = delta < 0 && cur <= Math.max(MIN_ZOOM, boundsMin) + 0.1;
-    const atCeil = delta > 0 && cur >= MAX_ZOOM - 0.02;
-    if (atFloor || atCeil) {
-      flashZoomEdge(delta > 0 ? 'in' : 'out');
-      return;
-    }
-    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, cur + delta));
     map.flyTo({ zoom: next, duration: 400, essential: true });
-    // Exact backstop: if the estimate was off and the map didn't actually move
-    // (clamped by maxBounds), still surface the message.
-    map.once('moveend', () => {
-      if (Math.abs(map.getZoom() - cur) < 0.03) {
-        flashZoomEdge(delta > 0 ? 'in' : 'out');
-      }
-    });
     // Exact backstop: if the estimate was off and the map didn't actually move
     // (clamped by maxBounds), still surface the message.
     map.once('moveend', () => {
@@ -907,20 +856,8 @@ export default function GlobeSection({ cities = [] }: Props) {
                   } catch { /* private mode */ }
                 }}
               >
-                <Link
-                  href={`/activities?id=${activeView.city.slug}`}
-                  className="ga-button"
-                  onClick={() => {
-                    try {
-                      sessionStorage.setItem(
-                        'globe.restore',
-                        JSON.stringify({ slug: activeView.city.slug, regionKey }),
-                      );
-                    } catch { /* private mode */ }
-                  }}
-                >
-                  {t('btn.exploreNow')}
-                </Link>
+                {t('btn.exploreNow')}
+              </Link>
             </div>
           </article>
         )}

@@ -50,19 +50,6 @@ export interface RegionPreset {
   bounds: [[number, number], [number, number]] | null;
 }
 
-// Region quick-jump presets for the detail-view button row. Bounding boxes are
-// approximate continental extents; the map fitBounds() into them.
-export const REGIONS: RegionPreset[] = [
-  { key: 'world', label: 'World', bounds: null },
-  { key: 'europe', label: 'Europe', bounds: [[-25, 34], [45, 72]] },
-  { key: 'asia', label: 'Asia', bounds: [[40, 5], [150, 78]] },
-  { key: 'africa', label: 'Africa', bounds: [[-20, -36], [52, 38]] },
-  { key: 'americas', label: 'Americas', bounds: [[-170, -56], [-34, 72]] },
-  { key: 'oceania', label: 'Oceania', bounds: [[110, -50], [180, 0]] },
-];
-
-const CITY_ZOOM_CLOSE = 16;
-const CITY_ZOOM_MED = 14;
 
 export function cityZoom(altitude: number): number {
   return altitude <= 0.6 ? CITY_ZOOM_CLOSE : CITY_ZOOM_MED;
@@ -124,14 +111,6 @@ export function createMarkerEl(
   nameEl.textContent = name;
   preview.appendChild(nameEl);
   el.appendChild(preview);
-
-  // Persistent city-name label shown below the pin only when it's the active
-  // (selected) marker. Red text with a white outline so it stays legible over
-  // the satellite imagery.
-  const label = document.createElement('div');
-  label.className = 'globe-marker-label';
-  label.textContent = name;
-  el.appendChild(label);
 
   // Persistent city-name label shown below the pin only when it's the active
   // (selected) marker. Red text with a white outline so it stays legible over

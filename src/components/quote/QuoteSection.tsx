@@ -63,7 +63,6 @@ export default function QuoteSection({ imageUrl }: Props) {
         {/* Right column — square portrait image + motto, fixed 45% of the frame. */}
         <motion.div
           className="w-full lg:w-[45%] max-lg:max-w-[440px] max-lg:mx-auto"
-          className="w-full lg:w-[45%] max-lg:max-w-[440px] max-lg:mx-auto"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}

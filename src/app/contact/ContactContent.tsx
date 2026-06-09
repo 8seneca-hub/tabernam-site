@@ -21,9 +21,8 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
     return (
       <main className="contact-page pt-[var(--header-height)] pb-20">
         <section className="px-[60px] py-20 max-w-[1320px] mx-auto max-md:px-[16px]">
-          <section className="px-[60px] py-20 max-w-[1320px] mx-auto max-md:px-[16px]">
-            <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
-          </section>
+          <h1 className="text-5xl font-semibold text-text">{t('heading.contact')}</h1>
+        </section>
       </main>
     );
   }

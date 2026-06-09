@@ -115,13 +115,9 @@ export default function Header() {
 
   const linkClass = (href: string) => {
     const active = isActive(href);
-    return `relative text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 ${active
-      ? '!text-brand after:bg-brand after:opacity-100'
-      : '!text-dark after:bg-dark after:opacity-0 hover:after:opacity-100'
-      }`;
-    return `relative text-[18px] tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 ${active
-        ? 'nav-link-active font-semibold !text-white after:bg-white after:opacity-100'
-        : 'font-normal !text-white after:bg-white after:opacity-0 hover:after:opacity-100'
+    return `relative text-[18px] font-normal tracking-[-0.007em] px-5 py-[14px] after:absolute after:left-5 after:right-5 after:bottom-[8px] after:h-[2px] after:content-[""] after:transition-opacity after:duration-200 !text-white after:bg-white ${active
+      ? 'after:opacity-100'
+      : 'after:opacity-0 hover:after:opacity-100'
       }`;
   };
 
