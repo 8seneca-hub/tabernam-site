@@ -105,7 +105,7 @@ await ensureCollection('hero_translations', {
 
 // 3) Translations table columns
 await ensureField('hero_translations', {
-  field: 'hero_id', type: 'uuid', interface: 'select-dropdown-m2o', special: ['m2o'], hidden: true,
+  field: 'hero_id', type: 'integer', interface: 'select-dropdown-m2o', special: ['m2o'], hidden: true,
 });
 await ensureField('hero_translations', {
   field: 'language', type: 'string', interface: 'select-dropdown-m2o', special: ['m2o'],
