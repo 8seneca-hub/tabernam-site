@@ -334,10 +334,13 @@ export interface CMSClosingQuoteTranslation extends CMSClosingQuoteTranslationFi
 interface CMSContactHeaderTranslationFields {
     heading_title: string;
     subheading: string;
+    motto_translation: string;
 }
 
 export interface CMSContactHeader {
     id: number;
+    motto_latin: string;
+    motto_author: string;
     sort: number | null;
     translations: CMSContactHeaderTranslation[];
 }
