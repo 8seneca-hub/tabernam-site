@@ -9,7 +9,7 @@ export { getGlobe, type GlobeBundle, type GlobeText } from './home/globe';
 export { getHomeAbout, type HomeAboutBundle, type HomeAboutText } from './home/home-about';
 export { getTravelRouteMaps } from './travel-routes-map';
 export { getAboutHeader, type AboutHeaderBundle, type AboutHeaderText } from './about/about-header';
-export { getAboutBody, type AboutBodyBundle, type AboutBodyText } from './about/about-body';
+export { getAboutBody, type AboutBodyBundle, type AboutBodyText, type AboutBodyVideo } from './about/about-body';
 export { getClosingQuote, type ClosingQuoteBundle, type ClosingQuoteText } from './about/closing-quote';
 export { getContactOffice, getContactTexts } from './contact/contact';
 export { getContactHeader, type ContactHeaderBundle, type ContactHeaderText } from './contact/contact-header';

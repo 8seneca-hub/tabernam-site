@@ -2,42 +2,63 @@ import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from '../client';
 
 export interface AboutBodyText {
-  body: string;
-  experienceVideoUrl: string;
-  experienceVideoTitle: string;
-  philanthropyStory1VideoUrl: string;
-  philanthropyStory1Title: string;
-  philanthropyStory2VideoUrl: string;
-  philanthropyStory2Title: string;
+  paragraph1: string;
+  paragraph2: string;
+  paragraph3: string;
+  paragraph4: string;
+  paragraph5: string;
+  paragraph6: string;
   travelRoutesHeading: string;
   travelRoutesBody: string;
 }
 
+export interface AboutBodyVideo {
+  /** Per-language { url, title }. */
+  byLang: Record<string, { url: string; title: string }>;
+}
+
 export interface AboutBodyBundle {
   byLang: Record<string, AboutBodyText>;
-  image1: string;
-  image2: string;
-  image3: string;
+  /** Image URLs grouped by paragraph_number (1..4). */
+  imagesByParagraph: Record<number, string[]>;
+  /** Video entries grouped by paragraph_number (1..4). */
+  videosByParagraph: Record<number, AboutBodyVideo[]>;
 }
 
 interface RawTranslation {
-  body?: unknown;
-  experience_video_url?: unknown;
-  experience_video_title?: unknown;
-  philanthropy_story_1_video_url?: unknown;
-  philanthropy_story_1_title?: unknown;
-  philanthropy_story_2_video_url?: unknown;
-  philanthropy_story_2_title?: unknown;
+  paragraph_1?: unknown;
+  paragraph_2?: unknown;
+  paragraph_3?: unknown;
+  paragraph_4?: unknown;
+  paragraph_5?: unknown;
+  paragraph_6?: unknown;
   travel_routes_heading?: unknown;
   travel_routes_body?: unknown;
   language?: { code?: string } | null;
 }
 
-interface RawRow extends RawTranslation {
-  image_1?: unknown;
-  image_2?: unknown;
-  image_3?: unknown;
+interface RawImage {
+  paragraph_number?: unknown;
+  sort?: unknown;
+  image?: unknown;
+}
+
+interface RawVideoTranslation {
+  url?: unknown;
+  title?: unknown;
+  language?: { code?: string } | null;
+}
+
+interface RawVideo {
+  paragraph_number?: unknown;
+  sort?: unknown;
+  translations?: RawVideoTranslation[];
+}
+
+interface RawRow {
   translations?: RawTranslation[];
+  images?: RawImage[];
+  videos?: RawVideo[];
 }
 
 const PRIMARY_LANG = 'en';
@@ -46,38 +67,45 @@ function asStr(v: unknown): string {
   return typeof v === 'string' ? v : '';
 }
 
-function projectTranslation(src: RawTranslation | RawRow): AboutBodyText {
+function projectTranslation(src: RawTranslation): AboutBodyText {
   return {
-    body: asStr(src.body),
-    experienceVideoUrl: asStr(src.experience_video_url),
-    experienceVideoTitle: asStr(src.experience_video_title),
-    philanthropyStory1VideoUrl: asStr(src.philanthropy_story_1_video_url),
-    philanthropyStory1Title: asStr(src.philanthropy_story_1_title),
-    philanthropyStory2VideoUrl: asStr(src.philanthropy_story_2_video_url),
-    philanthropyStory2Title: asStr(src.philanthropy_story_2_title),
+    paragraph1: asStr(src.paragraph_1),
+    paragraph2: asStr(src.paragraph_2),
+    paragraph3: asStr(src.paragraph_3),
+    paragraph4: asStr(src.paragraph_4),
+    paragraph5: asStr(src.paragraph_5),
+    paragraph6: asStr(src.paragraph_6),
     travelRoutesHeading: asStr(src.travel_routes_heading),
     travelRoutesBody: asStr(src.travel_routes_body),
   };
 }
 
-// /about page body content. English canonical lives on the `about_body`
-// parent (English row of translations is folded in for read convenience);
-// non-English on `about_body_translations`.
+const EMPTY_TEXT: AboutBodyText = {
+  paragraph1: '', paragraph2: '', paragraph3: '', paragraph4: '', paragraph5: '', paragraph6: '',
+  travelRoutesHeading: '', travelRoutesBody: '',
+};
+
+// /about page body. Four paragraph slots; each slot may have any number of
+// images (parent `about_body_images`, tagged by paragraph_number) and any
+// number of videos (parent `about_body_videos` + `_translations`).
 export async function getAboutBody(): Promise<AboutBodyBundle> {
   try {
     const row = (await directus.request(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       readSingleton('about_body', {
         fields: [
-          'image_1', 'image_2', 'image_3',
           {
             translations: [
-              'body',
-              'experience_video_url', 'experience_video_title',
-              'philanthropy_story_1_video_url', 'philanthropy_story_1_title',
-              'philanthropy_story_2_video_url', 'philanthropy_story_2_title',
+              'paragraph_1', 'paragraph_2', 'paragraph_3', 'paragraph_4', 'paragraph_5', 'paragraph_6',
               'travel_routes_heading', 'travel_routes_body',
               { language: ['code'] },
+            ],
+          },
+          { images: ['paragraph_number', 'sort', 'image'] },
+          {
+            videos: [
+              'paragraph_number', 'sort',
+              { translations: ['url', 'title', { language: ['code'] }] },
             ],
           },
         ],
@@ -85,42 +113,49 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
     )) as RawRow | null;
 
     const byLang: Record<string, AboutBodyText> = {};
-    let image1 = '';
-    let image2 = '';
-    let image3 = '';
+    const imagesByParagraph: Record<number, string[]> = {};
+    const videosByParagraph: Record<number, AboutBodyVideo[]> = {};
+
     if (row) {
       for (const t of row.translations ?? []) {
         const code = t.language && typeof t.language === 'object' ? t.language.code : null;
         if (!code) continue;
         byLang[code] = projectTranslation(t);
       }
-      image1 = typeof row.image_1 === 'string' ? assetUrl(row.image_1) : '';
-      image2 = typeof row.image_2 === 'string' ? assetUrl(row.image_2) : '';
-      image3 = typeof row.image_3 === 'string' ? assetUrl(row.image_3) : '';
+      // Group images by paragraph_number, preserving sort order.
+      const sortedImgs = [...(row.images ?? [])].sort((a, b) => {
+        const sa = typeof a.sort === 'number' ? a.sort : 0;
+        const sb = typeof b.sort === 'number' ? b.sort : 0;
+        return sa - sb;
+      });
+      for (const img of sortedImgs) {
+        const n = typeof img.paragraph_number === 'number' ? img.paragraph_number : null;
+        const id = typeof img.image === 'string' ? img.image : null;
+        if (!n || !id) continue;
+        (imagesByParagraph[n] ||= []).push(assetUrl(id));
+      }
+      // Group videos by paragraph_number, build per-language {url, title}.
+      const sortedVids = [...(row.videos ?? [])].sort((a, b) => {
+        const sa = typeof a.sort === 'number' ? a.sort : 0;
+        const sb = typeof b.sort === 'number' ? b.sort : 0;
+        return sa - sb;
+      });
+      for (const vid of sortedVids) {
+        const n = typeof vid.paragraph_number === 'number' ? vid.paragraph_number : null;
+        if (!n) continue;
+        const videoByLang: Record<string, { url: string; title: string }> = {};
+        for (const t of vid.translations ?? []) {
+          const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+          if (!code) continue;
+          videoByLang[code] = { url: asStr(t.url), title: asStr(t.title) };
+        }
+        (videosByParagraph[n] ||= []).push({ byLang: videoByLang });
+      }
     }
-    // Guarantee an `en` entry exists so the fallback chain has something
-    // to land on even if the user has only filled in non-English rows.
-    if (!byLang[PRIMARY_LANG]) {
-      byLang[PRIMARY_LANG] = {
-        body: '',
-        experienceVideoUrl: '',
-        experienceVideoTitle: '',
-        philanthropyStory1VideoUrl: '',
-        philanthropyStory1Title: '',
-        philanthropyStory2VideoUrl: '',
-        philanthropyStory2Title: '',
-        travelRoutesHeading: '',
-        travelRoutesBody: '',
-      };
-    }
-    return { byLang, image1, image2, image3 };
+    if (!byLang[PRIMARY_LANG]) byLang[PRIMARY_LANG] = { ...EMPTY_TEXT };
+    return { byLang, imagesByParagraph, videosByParagraph };
   } catch (e) {
     console.warn('Directus fetch failed for about_body, using fallback:', e);
-    return {
-      byLang: {},
-      image1: '',
-      image2: '',
-      image3: '',
-    };
+    return { byLang: {}, imagesByParagraph: {}, videosByParagraph: {} };
   }
 }

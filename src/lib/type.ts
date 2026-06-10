@@ -134,6 +134,9 @@ export interface CMSSchema {
     about_header_translations: CMSAboutHeaderTranslation[];
     about_body: CMSAboutBody;
     about_body_translations: CMSAboutBodyTranslation[];
+    about_body_images: CMSAboutBodyImage[];
+    about_body_videos: CMSAboutBodyVideo[];
+    about_body_videos_translations: CMSAboutBodyVideoTranslation[];
     closing_quote: CMSClosingQuote;
     closing_quote_translations: CMSClosingQuoteTranslation[];
     contact_header: CMSContactHeader;
@@ -259,22 +262,20 @@ export interface CMSAboutHeaderTranslation extends CMSAboutHeaderFields {
 }
 
 interface CMSAboutBodyTranslationFields {
-    body: string;
-    experience_video_url: string;
-    experience_video_title: string;
-    philanthropy_story_1_video_url: string;
-    philanthropy_story_1_title: string;
-    philanthropy_story_2_video_url: string;
-    philanthropy_story_2_title: string;
+    paragraph_1: string;
+    paragraph_2: string;
+    paragraph_3: string;
+    paragraph_4: string;
+    paragraph_5: string;
+    paragraph_6: string;
     travel_routes_heading: string;
     travel_routes_body: string;
 }
 
 export interface CMSAboutBody {
     id: number;
-    image_1: string | null;
-    image_2: string | null;
-    image_3: string | null;
+    images: CMSAboutBodyImage[];
+    videos: CMSAboutBodyVideo[];
     sort: number | null;
     translations: CMSAboutBodyTranslation[];
 }
@@ -283,6 +284,30 @@ export interface CMSAboutBodyTranslation extends CMSAboutBodyTranslationFields {
     id: number;
     about_body_id: number;
     language: number | CMSLanguage | { code: string } | null;
+}
+
+export interface CMSAboutBodyImage {
+    id: number;
+    about_body_id: number;
+    paragraph_number: number;
+    sort: number | null;
+    image: string | null;
+}
+
+export interface CMSAboutBodyVideo {
+    id: number;
+    about_body_id: number;
+    paragraph_number: number;
+    sort: number | null;
+    translations: CMSAboutBodyVideoTranslation[];
+}
+
+export interface CMSAboutBodyVideoTranslation {
+    id: number;
+    about_body_videos_id: number;
+    language: number | CMSLanguage | { code: string } | null;
+    url: string;
+    title: string;
 }
 
 interface CMSClosingQuoteTranslationFields {
