@@ -5,11 +5,14 @@ import Link from 'next/link';
 import FadeIn from '@/animations/FadeIn';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/app/hook/useI18n';
-import type { PageTexts } from '@/lib/directus';
+import type { ClosingQuoteBundle, ClosingQuoteText } from '@/lib/directus';
 
-// Fixed Latin slogan — never changes with the selected language.
-const LATIN = 'Honeste lucra, nobiliter dona';
-const TRANSLATION_FALLBACK = 'Earn honestly, give generously';
+const FALLBACK_LATIN = 'Honeste lucra, nobiliter dona';
+const FALLBACK_AUTHOR = 'Tibor Buček';
+const FALLBACK_TRANSLATION = 'Earn honestly, give generously';
+const FALLBACK_BACKGROUND = '/carousel/photo-12.jpg';
+
+const EMPTY_TEXT: ClosingQuoteText = { quote: '', mottoTranslation: '', cta: '' };
 
 const QuoteIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="w-14 h-14 opacity-40">
@@ -18,18 +21,25 @@ const QuoteIcon = () => (
 );
 
 interface Props {
-  texts: PageTexts;
+  closingQuote: ClosingQuoteBundle;
 }
 
-export default function ClosingQuote({ texts }: Props) {
-  const { t } = useI18n();
-  const author = texts.closing_quote_author;
-  const cta = texts.closing_cta;
-  const backgroundImage = texts.closing_background || '/carousel/photo-12.jpg';
+export default function ClosingQuote({ closingQuote }: Props) {
+  const { lang } = useI18n();
 
-  const translated = t('quote.motto.translation');
-  const translation =
-    translated && translated !== 'quote.motto.translation' ? translated : TRANSLATION_FALLBACK;
+  // Active language → English → empty.
+  const langText = closingQuote.byLang[lang];
+  const enText = closingQuote.byLang['en'];
+  const text =
+    (langText && (langText.mottoTranslation || langText.cta) ? langText : null) ??
+    (enText && (enText.mottoTranslation || enText.cta) ? enText : null) ??
+    EMPTY_TEXT;
+
+  const latin = closingQuote.mottoLatin || FALLBACK_LATIN;
+  const author = closingQuote.mottoAuthor || FALLBACK_AUTHOR;
+  const translation = text.mottoTranslation || FALLBACK_TRANSLATION;
+  const cta = text.cta;
+  const backgroundImage = closingQuote.background || FALLBACK_BACKGROUND;
 
   const sectionRef = useRef<HTMLElement>(null);
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: -1000, y: -1000 });
@@ -64,7 +74,7 @@ export default function ClosingQuote({ texts }: Props) {
         </FadeIn>
         <FadeIn delay={0.1} className="w-full max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="text-2xl md:text-4xl font-semibold italic leading-snug">
-            &ldquo;{LATIN}&rdquo;
+            &ldquo;{latin}&rdquo;
           </h2>
           <p className="text-[24px] italic leading-snug text-white/90">
             ({translation})

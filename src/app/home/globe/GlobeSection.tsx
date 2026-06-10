@@ -10,6 +10,38 @@ import { Move, ZoomIn, MapPin, X } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
 import Image from '@/components/ui/Image';
 import type { GlobeCity } from '@/lib/type';
+import type { GlobeBundle, GlobeText } from '@/lib/directus';
+
+// Hardcoded English fallback so the section renders even if Directus is
+// unreachable. Mirrors what `src/lib/i18n.ts` used to inject via t().
+const FALLBACK_GLOBE_TEXT: GlobeText = {
+  introHeading: 'A career mapped across continents.',
+  introBody: '',
+  introCta: 'Explore the globe',
+  hintDrag: 'Drag to spin',
+  hintZoom: 'Scroll to zoom',
+  hintClickCity: 'Tap a city',
+  zoomMaxToast: 'Zoomed in as far as it goes',
+  zoomMinToast: 'Zoomed out as far as it goes',
+  regionWorld: 'World',
+  regionEurope: 'Europe',
+  regionAsia: 'Asia',
+  regionAfrica: 'Africa',
+  regionAmericas: 'Americas',
+  regionOceania: 'Oceania',
+  panelGoToLocation: 'Go to location',
+  btnExploreNow: 'Explore now',
+};
+
+// region key (from REGIONS) → field in GlobeText that holds its localised label.
+const REGION_TEXT_KEY: Record<string, keyof GlobeText> = {
+  world: 'regionWorld',
+  europe: 'regionEurope',
+  asia: 'regionAsia',
+  africa: 'regionAfrica',
+  americas: 'regionAmericas',
+  oceania: 'regionOceania',
+};
 import {
   IDLE_CENTER,
   idleZoomFor,
@@ -25,12 +57,22 @@ import {
 
 interface Props {
   cities?: GlobeCity[];
+  globe?: GlobeBundle;
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-export default function GlobeSection({ cities = [] }: Props) {
-  const { t, lang } = useI18n();
+export default function GlobeSection({ cities = [], globe }: Props) {
+  const { lang } = useI18n();
+
+  // Active language → English → hardcoded fallback. An entry with an empty
+  // introHeading counts as "no text" so we still fall through.
+  const langText = globe?.byLang[lang];
+  const enText = globe?.byLang['en'];
+  const text: GlobeText =
+    (langText && langText.introHeading ? langText : null) ??
+    (enText && enText.introHeading ? enText : null) ??
+    FALLBACK_GLOBE_TEXT;
   const sectionRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLElement>(null);
@@ -754,7 +796,7 @@ export default function GlobeSection({ cities = [] }: Props) {
       <div ref={introRef} className={`ga-intro${isOpen ? ' out' : ''}`}>
         <h2>
           {(() => {
-            const heading = t('globeIntro.heading');
+            const heading = text.introHeading;
             const i = heading.indexOf('across');
             if (i === -1) return heading;
             return (
@@ -765,14 +807,14 @@ export default function GlobeSection({ cities = [] }: Props) {
             );
           })()}
         </h2>
-        <p>{t('globeIntro.body')}</p>
+        <p>{text.introBody}</p>
         <button
           type="button"
           className="ga-cta"
           onClick={() => { setIsOpen(true); setActiveIdx(null); setRegionKey('world'); }}
           disabled={cityViews.length === 0}
         >
-          {t('globeIntro.cta')}
+          {text.introCta}
         </button>
       </div>
 
@@ -841,7 +883,7 @@ export default function GlobeSection({ cities = [] }: Props) {
                   });
                 }}
               >
-                {t('panel.goToLocation')}
+                {text.panelGoToLocation}
               </button>
               <p className="ga-desc">{activeView.desc}</p>
               <Link
@@ -856,7 +898,7 @@ export default function GlobeSection({ cities = [] }: Props) {
                   } catch { /* private mode */ }
                 }}
               >
-                {t('btn.exploreNow')}
+                {text.btnExploreNow}
               </Link>
             </div>
           </article>
@@ -871,7 +913,7 @@ export default function GlobeSection({ cities = [] }: Props) {
             className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
             onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
           >
-            {t(`region.${r.key}`)}
+            {text[REGION_TEXT_KEY[r.key]] ?? r.label}
           </button>
         ))}
       </div>
@@ -910,15 +952,15 @@ export default function GlobeSection({ cities = [] }: Props) {
       <div className={`ga-hints${isOpen ? ' visible' : ''}`} aria-hidden="true">
         <div className="ga-hint">
           <Move />
-          <span>{t('globeHint.drag')}</span>
+          <span>{text.hintDrag}</span>
         </div>
         <div className="ga-hint">
           <ZoomIn />
-          <span>{t('globeHint.zoom')}</span>
+          <span>{text.hintZoom}</span>
         </div>
         <div className="ga-hint">
           <MapPin />
-          <span>{t('globeHint.clickCity')}</span>
+          <span>{text.hintClickCity}</span>
         </div>
       </div>
 
@@ -927,7 +969,7 @@ export default function GlobeSection({ cities = [] }: Props) {
         role="status"
         aria-live="polite"
       >
-        {zoomEdge === 'in' ? t('globeZoom.maxToast') : t('globeZoom.minToast')}
+        {zoomEdge === 'in' ? text.zoomMaxToast : text.zoomMinToast}
       </div>
 
     </section>

@@ -72,14 +72,33 @@ export default async function RootLayout({
     '--color-border': settings.colorBorder,
     '--color-footer-bg': settings.colorFooterBg,
     '--color-brand': settings.colorBrand,
+    '--color-accent': settings.colorAccent,
+    // Tailwind v4 derives bg-brand / text-brand from --brand and --accent (the
+    // base palette names); set those too so the utility classes pick up the
+    // override.
+    '--brand': settings.colorBrand,
+    '--accent': settings.colorAccent,
     '--max-width': settings.maxWidth,
     '--side-padding': settings.sidePadding,
     '--header-height': settings.headerHeight,
-    ...(settings.fontFamily ? { '--font-override': settings.fontFamily } : {}),
+    ...(settings.fontFamily ? { '--font-override': `'${settings.fontFamily}'` } : {}),
   } as React.CSSProperties;
+
+  // If the user picked a body font, ask Google Fonts for it server-side so the
+  // page renders with the right typeface immediately (no flash of fallback).
+  const googleFontHref = settings.fontFamily
+    ? `https://fonts.googleapis.com/css2?family=${encodeURIComponent(settings.fontFamily).replace(/%20/g, '+')}:wght@300;400;500;600;700;800&display=swap`
+    : null;
 
   return (
     <html lang="en" className={`${inter.variable} ${notoSansSC.variable} ${pinyonScript.variable}`} style={themeVars}>
+      <head>
+        {/* Material Icons web font — drives the contact-channel icons set
+            via the Directus icon picker. */}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        {/* Selected body font from site_settings.font_family. */}
+        {googleFontHref && <link rel="stylesheet" href={googleFontHref} />}
+      </head>
       <body
         className="bg-bg text-text leading-snug min-h-screen flex flex-col"
         suppressHydrationWarning

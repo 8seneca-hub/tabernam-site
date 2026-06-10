@@ -1,21 +1,45 @@
 'use client';
 
 import { useI18n } from '@/app/hook/useI18n';
-import { pickPageTexts, type PageTextsBundle } from '@/lib/directus';
+import { pickPageTexts, type ContactHeaderBundle, type PageTextsBundle } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
 import Image from '@/components/ui/Image';
-import MottoQuote from '@/components/MottoQuote';
+import MottoQuote from '@/components/layout/MottoQuote';
 import { Globe, Mail, MapPin, Phone } from 'lucide-react';
 import { ContactOffice } from '@/lib/data';
+
+// Renders the Material Icons glyph picked by the editor in Directus, falling
+// back to the default Lucide / inline-SVG component when no name is set.
+function ChannelIcon({ name, fallback }: { name: string; fallback: React.ReactNode }) {
+  if (name) {
+    return (
+      <span className="material-icons" aria-hidden="true" style={{ fontSize: 20, lineHeight: 1 }}>
+        {name}
+      </span>
+    );
+  }
+  return <>{fallback}</>;
+}
 
 interface Props {
   texts: PageTextsBundle;
   office: ContactOffice | null;
+  contactHeader: ContactHeaderBundle;
 }
 
-export default function ContactContent({ texts: bundle, office: active }: Props) {
+const FALLBACK_HEADING = 'Get in touch';
+const FALLBACK_SUBHEADING = 'If you are entering, scaling, or repositioning your business between Europle and China - or simply want a candid second opinion before the next step - I welcome the conversation. Reach me through whichever channel below fits your context.';
+
+export default function ContactContent({ texts: bundle, office: active, contactHeader }: Props) {
   const { lang, t } = useI18n();
   const texts = pickPageTexts(bundle, lang);
+
+  const langHeader = contactHeader.byLang[lang];
+  const enHeader = contactHeader.byLang['en'];
+  const header =
+    (langHeader && langHeader.headingTitle ? langHeader : null) ??
+    (enHeader && enHeader.headingTitle ? enHeader : null) ??
+    { headingTitle: FALLBACK_HEADING, subheading: FALLBACK_SUBHEADING };
 
   if (!active) {
     return (
@@ -32,10 +56,8 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
   const personalMailHref = active.personalEmail ? `mailto:${active.personalEmail}` : '';
   const websiteUrl = active.websiteUrl || "www.tabernam.at";
 
-  const headingTitle = texts.contact_heading_title || 'Get in touch';
-  const subheadingTitle =
-    texts.contact_subheading
-    || 'If you are entering, scaling, or repositioning your business between Europle and China - or simply want a candid second opinion before the next step - I welcome the conversation. Reach me through whichever channel below fits your context.'
+  const headingTitle = header.headingTitle || FALLBACK_HEADING;
+  const subheadingTitle = header.subheading || FALLBACK_SUBHEADING;
   const addressLabel = t('contact.addressLabel');
   const websiteLabel = t('contact.websiteLabel')
   const workEmailLabel = t('contact.emailLabel');
@@ -58,7 +80,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {active.workEmail && active.personalEmail && (
                 <div className="flex items-start gap-5">
                   <span className="flex items-center h-6 text-text shrink-0">
-                    <Mail size={20} />
+                    <ChannelIcon name={active.iconEmail} fallback={<Mail size={20} />} />
                   </span>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[16px] font-normal text-text leading-6">
@@ -82,7 +104,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {active.phone && (
                 <div className="flex items-start gap-5">
                   <span className="flex items-center h-6 text-text shrink-0">
-                    <Phone size={20} />
+                    <ChannelIcon name={active.iconPhone} fallback={<Phone size={20} />} />
                   </span>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[16px] font-normal text-text leading-6">
@@ -100,11 +122,11 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {active.wechat && (
                 <div className="flex items-start gap-5">
                   <span className="flex items-center h-6 text-text shrink-0">
+                    {/* WeChat keeps its real two-bubble icon — Material Icons
+                        doesn't ship a matching glyph, so this is hardcoded. */}
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      {/* Back bubble (upper-left), open on the lower-right where the front bubble overlaps. */}
                       <path d="M14 9.5c0-3.04-2.91-5.5-6.5-5.5S1 6.46 1 9.5c0 1.78 1 3.36 2.55 4.38L3 16.5l2.66-1.4c.58.16 1.2.27 1.84.32" />
                       <path d="M5.5 9h.01M9.5 9h.01" />
-                      {/* Front bubble (lower-right) with bottom-right tail. */}
                       <path d="M10 15.5c0 2.49 2.46 4.5 5.5 4.5.65 0 1.27-.09 1.84-.26L20 21l-.6-1.96C21.31 18.13 21 16.86 21 15.5c0-2.49-2.46-4.5-5.5-4.5S10 13.01 10 15.5Z" />
                       <path d="M14 15h.01M17.5 15h.01" />
                     </svg>
@@ -122,7 +144,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {active.addressLines.length > 0 && (
                 <div className="flex items-start gap-5">
                   <span className="flex items-center h-6 text-text shrink-0">
-                    <MapPin size={20} />
+                    <ChannelIcon name={active.iconAddress} fallback={<MapPin size={20} />} />
                   </span>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[16px] font-normal text-text leading-6">
@@ -141,7 +163,7 @@ export default function ContactContent({ texts: bundle, office: active }: Props)
               {active.websiteUrl && (
                 <div className="flex items-start gap-5">
                   <span className="flex items-center h-6 text-text shrink-0">
-                    <Globe size={20} />
+                    <ChannelIcon name={active.iconWebsite} fallback={<Globe size={20} />} />
                   </span>
                   <div className="flex flex-col gap-1.5">
                     <span className="text-[16px] font-normal text-text leading-6">

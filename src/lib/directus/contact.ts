@@ -37,8 +37,12 @@ export async function getContactOffice(): Promise<ContactOffice | null> {
       phone: string; website_url: string; whatsapp: string; wechat: string;
       work_email: string; personal_email: string;
       bank_credentials: string;
+      icon_email: string | null; icon_phone: string | null;
+      icon_website: string | null; icon_address: string | null;
       maps?: Array<{ directus_files_id: string }>;
     };
+    // Icon fields now store a Material Icons name (e.g. "mail"). Pass through.
+    const iconName = (v: string | null | undefined): string => (typeof v === 'string' ? v : '');
     return {
       slug: o.slug,
       region: o.region,
@@ -61,6 +65,10 @@ export async function getContactOffice(): Promise<ContactOffice | null> {
         .map((m) => m.directus_files_id)
         .filter((id): id is string => !!id)
         .map((id) => assetUrl(id)),
+      iconEmail: iconName(o.icon_email),
+      iconPhone: iconName(o.icon_phone),
+      iconWebsite: iconName(o.icon_website),
+      iconAddress: iconName(o.icon_address),
     };
   } catch (e) {
     console.warn('Directus fetch failed for contact singleton, using fallback:', e);

@@ -1,29 +1,28 @@
-import { getActivities, getHero, getHeroSlides, getHomeMarquee, getHomeTexts } from '@/lib/directus';
-import HeroSection from '@/components/hero/HeroSection';
-import QuoteSection from '@/components/quote/QuoteSection';
-import HomeMarquee from '@/components/home/component/HomeMarquee';
-import GlobeSection from '@/components/home/globe/GlobeSection';
-import AboutSection from '../components/home/AboutSection';
+import { getActivities, getGlobe, getHero, getHomeAbout, getHomeMarquee, getQuote } from '@/lib/directus';
+import HeroSection from '@/app/home/HeroSection';
+import QuoteSection from '@/app/home/QuoteSection';
+import HomeMarquee from '@/app/home/HomeMarquee';
+import GlobeSection from '@/app/home/globe/GlobeSection';
+import AboutSection from './home/AboutSection';
 
 export default async function HomePage() {
 
-  const [activities, heroSlides, marqueeImages, texts, hero] = await Promise.all([
+  const [activities, marqueeImages, hero, quote, globe, homeAbout] = await Promise.all([
     getActivities(),
-    getHeroSlides(),
     getHomeMarquee(),
-    getHomeTexts(),
     getHero(),
+    getQuote(),
+    getGlobe(),
+    getHomeAbout(),
   ]);
-
-  const quoteImage = texts.en?.quote_image ?? '';
 
   return (
     <main className="home-page">
-      <HeroSection slides={heroSlides} hero={hero} />
-      <QuoteSection imageUrl={quoteImage} />
-      <AboutSection texts={texts} />
+      <HeroSection hero={hero} />
+      <QuoteSection quote={quote} />
+      <AboutSection homeAbout={homeAbout} />
       <HomeMarquee images={marqueeImages} />
-      <GlobeSection cities={activities} />
+      <GlobeSection cities={activities} globe={globe} />
     </main>
   );
 }

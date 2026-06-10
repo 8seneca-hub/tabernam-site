@@ -9,9 +9,15 @@ export interface MarqueeImage {
   row: 1 | 2 | 3;
 }
 
+export interface TravelRouteMapTranslation {
+  language: string;
+  name: string;
+}
+
 export interface TravelRouteMap {
   slug: string;
   image: string;
+  translations: TravelRouteMapTranslation[];
 }
 
 export interface LabeledRow {
@@ -38,6 +44,13 @@ export interface ContactOffice {
   personalEmail: string;
   bankCredentials: LabeledRow[];
   mapImages: string[];
+  /** Per-channel custom icons (Material Icons names). Empty string when not set.
+   *  WeChat is intentionally not editable — Material Icons has no real WeChat
+   *  glyph, so the contact page hardcodes the two-bubble SVG. */
+  iconEmail: string;
+  iconPhone: string;
+  iconWebsite: string;
+  iconAddress: string;
 }
 
 export interface ActivityCoords {
@@ -72,6 +85,7 @@ export interface Activity {
 export interface SiteSettings {
   colorBg: string;
   colorBrand: string;
+  colorAccent: string;
   colorText: string;
   colorMuted: string;
   colorSurface: string;
@@ -253,6 +267,7 @@ export const CHINA_DESTINATIONS = [
 export const DEFAULT_SETTINGS: SiteSettings = {
   colorBg: '#FFFFFF',
   colorBrand: '#1759B0',
+  colorAccent: '#FF8A35',
   colorText: '#101823',
   colorMuted: '#5A6B83',
   colorSurface: '#C2CBD7',

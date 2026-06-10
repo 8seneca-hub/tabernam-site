@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Image from '@/components/ui/Image';
-import type { PageTexts, TravelRouteMap } from '@/lib/data';
+import type { TravelRouteMap } from '@/lib/data';
+import { useI18n } from '@/app/hook/useI18n';
 
 interface Props {
-  texts: PageTexts;
   maps?: TravelRouteMap[];
+  heading?: string;
+  body?: string;
 }
 
 interface Place {
@@ -15,31 +17,36 @@ interface Place {
   image: string;
 }
 
-const FALLBACK_IMAGES: Record<string, string> = {
-  china: '/china-map.jpeg',
-  america: '/america-map.jpeg',
-  europe: '/europe-map.jpeg',
-};
+// Used only when Directus is unreachable and `maps` comes back empty, so the
+// About page still renders something recognisable.
+const FALLBACK_PLACES: Place[] = [
+  { id: 'china', name: 'China', image: '/china-map.jpeg' },
+  { id: 'america', name: 'America', image: '/america-map.jpeg' },
+  { id: 'europe', name: 'Europe', image: '/europe-map.jpeg' },
+];
 
-const FALLBACK_NAMES: Record<string, string> = {
-  china: 'China',
-  america: 'America',
-  europe: 'Europe',
-};
+function resolveName(map: TravelRouteMap, lang: string): string {
+  const byLang = map.translations.find((t) => t.language === lang);
+  if (byLang?.name) return byLang.name;
+  const en = map.translations.find((t) => t.language === 'en');
+  if (en?.name) return en.name;
+  return map.translations[0]?.name || map.slug;
+}
 
-export default function TravelRoutes({ texts, maps = [] }: Props) {
-  const imageBySlug = new Map(maps.map((m) => [m.slug, m.image]));
+const FALLBACK_HEADING = 'My Travel Routes';
+const FALLBACK_BODY =
+  'My work and curiosity have carried me across continents — from long chapters in Asia to projects spanning Europe. Every destination left something behind: a partner, a lesson, a story worth telling. Explore where I’ve been, and reach out if any of these places speak to you.';
 
-  const places: Place[] = ['china', 'america', 'europe'].map((slug) => ({
-    id: slug,
-    name: texts[`travel_routes_${slug}_name`] || FALLBACK_NAMES[slug],
-    image: imageBySlug.get(slug) || FALLBACK_IMAGES[slug],
-  }));
+export default function TravelRoutes({ maps = [], heading: headingProp, body: bodyProp }: Props) {
+  const { lang } = useI18n();
 
-  const heading = texts.travel_routes_heading || 'My Travel Routes';
-  const body =
-    texts.travel_routes_body ||
-    'My work and curiosity have carried me across continents — from long chapters in Asia to projects spanning Europe. Every destination left something behind: a partner, a lesson, a story worth telling. Explore where I’ve been, and reach out if any of these places speak to you.';
+  const places: Place[] =
+    maps.length > 0
+      ? maps.map((m) => ({ id: m.slug, name: resolveName(m, lang), image: m.image }))
+      : FALLBACK_PLACES;
+
+  const heading = headingProp || FALLBACK_HEADING;
+  const body = bodyProp || FALLBACK_BODY;
 
   const [active, setActive] = useState(places[0].id);
   const current = places.find((p) => p.id === active) ?? places[0];

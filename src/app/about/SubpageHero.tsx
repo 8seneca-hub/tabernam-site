@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import Image from '@/components/ui/Image';
-import MottoQuote from '@/components/MottoQuote';
+import MottoQuote from '@/components/layout/MottoQuote';
 
 interface Props {
   heading: string;
@@ -13,9 +13,15 @@ interface Props {
   image: string;
   imageAlt?: string;
   children: ReactNode;
+  /** Latin motto override. Falls back to MottoQuote's constant. */
+  mottoLatin?: string;
+  /** Translated motto override. Falls back to the t() dictionary. */
+  mottoTranslation?: string;
+  /** Author line override. */
+  mottoAuthor?: string;
 }
 
-export default function SubpageHero({ heading, eyebrow, subheading, image, imageAlt = '', children }: Props) {
+export default function SubpageHero({ heading, eyebrow, subheading, image, imageAlt = '', children, mottoLatin, mottoTranslation, mottoAuthor }: Props) {
   return (
     <section className="px-[60px] py-20 max-md:px-[16px] max-[1025px]:pb-0">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
@@ -43,7 +49,7 @@ export default function SubpageHero({ heading, eyebrow, subheading, image, image
           <div className="feathered-image relative rounded-6 overflow-hidden bg-surface">
             <Image src={image} alt={imageAlt} priority className="w-full h-auto" />
           </div>
-          <MottoQuote />
+          <MottoQuote latin={mottoLatin} translation={mottoTranslation} author={mottoAuthor} />
         </div>
       </div>
     </section>

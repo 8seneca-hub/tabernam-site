@@ -1,11 +1,19 @@
-import { getAboutTexts, getTravelRouteMaps } from '@/lib/directus';
+import { getAboutBody, getAboutHeader, getClosingQuote, getTravelRouteMaps } from '@/lib/directus';
 import AboutContent from './AboutContent';
 
 export default async function AboutPage() {
-  const [texts, travelRouteMaps] = await Promise.all([
-    getAboutTexts(),
+  const [travelRouteMaps, aboutHeader, aboutBody, closingQuote] = await Promise.all([
     getTravelRouteMaps(),
+    getAboutHeader(),
+    getAboutBody(),
+    getClosingQuote(),
   ]);
-  const heroImage = texts.en?.portrait_image || '/tibor_image.png';
-  return <AboutContent texts={texts} heroImage={heroImage} travelRouteMaps={travelRouteMaps} />;
+  return (
+    <AboutContent
+      aboutHeader={aboutHeader}
+      aboutBody={aboutBody}
+      closingQuote={closingQuote}
+      travelRouteMaps={travelRouteMaps}
+    />
+  );
 }

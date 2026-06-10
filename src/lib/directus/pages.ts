@@ -35,7 +35,7 @@ export const DICT_BY_PAGE: Record<string, Array<{ key: string; field: string }>>
   return grouped;
 })();
 
-export function allTextFieldsFor(page: 'home' | 'about' | 'contact' | 'cv' | 'nav' | 'footer'): string[] {
+export function allTextFieldsFor(page: 'contact' | 'cv' | 'header' | 'footer'): string[] {
   const dictFields = (DICT_BY_PAGE[page] || []).map((x) => x.field);
   const pageTextConfig = (pageKeysConfig.pageTexts as Record<string, { text?: string[] }>)[page];
   const extra = pageTextConfig?.text ?? [];
@@ -52,7 +52,7 @@ export interface SingletonReadShape {
 // Read a page singleton with all its translations and asset fields. Exported
 // so `site.ts`'s dictionary loader can reuse it.
 export async function readPageSingleton(
-  page: 'home' | 'about' | 'contact' | 'cv' | 'nav' | 'footer',
+  page: 'contact' | 'cv' | 'header' | 'footer',
   textFields: string[],
   assetFields: string[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -91,7 +91,7 @@ export function pickPageTexts(bundle: PageTextsBundle, lang: string): PageTexts 
 }
 
 export async function composePageBundle(
-  page: 'home' | 'about' | 'contact' | 'cv',
+  page: 'contact' | 'cv',
 ): Promise<PageTextsBundle> {
   const cfg = (pageKeysConfig.pageTexts as Record<string, { text?: string[]; assets?: string[]; _fieldRename?: Record<string, string> }>)[page];
   if (!cfg) return {};

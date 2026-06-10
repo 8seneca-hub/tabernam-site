@@ -34,22 +34,32 @@ interface Props {
   texts: PageTexts;
   blocks: ContentBlock[];
   travelRouteMaps?: TravelRouteMap[];
+  /** The body string that paragraph blocks slice into. Sourced from
+   *  about_body_translations.body. */
+  body: string;
+  /** Heading + body for the embedded Travel Routes section. */
+  travelRoutesHeading?: string;
+  travelRoutesBody?: string;
 }
 
 const DEFAULT_SPACING = 'mt-[40px]';
 
-function renderBlock(block: ContentBlock, texts: PageTexts, travelRouteMaps: TravelRouteMap[]): ReactNode {
+function sliceBody(body: string, start = 0, end?: number): string {
+  const paragraphs = body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  return paragraphs.slice(start, end).join('\n\n');
+}
+
+function renderBlock(block: ContentBlock, texts: PageTexts, travelRouteMaps: TravelRouteMap[], body: string, travelRoutesHeading: string | undefined, travelRoutesBody: string | undefined): ReactNode {
   switch (block.type) {
     // Text only — capped at 640px, centered horizontally in the parent frame
     // (the text itself stays left-aligned).
-    case 'paragraph':
+    case 'paragraph': {
+      const text = block.text ?? sliceBody(body, block.start, block.end);
       return (
         <div className="max-w-[640px] mx-auto">
           <AboutParagraph
             texts={texts}
-            text={block.text}
-            start={block.start}
-            end={block.end}
+            text={text}
             splitAfterSentence={block.splitAfterSentence}
             suppressVideos={block.suppressVideos}
             paragraphClassName={BODY_CLASS}
@@ -57,6 +67,7 @@ function renderBlock(block: ContentBlock, texts: PageTexts, travelRouteMaps: Tra
           />
         </div>
       );
+    }
 
     case 'two_images':
       return (
@@ -77,16 +88,15 @@ function renderBlock(block: ContentBlock, texts: PageTexts, travelRouteMaps: Tra
       );
 
     case 'travel_routes':
-      return <TravelRoutes texts={texts} maps={travelRouteMaps} />;
+      return <TravelRoutes maps={travelRouteMaps} heading={travelRoutesHeading} body={travelRoutesBody} />;
 
-    case 'horizontal':
+    case 'horizontal': {
+      const text = block.text ?? sliceBody(body, block.start, block.end);
       return (
         <div className="grid grid-cols-2 gap-[40px] items-start max-md:grid-cols-1 max-md:gap-[24px]">
           <AboutParagraph
             texts={texts}
-            text={block.text}
-            start={block.start}
-            end={block.end}
+            text={text}
             splitAfterSentence={block.splitAfterSentence}
             // The right side already shows the video — don't repeat it inline.
             suppressVideos={!!block.video}
@@ -99,18 +109,19 @@ function renderBlock(block: ContentBlock, texts: PageTexts, travelRouteMaps: Tra
           ) : null}
         </div>
       );
+    }
 
     default:
       return null;
   }
 }
 
-export default function ContentBlocks({ texts, blocks, travelRouteMaps = [] }: Props) {
+export default function ContentBlocks({ texts, blocks, travelRouteMaps = [], body, travelRoutesHeading, travelRoutesBody }: Props) {
   return (
     <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[16px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col">
         {blocks.map((block, i) => {
-          const content = renderBlock(block, texts, travelRouteMaps);
+          const content = renderBlock(block, texts, travelRouteMaps, body, travelRoutesHeading, travelRoutesBody);
           if (!content) return null;
           return (
             <div key={i} className={i === 0 ? undefined : (block.spacingTop ?? DEFAULT_SPACING)}>

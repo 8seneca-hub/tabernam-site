@@ -2,19 +2,16 @@
 
 import { motion } from 'motion/react';
 import Image from '@/components/ui/Image';
-import MottoQuote from '@/components/MottoQuote';
+import MottoQuote from '@/components/layout/MottoQuote';
 import { useI18n } from '@/app/hook/useI18n';
+import type { QuoteBundle } from '@/lib/directus';
 
 const FALLBACK_EN = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
 const FALLBACK_TITLE_ACCENT = 'Build on trust,';
 const FALLBACK_TITLE_REST = ' not transactions';
 
-function resolve(key: string, value: string, fallback: string): string {
-  return value && value.trim() && value !== key ? value : fallback;
-}
-
 interface Props {
-  imageUrl?: string;
+  quote?: QuoteBundle;
 }
 
 const fadeUp = {
@@ -26,12 +23,21 @@ const fadeUp = {
   }),
 };
 
-export default function QuoteSection({ imageUrl }: Props) {
-  const { t } = useI18n();
+export default function QuoteSection({ quote }: Props) {
+  const imageUrl = quote?.image;
+  const { lang } = useI18n();
 
-  const body = resolve('quote.primary', t('quote.primary'), FALLBACK_EN);
-  const titleAccent = resolve('quote.titleAccent', t('quote.titleAccent'), FALLBACK_TITLE_ACCENT);
-  const titleRest = resolve('quote.titleRest', t('quote.titleRest'), FALLBACK_TITLE_REST);
+  // Active language → English → hardcoded constants.
+  const langText = quote?.byLang[lang];
+  const enText = quote?.byLang['en'];
+  const text =
+    (langText && langText.primary ? langText : null) ??
+    (enText && enText.primary ? enText : null) ??
+    { titleAccent: FALLBACK_TITLE_ACCENT, titleRest: FALLBACK_TITLE_REST, primary: FALLBACK_EN };
+
+  const body = text.primary;
+  const titleAccent = text.titleAccent;
+  const titleRest = text.titleRest;
 
   return (
     <section className="quote w-full px-[60px] py-[150px] max-md:px-[16px] max-[1025px]:py-[40px]">

@@ -1,41 +1,17 @@
 {
-  "_comment": "Source-of-truth for which Directus page singleton owns each i18n key, page-text field, and asset. The schema-apply/migrate scripts AND the runtime directus.ts both read from this file. To add a new key, add it here and re-run scripts/build-page-models-local.mjs (idempotent).",
+  "_comment": "Source-of-truth for which Directus page singleton owns each i18n key, page-text field, and asset. Read by the runtime directus.ts to wire dictionary keys → fields. To add a new key, add it here and ensure the matching field exists on the Directus singleton.",
   "dictionary": {
-    "quote.titleAccent": {
-      "page": "home",
-      "field": "quote_title_accent"
-    },
-    "quote.titleRest": {
-      "page": "home",
-      "field": "quote_title_rest"
-    },
-    "quote.primary": {
-      "page": "home",
-      "field": "quote_primary"
-    },
-    "globeIntro.heading": {
-      "page": "home",
-      "field": "globe_intro_heading"
-    },
-    "globeIntro.body": {
-      "page": "home",
-      "field": "globe_intro_body"
-    },
-    "btn.getToKnowMore": {
-      "page": "home",
-      "field": "btn_getToKnowMore"
-    },
     "nav.about": {
-      "page": "nav",
-      "field": "nav_about"
+      "page": "header",
+      "field": "about"
     },
     "nav.home": {
-      "page": "nav",
-      "field": "nav_home"
+      "page": "header",
+      "field": "home"
     },
     "nav.contact": {
-      "page": "nav",
-      "field": "nav_contact"
+      "page": "header",
+      "field": "contact"
     },
     "footer.copyright": {
       "page": "footer",
@@ -56,74 +32,6 @@
     "footer.quoteAuthor": {
       "page": "footer",
       "field": "footer_quote_author"
-    },
-    "globeIntro.cta": {
-      "page": "home",
-      "field": "globe_intro_cta"
-    },
-    "panel.goToLocation": {
-      "page": "home",
-      "field": "panel_goToLocation"
-    },
-    "btn.exploreNow": {
-      "page": "home",
-      "field": "btn_exploreNow"
-    },
-    "globeHint.drag": {
-      "page": "home",
-      "field": "globe_hint_drag"
-    },
-    "globeHint.zoom": {
-      "page": "home",
-      "field": "globe_hint_zoom"
-    },
-    "globeHint.clickCity": {
-      "page": "home",
-      "field": "globe_hint_clickCity"
-    },
-    "globeZoom.maxToast": {
-      "page": "home",
-      "field": "globe_zoom_maxToast"
-    },
-    "globeZoom.minToast": {
-      "page": "home",
-      "field": "globe_zoom_minToast"
-    },
-    "region.world": {
-      "page": "home",
-      "field": "region_world"
-    },
-    "region.europe": {
-      "page": "home",
-      "field": "region_europe"
-    },
-    "region.asia": {
-      "page": "home",
-      "field": "region_asia"
-    },
-    "region.africa": {
-      "page": "home",
-      "field": "region_africa"
-    },
-    "region.americas": {
-      "page": "home",
-      "field": "region_americas"
-    },
-    "region.oceania": {
-      "page": "home",
-      "field": "region_oceania"
-    },
-    "btn.viewCV": {
-      "page": "about",
-      "field": "btn_viewCV"
-    },
-    "heading.aboutMe": {
-      "page": "about",
-      "field": "heading_aboutMe"
-    },
-    "quote.motto.translation": {
-      "page": "about",
-      "field": "quote_motto_translation"
     },
     "contact.addressLabel": {
       "page": "contact",
@@ -303,61 +211,11 @@
   },
   "pageTexts": {
     "_comment": "Fields on each page singleton that the legacy frontend reads via texts.X (NOT through t()). Mostly text content; image fields listed in `assets` are emitted as full URLs.",
-    "home": {
-      "text": [
-        "about_eyebrow",
-        "about_body_1",
-        "about_body_2",
-        "about_body_3",
-        "about_body_4"
-      ],
-      "assets": [
-        "quote_image"
-      ]
-    },
-    "about": {
-      "text": [
-        "hero_name",
-        "about_eyebrow",
-        "about_paragraph_body",
-        "experience_eyebrow",
-        "experience_title",
-        "experience_body",
-        "experience_video_title",
-        "experience_video_url",
-        "philanthropy_story_1_title",
-        "philanthropy_story_1_video_url",
-        "philanthropy_story_2_title",
-        "philanthropy_story_2_video_url",
-        "closing_quote",
-        "closing_quote_author",
-        "closing_cta",
-        "travel_routes_heading",
-        "travel_routes_body",
-        "travel_routes_china_name",
-        "travel_routes_america_name",
-        "travel_routes_europe_name"
-      ],
-      "assets": [
-        "portrait_image",
-        "closing_background",
-        "body_image_1",
-        "body_image_2",
-        "body_image_3"
-      ]
-    },
     "contact": {
-      "text": [
-        "contact_heading_title",
-        "contact_subheading"
-      ],
+      "text": [],
       "assets": [
         "portrait_image"
-      ],
-      "_fieldRename": {
-        "contact_heading_title": "heading_title",
-        "contact_subheading": "subheading"
-      }
+      ]
     },
     "cv": {
       "text": [

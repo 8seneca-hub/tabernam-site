@@ -10,6 +10,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return {
       colorBg: s.color_bg || DEFAULT_SETTINGS.colorBg,
       colorBrand: s.color_brand || DEFAULT_SETTINGS.colorBrand,
+      colorAccent: s.color_accent || DEFAULT_SETTINGS.colorAccent,
       colorText: s.color_text || DEFAULT_SETTINGS.colorText,
       colorMuted: s.color_muted || DEFAULT_SETTINGS.colorMuted,
       colorSurface: s.color_surface || DEFAULT_SETTINGS.colorSurface,
@@ -51,7 +52,7 @@ export async function getLanguages(): Promise<LangInfo[]> {
 
 export async function getDictionaries(): Promise<Record<string, Record<string, string>>> {
   try {
-    const pages = ['home', 'about', 'contact', 'cv', 'nav', 'footer'] as const;
+    const pages = ['contact', 'cv', 'header', 'footer'] as const;
     const result: Record<string, Record<string, string>> = {};
 
     for (const page of pages) {

@@ -55,8 +55,8 @@ Directus item editor (the row's `language` field is `en` or `sk`).
 | Experience video block | **About → Translations**: `experience_video_url`, `experience_video_title`, `experience_eyebrow`, `experience_title`, `experience_body` |
 | Philanthropy story videos | **About → Translations**: `philanthropy_story_1_title`, `philanthropy_story_1_video_url`, `philanthropy_story_2_title`, `philanthropy_story_2_video_url` |
 | **Travel Routes** heading/body | **About → Translations**: `travel_routes_heading`, `travel_routes_body` |
-| **Travel Routes** tab labels | **About → Translations**: `travel_routes_china_name`, `travel_routes_america_name`, `travel_routes_europe_name` |
-| **Travel Routes** map images | **Travel Route Map** — one row per slug (`china`, `america`, `europe`); upload to the `image` field |
+| **Travel Routes** tab labels | **Travel Route Map** — on each row, open the **Translations** tab and edit `name` per language |
+| **Travel Routes** map images | **Travel Route Map** — one row per slug (`china`, `america`, `europe`, …); upload to the `image` field |
 | Closing quote | **About → Translations**: `closing_quote`, `closing_quote_author` |
 | Closing CTA button text | **About → Translations**: `closing_cta` (links to /contact) |
 | Closing background image | **About** singleton: `closing_background` |
@@ -126,13 +126,21 @@ The three scrolling image strips on the home page. Each row has:
 
 ## Travel Route Map
 
-Three rows pre-seeded with slugs `china`, `america`, `europe`. Upload an
-image to each `image` field; the matching tab label comes from About →
-Translations (`travel_routes_<slug>_name`).
+Three rows pre-seeded with slugs `china`, `america`, `europe`. Each row has:
 
-If you want a different set of tabs (e.g. add "Asia"), seeding a new slug
-isn't enough — the frontend currently hardcodes the three slugs. Tell me
-and I'll wire it up properly.
+- `slug` — stable identifier (used as the React key / sort anchor)
+- `image` — map picture shown when this tab is active
+- `sort` — order of the tabs
+- `translations` — one row per language, each carrying a `name` (the tab label)
+
+**To add a new region** (e.g. Vietnam):
+
+1. Add a row to **Travel Route Map** with slug `vietnam`, upload an `image`,
+   set `sort` to where you want the tab to appear.
+2. Inside that row's **Translations** section, add one entry per language
+   and fill in `name` (e.g. `Vietnam` for `en`, `Vietnam` for `sk`).
+
+The tab shows up automatically — no code change needed.
 
 ## Site Settings
 
@@ -231,9 +239,9 @@ If you find yourself needing a new editable string or image:
 
 1. Tell Claude what you need ("add a 'sub-tagline' field under hero on the
    home page")
-2. I'll write an idempotent migration script under `scripts/`, apply it to
-   local and (with your approval) production, register the field in
-   `src/lib/page-keys.json`, and update the matching component.
+2. I'll apply the schema change directly to production via the Directus
+   Admin API, register the field in `src/lib/page-keys.json`, and update
+   the matching component.
 
 Don't add fields by hand in the Directus UI — keep the schema in version
 control via migration scripts so local and production stay in sync.

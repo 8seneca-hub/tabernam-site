@@ -6,7 +6,6 @@ import type { HeroSlide, HeroBundle } from '@/lib/directus';
 import { useI18n } from '@/app/hook/useI18n';
 
 interface Props {
-  slides?: HeroSlide[];
   hero?: HeroBundle;
 }
 
@@ -35,9 +34,9 @@ const fadeUp = {
   }),
 };
 
-export default function HeroSection({ slides, hero }: Props) {
+export default function HeroSection({ hero }: Props) {
   const { lang } = useI18n();
-  const items = slides && slides.length > 0 ? slides : FALLBACK_SLIDES;
+  const items = hero?.slides && hero.slides.length > 0 ? hero.slides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Active language → English → hardcoded constant. A row exists but with an
