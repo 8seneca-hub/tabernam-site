@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from './client';
 import type { HeroSlide } from '../data';
 
@@ -36,19 +36,18 @@ const PRIMARY_LANG = 'en';
 
 export async function getHero(): Promise<HeroBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('hero', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('hero', {
         fields: [
           'title',
           'body',
           { translations: ['title', 'body', { language: ['code'] }] },
           { slides: ['image', 'alt'] },
         ],
-      }),
-    )) as RawHeroRow[];
+      } as any),
+    )) as RawHeroRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, HeroText> = {};
     let slides: HeroSlide[] = [];
     if (row) {

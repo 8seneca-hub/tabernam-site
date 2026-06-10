@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from './client';
 
 export interface ClosingQuoteText {
@@ -47,17 +47,16 @@ function projectTranslation(src: RawTranslation): ClosingQuoteText {
 // long-form quote live on `closing_quote_translations`.
 export async function getClosingQuote(): Promise<ClosingQuoteBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('closing_quote', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('closing_quote', {
         fields: [
           'background', 'motto_latin', 'motto_author',
           { translations: ['quote', 'motto_translation', 'cta', { language: ['code'] }] },
         ],
-      }),
-    )) as RawRow[];
+      } as any),
+    )) as RawRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, ClosingQuoteText> = {};
     let background = '';
     let mottoLatin = '';

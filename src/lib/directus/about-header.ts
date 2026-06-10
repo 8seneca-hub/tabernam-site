@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from './client';
 
 export interface AboutHeaderText {
@@ -61,9 +61,9 @@ function projectTranslation(src: RawTranslation | RawRow): AboutHeaderText {
 // parent; non-English in `about_header_translations`.
 export async function getAboutHeader(): Promise<AboutHeaderBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('about_header', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('about_header', {
         fields: [
           'title',
           'heading',
@@ -81,10 +81,9 @@ export async function getAboutHeader(): Promise<AboutHeaderBundle> {
             ],
           },
         ],
-      }),
-    )) as RawRow[];
+      } as any),
+    )) as RawRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, AboutHeaderText> = {};
     let image = '';
     let mottoLatin = '';

@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from './client';
 
 export interface AboutBodyText {
@@ -65,9 +65,9 @@ function projectTranslation(src: RawTranslation | RawRow): AboutBodyText {
 // non-English on `about_body_translations`.
 export async function getAboutBody(): Promise<AboutBodyBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('about_body', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('about_body', {
         fields: [
           'image_1', 'image_2', 'image_3',
           {
@@ -81,10 +81,9 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
             ],
           },
         ],
-      }),
-    )) as RawRow[];
+      } as any),
+    )) as RawRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, AboutBodyText> = {};
     let image1 = '';
     let image2 = '';

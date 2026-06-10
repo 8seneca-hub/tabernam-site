@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_SC, Pinyon_Script } from 'next/font/google';
 import './globals.css';
+
+// Every route reads live data from Directus via `cache: 'no-store'` so the
+// CMS edits show up on the next request. That makes the routes inherently
+// dynamic — opt out of Next.js's static pre-rendering at build time.
+export const dynamic = 'force-dynamic';
 import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
 import { getLanguages, getDictionaries, getSiteSettings, getContactOffice } from '@/lib/directus';

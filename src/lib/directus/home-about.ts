@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus from './client';
 
 export interface HomeAboutText {
@@ -38,9 +38,9 @@ function asStr(v: unknown): string {
 // `home_about` parent; non-English on `home_about_translations`.
 export async function getHomeAbout(): Promise<HomeAboutBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('home_about', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('home_about', {
         fields: [
           'eyebrow',
           'body_1',
@@ -48,10 +48,9 @@ export async function getHomeAbout(): Promise<HomeAboutBundle> {
           'btn_get_to_know_more',
           { translations: ['eyebrow', 'body_1', 'body_2', 'btn_get_to_know_more', { language: ['code'] }] },
         ],
-      }),
-    )) as RawRow[];
+      } as any),
+    )) as RawRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, HomeAboutText> = {};
     if (row) {
       byLang[PRIMARY_LANG] = {

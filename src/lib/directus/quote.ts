@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from './client';
 
 export interface QuoteText {
@@ -37,9 +37,9 @@ function asStr(v: unknown): string {
 // non-English translations live on `quote_translations`.
 export async function getQuote(): Promise<QuoteBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('quote', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('quote', {
         fields: [
           'title_accent',
           'title_rest',
@@ -47,10 +47,9 @@ export async function getQuote(): Promise<QuoteBundle> {
           'image',
           { translations: ['title_accent', 'title_rest', 'primary', { language: ['code'] }] },
         ],
-      }),
-    )) as RawQuoteRow[];
+      } as any),
+    )) as RawQuoteRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, QuoteText> = {};
     let image = '';
     if (row) {

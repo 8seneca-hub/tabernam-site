@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus from './client';
 
 // All 16 fields, camelCase for JS convention.
@@ -72,12 +72,11 @@ export async function getGlobe(): Promise<GlobeBundle> {
       ...apiFields,
       { translations: [...apiFields, { language: ['code'] }] },
     ];
-    const rows = (await directus.request(
+    const row = (await directus.request(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      readItems('globe', { limit: 1, fields: queryFields } as any),
-    )) as RawGlobeRow[];
+      readSingleton('globe', { fields: queryFields } as any),
+    )) as RawGlobeRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, GlobeText> = {};
     if (row) {
       byLang[PRIMARY_LANG] = project(row);

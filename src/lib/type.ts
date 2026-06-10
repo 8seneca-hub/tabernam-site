@@ -115,25 +115,28 @@ export interface CMSSchema {
     activities: CMSActivity[];
     activities_translations: CMSActivityTranslation[];
     activities_files: CMSActivityFile[];
-    hero: CMSHero[];
+    // The following are Directus singletons (one row each, queried via
+    // readSingleton). Schema-wise we type them as the row object directly so
+    // SDK type narrowing picks the singleton overloads.
+    hero: CMSHero;
     hero_translations: CMSHeroTranslation[];
     hero_slides: CMSHeroSlide[];
     home_marquee: CMSHomeMarquee[];
     travel_route_map: CMSTravelRouteMap[];
     travel_route_map_translations: CMSTravelRouteMapTranslation[];
-    quote: CMSQuote[];
+    quote: CMSQuote;
     quote_translations: CMSQuoteTranslation[];
-    globe: CMSGlobe[];
+    globe: CMSGlobe;
     globe_translations: CMSGlobeTranslation[];
-    home_about: CMSHomeAbout[];
+    home_about: CMSHomeAbout;
     home_about_translations: CMSHomeAboutTranslation[];
-    about_header: CMSAboutHeader[];
+    about_header: CMSAboutHeader;
     about_header_translations: CMSAboutHeaderTranslation[];
-    about_body: CMSAboutBody[];
+    about_body: CMSAboutBody;
     about_body_translations: CMSAboutBodyTranslation[];
-    closing_quote: CMSClosingQuote[];
+    closing_quote: CMSClosingQuote;
     closing_quote_translations: CMSClosingQuoteTranslation[];
-    contact_header: CMSContactHeader[];
+    contact_header: CMSContactHeader;
     contact_header_translations: CMSContactHeaderTranslation[];
     contact: CMSContact;
     contact_translations: CMSPageTranslation[];

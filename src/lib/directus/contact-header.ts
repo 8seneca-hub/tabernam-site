@@ -1,4 +1,4 @@
-import { readItems } from '@directus/sdk';
+import { readSingleton } from '@directus/sdk';
 import directus from './client';
 
 export interface ContactHeaderText {
@@ -28,16 +28,15 @@ function asStr(v: unknown): string {
 
 export async function getContactHeader(): Promise<ContactHeaderBundle> {
   try {
-    const rows = (await directus.request(
-      readItems('contact_header', {
-        limit: 1,
+    const row = (await directus.request(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      readSingleton('contact_header', {
         fields: [
           { translations: ['heading_title', 'subheading', { language: ['code'] }] },
         ],
-      }),
-    )) as RawRow[];
+      } as any),
+    )) as RawRow | null;
 
-    const row = rows[0];
     const byLang: Record<string, ContactHeaderText> = {};
     if (row) {
       for (const t of row.translations ?? []) {
