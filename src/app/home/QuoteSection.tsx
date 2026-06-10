@@ -33,7 +33,7 @@ export default function QuoteSection({ quote }: Props) {
   const text =
     (langText && langText.primary ? langText : null) ??
     (enText && enText.primary ? enText : null) ??
-    { titleAccent: FALLBACK_TITLE_ACCENT, titleRest: FALLBACK_TITLE_REST, primary: FALLBACK_EN };
+    { titleAccent: FALLBACK_TITLE_ACCENT, titleRest: FALLBACK_TITLE_REST, primary: FALLBACK_EN, mottoTranslation: '' };
 
   const body = text.primary;
   const titleAccent = text.titleAccent;
@@ -81,7 +81,7 @@ export default function QuoteSection({ quote }: Props) {
               className="w-full h-auto"
             />
           </div>
-          <MottoQuote />
+          <MottoQuote latin={quote?.mottoLatin} translation={text.mottoTranslation} author={quote?.mottoAuthor} />
         </motion.div>
       </div>
     </section>

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useI18n } from '@/app/hook/useI18n';
 import { useTheme } from '@/lib/theme-context';
 import Image from '../ui/Image';
-import LangSwitcher from '@/components/layout/LangSwitcher';
+  import LangSwitcher from './LangSwitcher';
 
 export default function Header() {
   const { t } = useI18n();

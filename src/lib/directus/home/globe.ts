@@ -1,5 +1,5 @@
 import { readSingleton } from '@directus/sdk';
-import directus from './client';
+import directus from '../client';
 
 // All 16 fields, camelCase for JS convention.
 export interface GlobeText {

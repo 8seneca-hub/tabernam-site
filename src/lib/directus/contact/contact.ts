@@ -1,7 +1,7 @@
 import { readSingleton } from '@directus/sdk';
-import directus, { assetUrl } from './client';
-import { composePageBundle, type PageTextsBundle } from './pages';
-import type { ContactOffice, LabeledRow } from '../data';
+import directus, { assetUrl } from '../client';
+import { composePageBundle, type PageTextsBundle } from '../pages';
+import { ContactOffice, LabeledRow } from '@/lib/data';
 
 export function getContactTexts(): Promise<PageTextsBundle> {
   return composePageBundle('contact');

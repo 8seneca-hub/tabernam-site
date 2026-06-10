@@ -1,6 +1,6 @@
 import { readItems } from '@directus/sdk';
-import directus, { assetUrl } from './client';
-import type { MarqueeImage } from '../data';
+import directus, { assetUrl } from '../client';
+import { MarqueeImage } from '@/lib/data';
 
 export async function getHomeMarquee(): Promise<MarqueeImage[]> {
   try {

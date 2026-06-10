@@ -1,8 +1,9 @@
 import { readSingleton } from '@directus/sdk';
-import directus from './client';
+import directus from '../client';
 
 export interface HomeAboutText {
   eyebrow: string;
+  heading: string;
   body1: string;
   body2: string;
   btnGetToKnowMore: string;
@@ -14,6 +15,7 @@ export interface HomeAboutBundle {
 
 interface RawTranslation {
   eyebrow?: unknown;
+  heading?: unknown;
   body_1?: unknown;
   body_2?: unknown;
   btn_get_to_know_more?: unknown;
@@ -22,6 +24,7 @@ interface RawTranslation {
 
 interface RawRow {
   eyebrow?: unknown;
+  heading?: unknown;
   body_1?: unknown;
   body_2?: unknown;
   btn_get_to_know_more?: unknown;
@@ -35,7 +38,7 @@ function asStr(v: unknown): string {
 }
 
 // Home page's "About" section content. English canonical lives on the
-// `home_about` parent; non-English on `home_about_translations`.
+// `home_about` singleton; non-English on `home_about_translations`.
 export async function getHomeAbout(): Promise<HomeAboutBundle> {
   try {
     const row = (await directus.request(
@@ -43,10 +46,11 @@ export async function getHomeAbout(): Promise<HomeAboutBundle> {
       readSingleton('home_about', {
         fields: [
           'eyebrow',
+          'heading',
           'body_1',
           'body_2',
           'btn_get_to_know_more',
-          { translations: ['eyebrow', 'body_1', 'body_2', 'btn_get_to_know_more', { language: ['code'] }] },
+          { translations: ['eyebrow', 'heading', 'body_1', 'body_2', 'btn_get_to_know_more', { language: ['code'] }] },
         ],
       } as any),
     )) as RawRow | null;
@@ -55,6 +59,7 @@ export async function getHomeAbout(): Promise<HomeAboutBundle> {
     if (row) {
       byLang[PRIMARY_LANG] = {
         eyebrow: asStr(row.eyebrow),
+        heading: asStr(row.heading),
         body1: asStr(row.body_1),
         body2: asStr(row.body_2),
         btnGetToKnowMore: asStr(row.btn_get_to_know_more),
@@ -64,6 +69,7 @@ export async function getHomeAbout(): Promise<HomeAboutBundle> {
         if (!code || code === PRIMARY_LANG) continue;
         byLang[code] = {
           eyebrow: asStr(t.eyebrow),
+          heading: asStr(t.heading),
           body1: asStr(t.body_1),
           body2: asStr(t.body_2),
           btnGetToKnowMore: asStr(t.btn_get_to_know_more),

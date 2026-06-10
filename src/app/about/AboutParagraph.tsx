@@ -98,10 +98,15 @@ function QuoteEmphasis({ children }: { children: string }) {
   return <strong style={{ color: 'var(--color-brand)', fontWeight: 700 }}>{children}</strong>;
 }
 
+// Inline YouTube embeds inside body paragraphs break out of the paragraph's
+// 640px text column and span the same 1320px container that the standalone
+// `video` content blocks use, so the player isn't cramped.
 function InlineYouTube({ url, title }: { url: string; title?: string }) {
   return (
-    <span className="block my-4">
-      <VideoCard videoUrl={url} title={title} />
+    <span className="relative left-1/2 -translate-x-1/2 block w-screen my-8 px-[60px] max-md:px-[16px]">
+      <span className="block max-w-[1320px] mx-auto">
+        <VideoCard videoUrl={url} title={title} />
+      </span>
     </span>
   );
 }

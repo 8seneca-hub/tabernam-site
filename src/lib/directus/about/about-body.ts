@@ -1,5 +1,5 @@
 import { readSingleton } from '@directus/sdk';
-import directus, { assetUrl } from './client';
+import directus, { assetUrl } from '../client';
 
 export interface AboutBodyText {
   body: string;

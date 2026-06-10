@@ -1,6 +1,6 @@
 import { readItems } from '@directus/sdk';
-import directus, { assetUrl } from './client';
-import type { GlobeCity, GlobeCityTranslation } from '../type';
+import directus, { assetUrl } from '../client';
+import type { GlobeCity, GlobeCityTranslation } from '../../type';
 
 export function pickTranslation(city: GlobeCity, lang: string): GlobeCityTranslation {
   return (

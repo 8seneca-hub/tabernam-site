@@ -10,10 +10,10 @@ interface Props {
   homeAbout?: HomeAboutBundle;
 }
 
-const EMPTY: HomeAboutText = { eyebrow: '', body1: '', body2: '', btnGetToKnowMore: '' };
+const EMPTY: HomeAboutText = { eyebrow: '', heading: 'About me', body1: '', body2: '', btnGetToKnowMore: '' };
 
 export default function AboutSection({ homeAbout }: Props) {
-  const { lang, t } = useI18n();
+  const { lang } = useI18n();
 
   // Active language → English → empty (section gracefully degrades).
   const langText = homeAbout?.byLang[lang];
@@ -36,7 +36,7 @@ export default function AboutSection({ homeAbout }: Props) {
             </span>
           )}
           <h1 className="text-5xl md:text-6xl font-bold text-accent tracking-tight leading-tight max-md:text-4xl">
-            {t('heading.aboutMe')}
+            {text.heading || 'About me'}
           </h1>
         </FadeIn>
         <FadeIn delay={0.1} className="w-full max-w-[50vw] mx-auto max-[1100px]:max-w-none">

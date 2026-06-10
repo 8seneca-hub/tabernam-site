@@ -165,6 +165,9 @@ export interface CMSQuote {
     title_accent: string;
     title_rest: string;
     primary: string;
+    motto_latin: string;
+    motto_author: string;
+    motto_translation: string;
     image: string | null;
     sort: number | null;
     translations: CMSQuoteTranslation[];
@@ -177,6 +180,7 @@ export interface CMSQuoteTranslation {
     title_accent: string;
     title_rest: string;
     primary: string;
+    motto_translation: string;
 }
 
 interface CMSGlobeFields {
@@ -212,6 +216,7 @@ export interface CMSGlobeTranslation extends CMSGlobeFields {
 
 interface CMSHomeAboutFields {
     eyebrow: string;
+    heading: string;
     body_1: string;
     body_2: string;
     btn_get_to_know_more: string;

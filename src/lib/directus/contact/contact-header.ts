@@ -1,5 +1,5 @@
 import { readSingleton } from '@directus/sdk';
-import directus from './client';
+import directus from '../client';
 
 export interface ContactHeaderText {
   headingTitle: string;

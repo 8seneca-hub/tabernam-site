@@ -1,6 +1,6 @@
 import { readSingleton } from '@directus/sdk';
-import directus, { assetUrl } from './client';
-import type { HeroSlide } from '../data';
+import directus, { assetUrl } from '../client';
+import type { HeroSlide } from '@/lib/data';
 
 export interface HeroText {
   title: string;
