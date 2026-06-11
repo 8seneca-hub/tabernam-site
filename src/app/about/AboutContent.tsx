@@ -27,7 +27,7 @@ const EMPTY_HEADER: AboutHeaderText = {
 };
 
 const EMPTY_BODY: AboutBodyText = {
-  paragraph1: '', paragraph2: '', paragraph3: '', paragraph4: '', paragraph5: '', paragraph6: '',
+  paragraphs: {},
   travelRoutesHeading: '', travelRoutesBody: '',
 };
 
@@ -46,7 +46,7 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
   // Body text: same fallback chain.
   const langBody = aboutBody.byLang[lang];
   const enBody = aboutBody.byLang['en'];
-  const hasContent = (b: AboutBodyText | undefined) => !!(b && (b.paragraph1 || b.paragraph2 || b.paragraph3 || b.paragraph4 || b.paragraph5 || b.paragraph6));
+  const hasContent = (b: AboutBodyText | undefined) => !!(b && Object.keys(b.paragraphs).length > 0);
   const body: AboutBodyText =
     (hasContent(langBody) ? langBody! : null) ??
     (hasContent(enBody) ? enBody! : null) ??
@@ -62,13 +62,19 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
     videosByParagraph[Number(k)] = vids.map(pickVideo).filter((v) => v.url);
   }
 
-  // Six paragraph slots. For each, push paragraph → images grid → videos grid.
-  // Empty arrays produce no block (the grid renderer returns null when empty).
-  // TravelRoutes is wedged in after paragraph 2's media (and before paragraph 3).
-  const paragraphs = [body.paragraph1, body.paragraph2, body.paragraph3, body.paragraph4, body.paragraph5, body.paragraph6];
+  // Dynamic paragraph slots — walk every N that has *any* content (text,
+  // image, or video) in numeric order. Add paragraph_8 (or paragraph_99)
+  // on Directus and it renders here automatically. TravelRoutes is wedged
+  // in after slot 3 (i.e. between paragraph 3 and paragraph 4).
+  const slotNumbers = new Set<number>();
+  for (const n of Object.keys(body.paragraphs)) slotNumbers.add(Number(n));
+  for (const n of Object.keys(aboutBody.imagesByParagraph)) slotNumbers.add(Number(n));
+  for (const n of Object.keys(videosByParagraph)) slotNumbers.add(Number(n));
+  const sortedSlots = [...slotNumbers].filter((n) => Number.isFinite(n)).sort((a, b) => a - b);
+
   const blocks: ContentBlock[] = [];
-  for (let n = 1; n <= 6; n += 1) {
-    const text = paragraphs[n - 1];
+  for (const n of sortedSlots) {
+    const text = body.paragraphs[n];
     const images = aboutBody.imagesByParagraph[n] ?? [];
     const videos = videosByParagraph[n] ?? [];
     if (text) blocks.push({ type: 'paragraph', text });
@@ -76,6 +82,8 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
     if (videos.length > 0) blocks.push({ type: 'videos_grid', videos });
     if (n === 3) blocks.push({ type: 'travel_routes' });
   }
+  // If there's no slot 3 at all, still surface TravelRoutes at the end.
+  if (!sortedSlots.includes(3)) blocks.push({ type: 'travel_routes' });
 
   return (
     <main className="cv-page pt-[var(--header-height)]">

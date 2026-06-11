@@ -2,12 +2,8 @@ import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from '../client';
 
 export interface AboutBodyText {
-  paragraph1: string;
-  paragraph2: string;
-  paragraph3: string;
-  paragraph4: string;
-  paragraph5: string;
-  paragraph6: string;
+  /** Paragraph N (1-based) → text. Sparse: only includes keys with content. */
+  paragraphs: Record<number, string>;
   travelRoutesHeading: string;
   travelRoutesBody: string;
 }
@@ -19,19 +15,13 @@ export interface AboutBodyVideo {
 
 export interface AboutBodyBundle {
   byLang: Record<string, AboutBodyText>;
-  /** Image URLs grouped by paragraph_number (1..4). */
+  /** Image URLs grouped by paragraph_number. */
   imagesByParagraph: Record<number, string[]>;
-  /** Video entries grouped by paragraph_number (1..4). */
+  /** Video entries grouped by paragraph_number. */
   videosByParagraph: Record<number, AboutBodyVideo[]>;
 }
 
-interface RawTranslation {
-  paragraph_1?: unknown;
-  paragraph_2?: unknown;
-  paragraph_3?: unknown;
-  paragraph_4?: unknown;
-  paragraph_5?: unknown;
-  paragraph_6?: unknown;
+interface RawTranslation extends Record<string, unknown> {
   travel_routes_heading?: unknown;
   travel_routes_body?: unknown;
   language?: { code?: string } | null;
@@ -62,45 +52,50 @@ interface RawRow {
 }
 
 const PRIMARY_LANG = 'en';
+const PARAGRAPH_KEY_RE = /^paragraph_(\d+)$/;
 
 function asStr(v: unknown): string {
   return typeof v === 'string' ? v : '';
 }
 
 function projectTranslation(src: RawTranslation): AboutBodyText {
+  // Discover every paragraph_N key on the row dynamically — adding a new
+  // field in Directus (e.g. paragraph_8) automatically flows through.
+  const paragraphs: Record<number, string> = {};
+  for (const key of Object.keys(src)) {
+    const m = key.match(PARAGRAPH_KEY_RE);
+    if (!m) continue;
+    const n = Number(m[1]);
+    const value = asStr(src[key]);
+    if (value) paragraphs[n] = value;
+  }
   return {
-    paragraph1: asStr(src.paragraph_1),
-    paragraph2: asStr(src.paragraph_2),
-    paragraph3: asStr(src.paragraph_3),
-    paragraph4: asStr(src.paragraph_4),
-    paragraph5: asStr(src.paragraph_5),
-    paragraph6: asStr(src.paragraph_6),
+    paragraphs,
     travelRoutesHeading: asStr(src.travel_routes_heading),
     travelRoutesBody: asStr(src.travel_routes_body),
   };
 }
 
 const EMPTY_TEXT: AboutBodyText = {
-  paragraph1: '', paragraph2: '', paragraph3: '', paragraph4: '', paragraph5: '', paragraph6: '',
-  travelRoutesHeading: '', travelRoutesBody: '',
+  paragraphs: {},
+  travelRoutesHeading: '',
+  travelRoutesBody: '',
 };
 
-// /about page body. Four paragraph slots; each slot may have any number of
-// images (parent `about_body_images`, tagged by paragraph_number) and any
-// number of videos (parent `about_body_videos` + `_translations`).
+// /about page body. Any number of paragraph_N fields (1..N) on
+// about_body_translations are picked up automatically; the frontend renders
+// them in numeric order. Images and videos attach to a paragraph by its
+// numeric paragraph_number.
 export async function getAboutBody(): Promise<AboutBodyBundle> {
   try {
     const row = (await directus.request(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       readSingleton('about_body', {
         fields: [
-          {
-            translations: [
-              'paragraph_1', 'paragraph_2', 'paragraph_3', 'paragraph_4', 'paragraph_5', 'paragraph_6',
-              'travel_routes_heading', 'travel_routes_body',
-              { language: ['code'] },
-            ],
-          },
+          // `*` pulls every scalar field on the translation row, including
+          // any newly-added paragraph_N. The nested `language` is appended
+          // explicitly because `*` alone doesn't follow relations.
+          { translations: ['*', { language: ['code'] }] },
           { images: ['paragraph_number', 'sort', 'image'] },
           {
             videos: [
@@ -122,7 +117,6 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
         if (!code) continue;
         byLang[code] = projectTranslation(t);
       }
-      // Group images by paragraph_number, preserving sort order.
       const sortedImgs = [...(row.images ?? [])].sort((a, b) => {
         const sa = typeof a.sort === 'number' ? a.sort : 0;
         const sb = typeof b.sort === 'number' ? b.sort : 0;
@@ -134,7 +128,6 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
         if (!n || !id) continue;
         (imagesByParagraph[n] ||= []).push(assetUrl(id));
       }
-      // Group videos by paragraph_number, build per-language {url, title}.
       const sortedVids = [...(row.videos ?? [])].sort((a, b) => {
         const sa = typeof a.sort === 'number' ? a.sort : 0;
         const sb = typeof b.sort === 'number' ? b.sort : 0;

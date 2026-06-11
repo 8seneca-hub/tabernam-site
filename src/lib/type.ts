@@ -262,12 +262,9 @@ export interface CMSAboutHeaderTranslation extends CMSAboutHeaderFields {
 }
 
 interface CMSAboutBodyTranslationFields {
-    paragraph_1: string;
-    paragraph_2: string;
-    paragraph_3: string;
-    paragraph_4: string;
-    paragraph_5: string;
-    paragraph_6: string;
+    // Any number of paragraph_N fields (paragraph_1, paragraph_2, …) — the
+    // runtime fetcher discovers whatever columns exist on the table.
+    [paragraph: `paragraph_${number}`]: string;
     travel_routes_heading: string;
     travel_routes_body: string;
 }
