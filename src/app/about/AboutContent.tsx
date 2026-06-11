@@ -1,20 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import type { AboutBodyBundle, AboutBodyText, AboutHeaderBundle, AboutHeaderText, ClosingQuoteBundle } from '@/lib/directus';
+import type { AboutBodyBundle, AboutBodyText, AboutHeaderBundle, AboutHeaderText, ClosingQuoteBundle, TravelRoutesBundle } from '@/lib/directus';
 import AboutParagraph from './AboutParagraph';
 import ClosingQuote from './ClosingQuote';
 import SubpageHero from '@/app/about/SubpageHero';
 import ContentBlocks, { type ContentBlock } from './ContentBlocks';
 import Button from '@/components/ui/Button';
 import { useI18n } from '@/app/hook/useI18n';
-import { TravelRouteMap } from '@/lib/directus/index';
 
 interface Props {
   aboutHeader: AboutHeaderBundle;
   aboutBody: AboutBodyBundle;
   closingQuote: ClosingQuoteBundle;
-  travelRouteMaps: TravelRouteMap[];
+  travelRoutes: TravelRoutesBundle;
 }
 
 const EMPTY_HEADER: AboutHeaderText = {
@@ -28,10 +27,9 @@ const EMPTY_HEADER: AboutHeaderText = {
 
 const EMPTY_BODY: AboutBodyText = {
   paragraphs: {},
-  travelRoutesHeading: '', travelRoutesBody: '',
 };
 
-export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRouteMaps }: Props) {
+export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRoutes }: Props) {
   const { lang } = useI18n();
 
   // Header: active language → English → hardcoded fallback.
@@ -104,10 +102,8 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
       </SubpageHero>
       <ContentBlocks
         blocks={blocks}
-        travelRouteMaps={travelRouteMaps}
+        travelRoutes={travelRoutes}
         body={''}
-        travelRoutesHeading={body.travelRoutesHeading}
-        travelRoutesBody={body.travelRoutesBody}
       />
       <ClosingQuote closingQuote={closingQuote} />
     </main>

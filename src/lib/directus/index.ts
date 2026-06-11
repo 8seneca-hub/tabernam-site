@@ -7,7 +7,7 @@ export { getHero, type HeroBundle, type HeroText } from './home/hero';
 export { getQuote, type QuoteBundle, type QuoteText } from './home/quote';
 export { getGlobe, type GlobeBundle, type GlobeText } from './home/globe';
 export { getHomeAbout, type HomeAboutBundle, type HomeAboutText } from './home/home-about';
-export { getTravelRouteMaps } from './travel-routes-map';
+export { getTravelRoutes, type TravelRoutesBundle, type TravelRoutesText } from './about/travel-routes';
 export { getAboutHeader, type AboutHeaderBundle, type AboutHeaderText } from './about/about-header';
 export { getAboutBody, type AboutBodyBundle, type AboutBodyText, type AboutBodyVideo } from './about/about-body';
 export { getClosingQuote, type ClosingQuoteBundle, type ClosingQuoteText } from './about/closing-quote';

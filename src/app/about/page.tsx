@@ -1,9 +1,9 @@
-import { getAboutBody, getAboutHeader, getClosingQuote, getTravelRouteMaps } from '@/lib/directus';
+import { getAboutBody, getAboutHeader, getClosingQuote, getTravelRoutes } from '@/lib/directus';
 import AboutContent from './AboutContent';
 
 export default async function AboutPage() {
-  const [travelRouteMaps, aboutHeader, aboutBody, closingQuote] = await Promise.all([
-    getTravelRouteMaps(),
+  const [travelRoutes, aboutHeader, aboutBody, closingQuote] = await Promise.all([
+    getTravelRoutes(),
     getAboutHeader(),
     getAboutBody(),
     getClosingQuote(),
@@ -13,7 +13,7 @@ export default async function AboutPage() {
       aboutHeader={aboutHeader}
       aboutBody={aboutBody}
       closingQuote={closingQuote}
-      travelRouteMaps={travelRouteMaps}
+      travelRoutes={travelRoutes}
     />
   );
 }

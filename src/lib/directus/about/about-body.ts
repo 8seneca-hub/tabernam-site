@@ -4,8 +4,6 @@ import directus, { assetUrl } from '../client';
 export interface AboutBodyText {
   /** Paragraph N (1-based) → text. Sparse: only includes keys with content. */
   paragraphs: Record<number, string>;
-  travelRoutesHeading: string;
-  travelRoutesBody: string;
 }
 
 export interface AboutBodyVideo {
@@ -22,8 +20,6 @@ export interface AboutBodyBundle {
 }
 
 interface RawTranslation extends Record<string, unknown> {
-  travel_routes_heading?: unknown;
-  travel_routes_body?: unknown;
   language?: { code?: string } | null;
 }
 
@@ -33,9 +29,15 @@ interface RawImage {
   image?: unknown;
 }
 
+interface RawFile {
+  id?: unknown;
+  modified_on?: unknown;
+}
+
 interface RawVideoTranslation {
   url?: unknown;
   title?: unknown;
+  file?: unknown;
   language?: { code?: string } | null;
 }
 
@@ -69,17 +71,11 @@ function projectTranslation(src: RawTranslation): AboutBodyText {
     const value = asStr(src[key]);
     if (value) paragraphs[n] = value;
   }
-  return {
-    paragraphs,
-    travelRoutesHeading: asStr(src.travel_routes_heading),
-    travelRoutesBody: asStr(src.travel_routes_body),
-  };
+  return { paragraphs };
 }
 
 const EMPTY_TEXT: AboutBodyText = {
   paragraphs: {},
-  travelRoutesHeading: '',
-  travelRoutesBody: '',
 };
 
 // /about page body. Any number of paragraph_N fields (1..N) on
@@ -94,13 +90,21 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
         fields: [
           // `*` pulls every scalar field on the translation row, including
           // any newly-added paragraph_N. The nested `language` is appended
-          // explicitly because `*` alone doesn't follow relations.
+          // explicitly because `*` alone doesn't follow relations. (Note:
+          // travel-routes heading/body have moved to travel_route_map; no
+          // need to project them here anymore.)
           { translations: ['*', { language: ['code'] }] },
           { images: ['paragraph_number', 'sort', 'image'] },
           {
             videos: [
               'paragraph_number', 'sort',
-              { translations: ['url', 'title', { language: ['code'] }] },
+              {
+                translations: [
+                  'url', 'title',
+                  { file: ['id', 'modified_on'] },
+                  { language: ['code'] },
+                ],
+              },
             ],
           },
         ],
@@ -140,7 +144,20 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
         for (const t of vid.translations ?? []) {
           const code = t.language && typeof t.language === 'object' ? t.language.code : null;
           if (!code) continue;
-          videoByLang[code] = { url: asStr(t.url), title: asStr(t.title) };
+          // Prefer the uploaded file when set — gives the user a way to host
+          // the video directly. Cache-bust via modified_on so file replaces
+          // bust the browser's 30-day asset cache.
+          let url = '';
+          if (t.file && typeof t.file === 'object') {
+            const f = t.file as RawFile;
+            const id = typeof f.id === 'string' ? f.id : '';
+            if (id) {
+              const v = typeof f.modified_on === 'string' ? f.modified_on : '';
+              url = v ? `${assetUrl(id)}?v=${encodeURIComponent(v)}` : assetUrl(id);
+            }
+          }
+          if (!url) url = asStr(t.url);
+          videoByLang[code] = { url, title: asStr(t.title) };
         }
         (videosByParagraph[n] ||= []).push({ byLang: videoByLang });
       }

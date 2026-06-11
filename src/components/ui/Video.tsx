@@ -38,12 +38,6 @@ export default function Video({
   const [isPlaying, setIsPlaying] = useState(false);
   const videoId = videoUrl ? getYouTubeId(videoUrl) : null;
 
-  // SSR with hqdefault (always exists, 480x360 with embedded 16:9 content +
-  // black bars; the `object-cover` on the rendered img crops the bars out).
-  // The client then probes maxresdefault.jpg and upgrades when it exists —
-  // YouTube returns either 404 OR a 120x90 gray placeholder (200 OK) when
-  // the HD thumbnail is unavailable, so we have to check natural dimensions
-  // instead of HTTP status.
   const initialSrc = thumbnail
     ? thumbnail
     : videoId
@@ -63,6 +57,22 @@ export default function Video({
       probe.onload = null;
     };
   }, [thumbnail, videoId]);
+
+  if (videoUrl && !videoId) {
+    return (
+      <div className={`relative overflow-hidden bg-black ${className}`.trim()}>
+        <video
+          src={videoUrl}
+          controls
+          playsInline
+          poster={thumbnail}
+          className="absolute inset-0 w-full h-full object-contain"
+        >
+          <track kind="captions" />
+        </video>
+      </div>
+    );
+  }
 
   if (isPlaying && videoId) {
     return (

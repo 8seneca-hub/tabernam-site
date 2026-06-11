@@ -1,19 +1,16 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './globe-section.css';
 import { useI18n } from '@/app/hook/useI18n';
 import { Move, ZoomIn, MapPin, X } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
-import Image from '@/components/ui/Image';
+import PinDetailSheet from './PinDetailSheet';
 import type { GlobeCity } from '@/lib/type';
 import type { GlobeBundle, GlobeText } from '@/lib/directus';
 
-// Hardcoded English fallback so the section renders even if Directus is
-// unreachable. Mirrors what `src/lib/i18n.ts` used to inject via t().
 const FALLBACK_GLOBE_TEXT: GlobeText = {
   introHeading: 'A career mapped across continents.',
   introBody: '',
@@ -33,7 +30,6 @@ const FALLBACK_GLOBE_TEXT: GlobeText = {
   btnExploreNow: 'Explore now',
 };
 
-// region key (from REGIONS) → field in GlobeText that holds its localised label.
 const REGION_TEXT_KEY: Record<string, keyof GlobeText> = {
   world: 'regionWorld',
   europe: 'regionEurope',
@@ -75,19 +71,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     FALLBACK_GLOBE_TEXT;
   const sectionRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
-  const sheetRef = useRef<HTMLElement>(null);
-  const sheetDragRef = useRef<{ startY: number; collapsedPx: number; dragging: boolean }>({
-    startY: 0,
-    collapsedPx: 0,
-    dragging: false,
-  });
-  // Collapsed translate (px) for the bottom sheet — measured from each city's
-  // actual content height so the expanded sheet hugs its content instead of a
-  // fixed height. Kept in sync via a ResizeObserver (see effect below).
-  const sheetCollapsedRef = useRef(0);
-  // Drag is throttled to one transform write per animation frame for smoothness.
-  const sheetRafRef = useRef(0);
-  const sheetLastYRef = useRef(0);
   const starsRef = useRef<HTMLCanvasElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -95,13 +78,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
   const spinRef = useRef(true);
   const isCameraMovingRef = useRef(false);
   const edgeTimerRef = useRef<number | undefined>(undefined);
-  // The map view the user was at right before opening a city card, captured so
-  // closing the card can restore exactly that view (instead of re-framing the
-  // region). prevActiveIdxRef detects the null→city transition (when to capture).
-  // restoreOnCloseRef is an explicit intent set by the card-close button: only
-  // then does deselecting restore the pre-card view; region-tab clicks leave it
-  // false so they re-frame the region instead. Read (not mutated) by the sync
-  // effect so it stays correct even if the effect runs twice for one gesture.
   const preCityCameraRef = useRef<{ center: [number, number]; zoom: number; bearing: number } | null>(null);
   const prevActiveIdxRef = useRef<number | null>(null);
   const restoreOnCloseRef = useRef(false);
@@ -113,11 +89,7 @@ export default function GlobeSection({ cities = [], globe }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
   const [tokenMissing, setTokenMissing] = useState(false);
   const [mapReady, setMapReady] = useState(false);
-  // On touch devices (mobile/tablet) the interaction is a tap, not a click.
-  // Resolved after mount to stay hydration-safe.
   const [isTouch, setIsTouch] = useState(false);
-  // Mobile bottom-sheet expansion state (collapsed peek vs. full height).
-  const [sheetExpanded, setSheetExpanded] = useState(false);
   const restoredRef = useRef(false);
 
   useEffect(() => {
@@ -146,7 +118,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     [cities],
   );
 
-  // Initialize the Mapbox globe once on mount.
   useEffect(() => {
     const container = mapContainerRef.current;
     if (!container) return;
@@ -164,16 +135,8 @@ export default function GlobeSection({ cities = [], globe }: Props) {
       zoom: idleZoomFor(window.innerWidth),
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
-      // Don't tile infinite copies of the world horizontally in the flat
-      // (mercator) detail view — otherwise dragging sideways wraps forever.
       renderWorldCopies: false,
-      // Lock panning to a single world so you can't drag off the edges into
-      // empty space. ±85 lat is the mercator pole limit.
       maxBounds: [[-180, -85], [180, 85]],
-      // Don't tile infinite copies of the world horizontally in the flat
-      // (mercator) detail view — otherwise dragging sideways wraps forever.
-      // Lock panning to a single world so you can't drag off the edges into
-      // empty space. ±85 lat is the mercator pole limit.
       attributionControl: false,
       interactive: false,
       pitchWithRotate: false,
@@ -188,13 +151,9 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     map.on('load', () => setMapReady(true));
     map.on('movestart', () => { isCameraMovingRef.current = true; });
     map.on('moveend', () => {
-      // Small grace period after moveend in case the cursor is parked on a
-      // marker that just slid under it — don't immediately fire.
       window.setTimeout(() => { isCameraMovingRef.current = false; }, 200);
     });
 
-    // Flash a transient "can't zoom further" message when the user reaches the
-    // min/max zoom limit (via wheel, pinch, or the +/- buttons).
     map.on('zoom', () => {
       const z = map.getZoom();
       let edge: 'in' | 'out' | null = null;
@@ -209,9 +168,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
 
     map.on('style.load', () => {
       map.setFog({
-        // Semi-transparent gray-20 (#F7F7F7) atmosphere: blends the globe's edge
-        // into the section background without washing a near-white haze over the
-        // whole disk (which read especially strong on smaller mobile globes).
         color: 'rgba(247, 247, 247, 0.35)',
         'high-color': 'rgba(190, 210, 240, 0.5)',
         'horizon-blend': 0.01,
@@ -241,7 +197,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     };
   }, []);
 
-  // Smooth continuous rotation when idle.
   function scheduleSpin(map: mapboxgl.Map) {
     function step() {
       if (!spinRef.current) return;
@@ -258,22 +213,25 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     step();
   }
 
-  // Sync map state with the open/active flags.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
+    const runWhenStyleReady = (fn: () => void) => {
+      if (map.isStyleLoaded()) fn();
+      else map.once('style.load', fn);
+    };
 
     if (!isOpen) {
       spinRef.current = true;
-      // Back to the 3D globe when the detail view is closed.
-      map.setProjection({ name: 'globe' });
-      // Restore terrain relief for the globe (disabled in the flat view).
-      if (map.getSource('mapbox-dem')) {
-        map.setTerrain({ source: 'mapbox-dem', exaggeration: 0.9 });
-      }
+      runWhenStyleReady(() => {
+        map.setProjection({ name: 'globe' });
+        if (map.getSource('mapbox-dem')) {
+          map.setTerrain({ source: 'mapbox-dem', exaggeration: 0.9 });
+        }
+      });
       map.dragPan.disable();
       map.scrollZoom.disable();
       map.touchZoomRotate.disable();
@@ -287,7 +245,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
         duration: 1200,
         essential: true,
       });
-      // Reset the close-restore tracking so the next open starts fresh.
       prevActiveIdxRef.current = null;
       restoreOnCloseRef.current = false;
       preCityCameraRef.current = null;
@@ -297,14 +254,10 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     spinRef.current = false;
     map.stop();
 
-    // Flatten the globe into a 2D map for the detail/explore view.
-    map.setProjection({ name: 'mercator' });
-
-    // Disable 3D terrain in the flat view. With terrain on, Mapbox offsets each
-    // marker by its ground elevation; at high zoom over high-altitude cities
-    // (e.g. Lhasa, ~3650m) that pushes the pin far off its coordinate / off
-    // screen. The flat detail map doesn't need terrain relief anyway.
-    map.setTerrain(null);
+    runWhenStyleReady(() => {
+      map.setProjection({ name: 'mercator' });
+      map.setTerrain(null);
+    });
 
     map.dragPan.enable();
     map.scrollZoom.enable();
@@ -312,16 +265,21 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     map.doubleClickZoom.enable();
     map.keyboard.enable();
 
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
     cityViews.forEach((v, i) => {
       const thumb = cardsPhotos[i]?.[0] || '/carousel/photo-01.jpg';
       const el = createMarkerEl(v.name, i === activeIdx, thumb);
-      el.addEventListener('mouseenter', () => {
-        if (isCameraMovingRef.current) return;
-        el.classList.add('is-hover');
-      });
-      el.addEventListener('mouseleave', () => {
-        el.classList.remove('is-hover');
-      });
+      // Skip hover preview on touch devices — synthetic mouseenter sticks
+      // after tap and leaves the preview card visible until another tap.
+      if (!isCoarsePointer) {
+        el.addEventListener('mouseenter', () => {
+          if (isCameraMovingRef.current) return;
+          el.classList.add('is-hover');
+        });
+        el.addEventListener('mouseleave', () => {
+          el.classList.remove('is-hover');
+        });
+      }
       el.addEventListener('click', () => {
         setActiveIdx(i);
         setPhotoIdx(0);
@@ -333,8 +291,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     });
 
     if (activeIdx !== null && cityViews[activeIdx]) {
-      // Entering city-view from the overview (not switching city→city): remember
-      // the current view so closing the card can return here.
       if (prevActiveIdxRef.current === null) {
         const cc = map.getCenter();
         preCityCameraRef.current = {
@@ -353,8 +309,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
         offset: sheetFlyOffset(),
       });
     } else if (restoreOnCloseRef.current && preCityCameraRef.current) {
-      // Card was closed via its close button — restore the exact view the user
-      // was at before opening it, rather than re-framing the region.
       const cam = preCityCameraRef.current;
       map.flyTo({
         center: cam.center,
@@ -375,9 +329,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
           essential: true,
         });
       } else if (cityViews.length > 0) {
-        // 'world' / default: open focused on the actual locations — fit a box
-        // around every city pin rather than the whole globe. The user can still
-        // zoom out to the full map from here.
         const lngs = cityViews.map((v) => v.city.lng);
         const lats = cityViews.map((v) => v.city.lat);
         map.fitBounds(
@@ -397,31 +348,8 @@ export default function GlobeSection({ cities = [], globe }: Props) {
         });
       }
     }
-
-    // Track activeIdx so the next run can detect the overview→city transition
-    // (when to capture the pre-card view).
     prevActiveIdxRef.current = activeIdx;
   }, [activeIdx, isOpen, regionKey, cityViews, cardsPhotos, mapReady]);
-
-  // Keep the idle globe both sized AND positioned to the viewport.
-  //
-  // Sizing: the right zoom is breakpoint-dependent (see idleZoomFor), so re-zoom
-  // on resize while the intro globe is shown.
-  //
-  // Positioning: the globe's disk and the intro button live in different
-  // reference frames — the disk is offset by a fraction of viewport *height*,
-  // while the button sits at the bottom of copy that wraps by viewport *width*
-  // (and language). No fixed percentage clears the button at every aspect ratio.
-  // So we measure where the intro actually ends and place the globe so its
-  // visible top edge sits a constant GAP below it.
-  //
-  // The globe is drawn with a *perspective* camera, so its on-screen silhouette
-  // is larger than transform.globeRadius (the geometric radius). We therefore
-  // measure the real silhouette by projecting a ring of near-limb surface points
-  // and taking the farthest from the projected center — that distance is the
-  // visible radius, and the disk is centered in the canvas, so the visible top
-  // is centerY − R. Published as --ga-globe-ty. (The opened detail map drives
-  // its own zoom/position and is left alone.)
   useEffect(() => {
     if (isOpen) return;
     const map = mapRef.current;
@@ -430,14 +358,7 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     const section = sectionRef.current;
     if (!map || !globe || !intro || !section) return;
 
-    // Gap between the button's bottom and the globe's visible top. Desktop has
-    // far more room beside/below the copy, so it gets a more generous gap than
-    // the tighter mobile/tablet layouts. (Recomputed per recalc so it tracks
-    // breakpoint changes on resize.)
     const gapFor = (w: number) => (w >= 1025 ? 88 : 28);
-
-    // Max screen distance from the projected center to a ring of near-limb
-    // surface points = the globe's visible silhouette radius (in canvas px).
     const visibleRadius = (centerScreen: mapboxgl.Point) => {
       const c = map.getCenter();
       const R2D = 180 / Math.PI;
@@ -459,12 +380,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
       return maxDist;
     };
 
-    // Measure + position only — NEVER moves the camera. (Camera zoom is owned by
-    // the sync effect's open/close flyTo and the resize handler below; if this
-    // also drove zoom it would fight that flyTo and strand the map mid-close.)
-    // Bails unless the map is settled at the idle zoom, so it never measures the
-    // radius mid-flight (e.g. while the close flyTo is still zooming out from a
-    // deep city view) — the flyTo's final moveend re-runs it at the right zoom.
     const recalc = () => {
       if (Math.abs(map.getZoom() - idleZoomFor(window.innerWidth)) > 0.05) return;
       const center = map.project(map.getCenter());
@@ -498,8 +413,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     };
   }, [isOpen, lang, cityViews]);
 
-  // Restore the previously-opened city when returning from its detail page
-  // (e.g. globe → click city → "Explore now" → /activities → browser back).
   useEffect(() => {
     if (restoredRef.current || cityViews.length === 0) return;
     let saved: string | null = null;
@@ -528,10 +441,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
     const map = mapRef.current;
     if (!map || !isOpen) return;
     const cur = map.getZoom();
-    // maxBounds raises the real minimum zoom above MIN_ZOOM: you can't zoom out
-    // past the point where the whole world fills the viewport, i.e.
-    // log2(viewport / tileSize). That floor is viewport-dependent, so estimate
-    // it from the container — this lets us skip a flyTo that would just bounce.
     const el = map.getContainer();
     const boundsMin = Math.log2(Math.max(el.clientWidth, el.clientHeight) / 512);
     const atFloor = delta < 0 && cur <= Math.max(MIN_ZOOM, boundsMin) + 0.1;
@@ -585,32 +494,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
 
   useEffect(() => {
     setPhotoIdx(0);
-    setSheetExpanded(false);
-  }, [activeIdx]);
-
-  // Measure the bottom sheet's natural content height and derive the collapsed
-  // peek: the sheet hugs its content (capped at 90vh by CSS), peeks at most 50vh
-  // when collapsed, and the expanded position is the content height itself. The
-  // collapsed translate is published as a CSS var so .ga-panel.in can use it,
-  // and stored in a ref for the drag handlers. Re-runs on content/size changes.
-  useEffect(() => {
-    const sheet = sheetRef.current;
-    if (!sheet || activeIdx === null) return;
-    const measure = () => {
-      const h = sheet.getBoundingClientRect().height;
-      const peek = Math.min(h, 0.5 * window.innerHeight);
-      const collapsed = Math.max(0, h - peek);
-      sheet.style.setProperty('--sheet-collapsed', `${collapsed}px`);
-      sheetCollapsedRef.current = collapsed;
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(sheet);
-    window.addEventListener('resize', measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', measure);
-    };
   }, [activeIdx]);
 
   // Stars animation kept for the section's white-to-black backdrop strip
@@ -698,77 +581,6 @@ export default function GlobeSection({ cities = [], globe }: Props) {
   const activeView = activeIdx !== null ? cityViews[activeIdx] : null;
   const activeCards = activeIdx !== null ? cardsPhotos[activeIdx] : null;
 
-  // ── Mobile bottom-sheet drag ──────────────────────────────────────────────
-  // The sheet rests at a collapsed peek (CSS translateY, derived from the
-  // measured content height) and drags up to its content height. We track the
-  // drag in px and snap to the nearest state on release.
-  const collapsedOffsetPx = () => sheetCollapsedRef.current;
-
-  const onSheetDragStart = (e: React.PointerEvent) => {
-    const sheet = sheetRef.current;
-    if (!sheet) return;
-    sheetDragRef.current = {
-      startY: e.clientY,
-      collapsedPx: collapsedOffsetPx(),
-      dragging: true,
-    };
-    sheetLastYRef.current = e.clientY;
-    // No transition while the finger is down so the sheet tracks 1:1, and hint
-    // the compositor so the per-frame transforms stay on the GPU.
-    sheet.style.transition = 'none';
-    sheet.style.willChange = 'transform';
-    // Capture on the handle (the listener target), NOT the sheet — capturing on
-    // the sheet would redirect pointermove/up away from the handle's handlers
-    // and the drag would stall after it starts.
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-  };
-
-  // Apply the latest drag position once per frame (rAF-throttled) for smoothness.
-  const renderSheetDrag = () => {
-    sheetRafRef.current = 0;
-    const drag = sheetDragRef.current;
-    const sheet = sheetRef.current;
-    if (!drag.dragging || !sheet) return;
-    const base = sheetExpanded ? 0 : drag.collapsedPx;
-    const next = Math.max(0, Math.min(drag.collapsedPx, base + (sheetLastYRef.current - drag.startY)));
-    sheet.style.transform = `translate3d(0, ${next}px, 0)`;
-  };
-
-  const onSheetDragMove = (e: React.PointerEvent) => {
-    if (!sheetDragRef.current.dragging) return;
-    sheetLastYRef.current = e.clientY;
-    if (!sheetRafRef.current) {
-      sheetRafRef.current = requestAnimationFrame(renderSheetDrag);
-    }
-  };
-
-  const onSheetDragEnd = (e: React.PointerEvent) => {
-    const drag = sheetDragRef.current;
-    const sheet = sheetRef.current;
-    if (!drag.dragging || !sheet) return;
-    drag.dragging = false;
-    if (sheetRafRef.current) {
-      cancelAnimationFrame(sheetRafRef.current);
-      sheetRafRef.current = 0;
-    }
-    const base = sheetExpanded ? 0 : drag.collapsedPx;
-    const ended = Math.max(0, Math.min(drag.collapsedPx, base + (e.clientY - drag.startY)));
-    const willExpand = ended < drag.collapsedPx / 2;
-    const target = willExpand ? 0 : drag.collapsedPx;
-    // Animate to the snap target inline, then hand control back to the CSS class
-    // (which now matches `sheetExpanded`) once the transition settles.
-    sheet.style.transition = 'transform 0.42s cubic-bezier(0.32, 0.72, 0, 1)';
-    sheet.style.transform = `translate3d(0, ${target}px, 0)`;
-    setSheetExpanded(willExpand);
-    const clear = () => {
-      sheet.style.transition = '';
-      sheet.style.transform = '';
-      sheet.style.willChange = '';
-      sheet.removeEventListener('transitionend', clear);
-    };
-    sheet.addEventListener('transitionend', clear);
-    window.setTimeout(clear, 480);
-  };
 
   return (
     <section
@@ -818,92 +630,40 @@ export default function GlobeSection({ cities = [], globe }: Props) {
         </button>
       </div>
 
-      <aside
-        ref={sheetRef}
-        className={`ga-panel${isOpen && activeView ? ' in' : ''}${sheetExpanded ? ' expanded' : ''}`}
-        aria-hidden={!(isOpen && activeView)}
-      >
-        {activeView && activeCards && (
-          <article className="ga-card">
-            {/* Drag grip — only shown on mobile, where the card is a bottom sheet. */}
-            <div
-              className="ga-sheet-handle"
-              onPointerDown={onSheetDragStart}
-              onPointerMove={onSheetDragMove}
-              onPointerUp={onSheetDragEnd}
-              onPointerCancel={onSheetDragEnd}
-              aria-hidden="true"
-            >
-              <span className="ga-sheet-grip" />
-            </div>
-            <div className="ga-thumb">
-              {activeCards.map((p, i) => (
-                <Image
-                  key={p + i}
-                  src={p}
-                  alt=""
-                  className={'ga-thumb-img' + (i === photoIdx ? ' active' : '')}
-                />
-              ))}
-              <div className="ga-progress" aria-hidden="true">
-                {activeCards.map((p, i) => (
-                  <span
-                    key={p + i}
-                    className={'ga-progress-seg' + (i === photoIdx ? ' active' : '')}
-                  />
-                ))}
-              </div>
-              <button
-                type="button"
-                aria-label="Close"
-                className="ga-close"
-                onClick={() => { restoreOnCloseRef.current = true; setActiveIdx(null); }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
-              </button>
-            </div>
-            <div className="ga-card-body">
-              <h3 className="ga-name">{activeView.name}</h3>
-              <button
-                type="button"
-                className="ga-location"
-                onClick={() => {
-                  const map = mapRef.current;
-                  if (!map || activeIdx === null) return;
-                  const c = cityViews[activeIdx].city;
-                  map.flyTo({
-                    center: [c.lng, c.lat],
-                    zoom: cityZoom(c.altitude),
-                    bearing: 0,
-                    duration: 1000,
-                    essential: true,
-                    offset: sheetFlyOffset(),
-                  });
-                }}
-              >
-                {text.panelGoToLocation}
-              </button>
-              <p className="ga-desc">{activeView.desc}</p>
-              <Link
-                href={`/activities?id=${activeView.city.slug}`}
-                className="ga-button"
-                onClick={() => {
-                  try {
-                    sessionStorage.setItem(
-                      'globe.restore',
-                      JSON.stringify({ slug: activeView.city.slug, regionKey }),
-                    );
-                  } catch { /* private mode */ }
-                }}
-              >
-                {text.btnExploreNow}
-              </Link>
-            </div>
-          </article>
-        )}
-      </aside>
+      <PinDetailSheet
+        isOpen={isOpen}
+        card={
+          activeView && activeCards
+            ? {
+                citySlug: activeView.city.slug,
+                name: activeView.name,
+                desc: activeView.desc,
+                photos: activeCards,
+              }
+            : null
+        }
+        photoIdx={photoIdx}
+        regionKey={regionKey}
+        panelGoToLocationLabel={text.panelGoToLocation}
+        btnExploreNowLabel={text.btnExploreNow}
+        onClose={() => {
+          restoreOnCloseRef.current = true;
+          setActiveIdx(null);
+        }}
+        onLocationClick={() => {
+          const map = mapRef.current;
+          if (!map || activeIdx === null) return;
+          const c = cityViews[activeIdx].city;
+          map.flyTo({
+            center: [c.lng, c.lat],
+            zoom: cityZoom(c.altitude),
+            bearing: 0,
+            duration: 1000,
+            essential: true,
+            offset: sheetFlyOffset(),
+          });
+        }}
+      />
 
       <div className={`ga-regions${isOpen ? ' visible' : ''}`} aria-hidden={!isOpen}>
         {REGIONS.map((r) => (

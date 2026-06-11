@@ -12,6 +12,11 @@ export interface MarqueeImage {
 export interface TravelRouteMapTranslation {
   language: string;
   name: string;
+  /** Deprecated — section heading now lives on the `travel_routes` singleton.
+   *  Field is kept on the type for backwards compatibility but isn't populated. */
+  heading: string;
+  /** Deprecated — see `heading`. */
+  body: string;
 }
 
 export interface TravelRouteMap {

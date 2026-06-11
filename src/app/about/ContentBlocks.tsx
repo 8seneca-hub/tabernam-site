@@ -4,8 +4,9 @@ import type { ReactNode } from 'react';
 import Image from '@/components/ui/Image';
 import AboutParagraph from './AboutParagraph';
 import VideoCard from '@/components/ui/VideoCard';
+import SlideTabs from '@/components/ui/SlideTabs';
 import TravelRoutes from './TravelRoutes';
-import type { TravelRouteMap } from '@/lib/data';
+import type { TravelRoutesBundle } from '@/lib/directus';
 
 type BlockSpacing = { spacingTop?: string };
 
@@ -16,9 +17,7 @@ export type ContentBlock = BlockSpacing & (
   | { type: 'video'; video?: string; title?: string }
   | { type: 'travel_routes' }
   | { type: 'horizontal'; start: number; end?: number; text?: string; image?: string; video?: string; videoTitle?: string }
-  /** Variable-length array of images. 1 → single full-width frame, 2+ → 2-column grid. */
   | { type: 'images_grid'; images: string[] }
-  /** Variable-length array of videos. 1 → single full-width card, 2+ → 2-column grid. */
   | { type: 'videos_grid'; videos: Array<{ url: string; title?: string }> }
 );
 
@@ -36,10 +35,8 @@ function ImageFrame({ src, aspect }: { src: string; aspect: string }) {
 
 interface Props {
   blocks: ContentBlock[];
-  travelRouteMaps?: TravelRouteMap[];
+  travelRoutes?: TravelRoutesBundle;
   body: string;
-  travelRoutesHeading?: string;
-  travelRoutesBody?: string;
 }
 
 const DEFAULT_SPACING = 'mt-[40px]';
@@ -49,7 +46,7 @@ function sliceBody(body: string, start = 0, end?: number): string {
   return paragraphs.slice(start, end).join('\n\n');
 }
 
-function renderBlock(block: ContentBlock, travelRouteMaps: TravelRouteMap[], body: string, travelRoutesHeading: string | undefined, travelRoutesBody: string | undefined): ReactNode {
+function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | undefined, body: string): ReactNode {
   switch (block.type) {
     case 'paragraph': {
       const text = block.text ?? sliceBody(body, block.start, block.end);
@@ -84,31 +81,47 @@ function renderBlock(block: ContentBlock, travelRouteMaps: TravelRouteMap[], bod
       );
 
     case 'travel_routes':
-      return <TravelRoutes maps={travelRouteMaps} heading={travelRoutesHeading} body={travelRoutesBody} />;
+      return <TravelRoutes travelRoutes={travelRoutes} />;
 
     case 'images_grid': {
       const imgs = block.images.filter(Boolean);
       if (imgs.length === 0) return null;
-      const cols = imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2 max-md:grid-cols-1';
+      if (imgs.length === 1) {
+        return <ImageFrame src={imgs[0]} aspect="aspect-[16/9]" />;
+      }
+      // 2+ → tabbed slide. Images have no native label, so use index numbers.
       return (
-        <div className={`grid ${cols} gap-[40px] max-md:gap-[20px]`}>
-          {imgs.map((src, i) => (
-            <ImageFrame key={i} src={src} aspect="aspect-[16/9]" />
-          ))}
-        </div>
+        <SlideTabs
+          items={imgs.map((src, i) => ({
+            id: i,
+            label: String(i + 1),
+            content: <ImageFrame src={src} aspect="aspect-[16/9]" />,
+          }))}
+          className="py-[20px]"
+        />
       );
     }
 
     case 'videos_grid': {
       const vids = block.videos.filter((v) => v.url);
       if (vids.length === 0) return null;
-      const cols = vids.length === 1 ? 'grid-cols-1' : 'grid-cols-2 max-md:grid-cols-1';
+      if (vids.length === 1) {
+        return (
+          <div className="py-[20px]">
+            <VideoCard videoUrl={vids[0].url} title={vids[0].title} />
+          </div>
+        );
+      }
+      // 2+ → tabbed slide. Use the video title as the label (or "Video N" if blank).
       return (
-        <div className={`py-[20px] grid ${cols} gap-[40px] max-md:gap-[20px]`}>
-          {vids.map((v, i) => (
-            <VideoCard key={i} videoUrl={v.url} title={v.title} />
-          ))}
-        </div>
+        <SlideTabs
+          items={vids.map((v, i) => ({
+            id: i,
+            label: v.title?.trim() || `Video ${i + 1}`,
+            content: <VideoCard videoUrl={v.url} title={v.title} />,
+          }))}
+          className="py-[20px]"
+        />
       );
     }
 
@@ -134,12 +147,12 @@ function renderBlock(block: ContentBlock, travelRouteMaps: TravelRouteMap[], bod
   }
 }
 
-export default function ContentBlocks({ blocks, travelRouteMaps = [], body, travelRoutesHeading, travelRoutesBody }: Props) {
+export default function ContentBlocks({ blocks, travelRoutes, body }: Props) {
   return (
     <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[16px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col">
         {blocks.map((block, i) => {
-          const content = renderBlock(block, travelRouteMaps, body, travelRoutesHeading, travelRoutesBody);
+          const content = renderBlock(block, travelRoutes, body);
           if (!content) return null;
           return (
             <div key={i} className={i === 0 ? undefined : (block.spacingTop ?? DEFAULT_SPACING)}>

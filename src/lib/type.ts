@@ -46,7 +46,22 @@ export interface CMSTravelRouteMap {
     slug: string;
     image: string | null;
     sort: number | null;
+    travel_routes_id: number | null;
     translations: CMSTravelRouteMapTranslation[];
+}
+
+export interface CMSTravelRoutes {
+    id: number;
+    translations: CMSTravelRoutesTranslation[];
+    maps: CMSTravelRouteMap[];
+}
+
+export interface CMSTravelRoutesTranslation {
+    id: number;
+    travel_routes_id: number;
+    language: number | CMSLanguage | { code: string } | null;
+    heading: string;
+    body: string;
 }
 
 export interface CMSTravelRouteMapTranslation {
@@ -54,6 +69,10 @@ export interface CMSTravelRouteMapTranslation {
     travel_route_map_id: number;
     language: number | CMSLanguage | { code: string } | null;
     name: string;
+    /** Section-level heading. Read only from the first sorted map row. */
+    heading: string;
+    /** Section-level body. Read only from the first sorted map row. */
+    body: string;
 }
 
 export interface CMSPageSingleton {
@@ -124,6 +143,8 @@ export interface CMSSchema {
     home_marquee: CMSHomeMarquee[];
     travel_route_map: CMSTravelRouteMap[];
     travel_route_map_translations: CMSTravelRouteMapTranslation[];
+    travel_routes: CMSTravelRoutes;
+    travel_routes_translations: CMSTravelRoutesTranslation[];
     quote: CMSQuote;
     quote_translations: CMSQuoteTranslation[];
     globe: CMSGlobe;
@@ -265,8 +286,6 @@ interface CMSAboutBodyTranslationFields {
     // Any number of paragraph_N fields (paragraph_1, paragraph_2, …) — the
     // runtime fetcher discovers whatever columns exist on the table.
     [paragraph: `paragraph_${number}`]: string;
-    travel_routes_heading: string;
-    travel_routes_body: string;
 }
 
 export interface CMSAboutBody {
@@ -305,6 +324,7 @@ export interface CMSAboutBodyVideoTranslation {
     language: number | CMSLanguage | { code: string } | null;
     url: string;
     title: string;
+    file: string | null;
 }
 
 interface CMSClosingQuoteTranslationFields {
