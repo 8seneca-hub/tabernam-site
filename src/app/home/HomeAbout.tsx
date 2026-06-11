@@ -12,7 +12,7 @@ interface Props {
 
 const EMPTY: HomeAboutText = { eyebrow: '', heading: 'About me', body1: '', body2: '', btnGetToKnowMore: '' };
 
-export default function AboutSection({ homeAbout }: Props) {
+export default function HomeAbout({ homeAbout }: Props) {
   const { lang } = useI18n();
 
   // Active language → English → empty (section gracefully degrades).
@@ -46,7 +46,7 @@ export default function AboutSection({ homeAbout }: Props) {
                 key={i}
                 className="text-[24px] font-medium text-text italic leading-[30px] md:max-[1100px]:text-[22px] max-md:text-[20px]"
               >
-                {`${i === 0 ? '"' : ''}${body}${i === bodies.length - 1 ? '"' : ''}`}
+                {body}
               </p>
             ))}
           </div>

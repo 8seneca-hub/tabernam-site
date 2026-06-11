@@ -3,7 +3,7 @@ import HeroSection from '@/app/home/HeroSection';
 import QuoteSection from '@/app/home/QuoteSection';
 import HomeMarquee from '@/app/home/HomeMarquee';
 import GlobeSection from '@/app/home/globe/GlobeSection';
-import AboutSection from './home/AboutSection';
+import HomeAbout from './home/HomeAbout';
 
 export default async function HomePage() {
 
@@ -20,7 +20,7 @@ export default async function HomePage() {
     <main className="home-page">
       <HeroSection hero={hero} />
       <QuoteSection quote={quote} />
-      <AboutSection homeAbout={homeAbout} />
+      <HomeAbout homeAbout={homeAbout} />
       <HomeMarquee images={marqueeImages} />
       <GlobeSection cities={activities} globe={globe} />
     </main>
