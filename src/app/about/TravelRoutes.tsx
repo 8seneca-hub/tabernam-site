@@ -54,8 +54,8 @@ export default function TravelRoutes({ travelRoutes }: Props) {
     label: p.name,
     content: (
       <>
-        <div className="relative w-full aspect-[2/1] overflow-hidden rounded-4 bg-gray-40">
-          <Image src={p.image} alt={p.name} fill className="object-cover" />
+        <div className="relative w-full aspect-[16/9] overflow-hidden rounded-4 bg-gray-40">
+          <Image src={p.image} alt={p.name} fill className="object-contain" />
         </div>
       </>
     ),
