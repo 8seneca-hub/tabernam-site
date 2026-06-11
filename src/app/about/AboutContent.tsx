@@ -80,10 +80,10 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
     if (text) blocks.push({ type: 'paragraph', text });
     if (images.length > 0) blocks.push({ type: 'images_grid', images });
     if (videos.length > 0) blocks.push({ type: 'videos_grid', videos });
-    if (n === 3) blocks.push({ type: 'travel_routes' });
+    if (n === 6) blocks.push({ type: 'travel_routes' });
   }
-  // If there's no slot 3 at all, still surface TravelRoutes at the end.
-  if (!sortedSlots.includes(3)) blocks.push({ type: 'travel_routes' });
+  // If there's no slot 6 at all, still surface TravelRoutes at the end.
+  if (!sortedSlots.includes(6)) blocks.push({ type: 'travel_routes' });
 
   return (
     <main className="cv-page pt-[var(--header-height)]">
