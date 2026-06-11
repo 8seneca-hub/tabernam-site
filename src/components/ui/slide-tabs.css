@@ -1,0 +1,65 @@
+/* Mirrors the .ga-regions pattern from globe-section.css: a horizontally
+   scrollable pill with hidden scrollbar, a hard mobile cap, and a content-sized
+   desktop layout. Uses raw CSS so layout isn't fighting Tailwind utility
+   cascading / flex-item min-width quirks. */
+
+.slide-tabs-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 6px;
+  background: #ffffff;
+  border-radius: 9999px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Mobile: hard-capped at the parent's content area so the pill never
+     extends past the viewport. */
+  max-width: 100%;
+  width: fit-content;
+}
+
+.slide-tabs-pill::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  /* Desktop: no cap → pill is content-sized, centered via margin auto. */
+  .slide-tabs-pill {
+    max-width: max-content;
+  }
+}
+
+.slide-tabs-btn {
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-80);
+  padding: 6px 28px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.18s ease, color 0.18s ease;
+  /* Mobile: cap each tab at 120px and ellipsize. */
+  max-width: 120px;
+}
+
+@media (min-width: 768px) {
+  .slide-tabs-btn {
+    max-width: none;
+  }
+}
+
+.slide-tabs-btn:hover:not(.is-active) {
+  color: var(--dark);
+}
+
+.slide-tabs-btn.is-active {
+  background: var(--brand);
+  color: #ffffff;
+}
