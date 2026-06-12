@@ -6,6 +6,7 @@ export { getHomeMarquee } from './home/home-marquee';
 export { getHero, type HeroBundle, type HeroText } from './home/hero';
 export { getQuote, type QuoteBundle, type QuoteText } from './home/quote';
 export { getGlobe, type GlobeBundle, type GlobeText } from './home/globe';
+export { getMap, type MapBundle, type MapText } from './home/map';
 export { getHomeAbout, type HomeAboutBundle, type HomeAboutText } from './home/home-about';
 export { getTravelRoutes, type TravelRoutesBundle, type TravelRoutesText } from './about/travel-routes';
 export { getAboutHeader, type AboutHeaderBundle, type AboutHeaderText } from './about/about-header';

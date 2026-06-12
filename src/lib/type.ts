@@ -149,6 +149,8 @@ export interface CMSSchema {
     quote_translations: CMSQuoteTranslation[];
     globe: CMSGlobe;
     globe_translations: CMSGlobeTranslation[];
+    map: CMSMap;
+    map_translations: CMSMapTranslation[];
     home_about: CMSHomeAbout;
     home_about_translations: CMSHomeAboutTranslation[];
     about_header: CMSAboutHeader;
@@ -211,6 +213,9 @@ interface CMSGlobeFields {
     intro_heading: string;
     intro_body: string;
     intro_cta: string;
+}
+
+interface CMSMapFields {
     hint_drag: string;
     hint_zoom: string;
     hint_click_city: string;
@@ -224,6 +229,18 @@ interface CMSGlobeFields {
     region_oceania: string;
     panel_go_to_location: string;
     btn_explore_now: string;
+}
+
+export interface CMSMap extends CMSMapFields {
+    id: number;
+    sort: number | null;
+    translations: CMSMapTranslation[];
+}
+
+export interface CMSMapTranslation extends CMSMapFields {
+    id: number;
+    map_id: number;
+    language: number | CMSLanguage | { code: string } | null;
 }
 
 export interface CMSGlobe extends CMSGlobeFields {

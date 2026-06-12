@@ -1,49 +1,20 @@
 import { readSingleton } from '@directus/sdk';
 import directus from '../client';
 
-// All 16 fields, camelCase for JS convention.
 export interface GlobeText {
   introHeading: string;
   introBody: string;
   introCta: string;
-  hintDrag: string;
-  hintZoom: string;
-  hintClickCity: string;
-  zoomMaxToast: string;
-  zoomMinToast: string;
-  regionWorld: string;
-  regionEurope: string;
-  regionAsia: string;
-  regionAfrica: string;
-  regionAmericas: string;
-  regionOceania: string;
-  panelGoToLocation: string;
-  btnExploreNow: string;
 }
 
 export interface GlobeBundle {
   byLang: Record<string, GlobeText>;
 }
 
-// Directus snake_case key → JS camelCase key, used to project both the parent
-// row and translation rows onto the same TS shape.
 const FIELD_TO_TS: Array<[keyof GlobeText, string]> = [
-  ['introHeading',      'intro_heading'],
-  ['introBody',         'intro_body'],
-  ['introCta',          'intro_cta'],
-  ['hintDrag',          'hint_drag'],
-  ['hintZoom',          'hint_zoom'],
-  ['hintClickCity',     'hint_click_city'],
-  ['zoomMaxToast',      'zoom_max_toast'],
-  ['zoomMinToast',      'zoom_min_toast'],
-  ['regionWorld',       'region_world'],
-  ['regionEurope',      'region_europe'],
-  ['regionAsia',        'region_asia'],
-  ['regionAfrica',      'region_africa'],
-  ['regionAmericas',    'region_americas'],
-  ['regionOceania',     'region_oceania'],
-  ['panelGoToLocation', 'panel_go_to_location'],
-  ['btnExploreNow',     'btn_explore_now'],
+  ['introHeading', 'intro_heading'],
+  ['introBody',    'intro_body'],
+  ['introCta',     'intro_cta'],
 ];
 
 const PRIMARY_LANG = 'en';

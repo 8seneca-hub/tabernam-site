@@ -9,12 +9,15 @@ import { Move, ZoomIn, MapPin, X } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
 import PinDetailSheet from './PinDetailSheet';
 import type { GlobeCity } from '@/lib/type';
-import type { GlobeBundle, GlobeText } from '@/lib/directus';
+import type { GlobeBundle, GlobeText, MapBundle, MapText } from '@/lib/directus';
 
 const FALLBACK_GLOBE_TEXT: GlobeText = {
   introHeading: 'A career mapped across continents.',
   introBody: '',
   introCta: 'Explore the globe',
+};
+
+const FALLBACK_MAP_TEXT: MapText = {
   hintDrag: 'Drag to spin',
   hintZoom: 'Scroll to zoom',
   hintClickCity: 'Tap a city',
@@ -30,7 +33,7 @@ const FALLBACK_GLOBE_TEXT: GlobeText = {
   btnExploreNow: 'Explore now',
 };
 
-const REGION_TEXT_KEY: Record<string, keyof GlobeText> = {
+const REGION_TEXT_KEY: Record<string, keyof MapText> = {
   world: 'regionWorld',
   europe: 'regionEurope',
   asia: 'regionAsia',
@@ -54,21 +57,30 @@ import {
 interface Props {
   cities?: GlobeCity[];
   globe?: GlobeBundle;
+  map?: MapBundle;
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-export default function GlobeSection({ cities = [], globe }: Props) {
+export default function GlobeSection({ cities = [], globe, map }: Props) {
   const { lang } = useI18n();
 
   // Active language → English → hardcoded fallback. An entry with an empty
-  // introHeading counts as "no text" so we still fall through.
+  // introHeading counts as "no text" so we still fall through. Globe drives
+  // the intro hero; Map drives all the in-canvas UI labels.
   const langText = globe?.byLang[lang];
   const enText = globe?.byLang['en'];
   const text: GlobeText =
     (langText && langText.introHeading ? langText : null) ??
     (enText && enText.introHeading ? enText : null) ??
     FALLBACK_GLOBE_TEXT;
+
+  const langMap = map?.byLang[lang];
+  const enMap = map?.byLang['en'];
+  const mapText: MapText =
+    (langMap && langMap.regionWorld ? langMap : null) ??
+    (enMap && enMap.regionWorld ? enMap : null) ??
+    FALLBACK_MAP_TEXT;
   const sectionRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const starsRef = useRef<HTMLCanvasElement>(null);
@@ -644,8 +656,8 @@ export default function GlobeSection({ cities = [], globe }: Props) {
         }
         photoIdx={photoIdx}
         regionKey={regionKey}
-        panelGoToLocationLabel={text.panelGoToLocation}
-        btnExploreNowLabel={text.btnExploreNow}
+        panelGoToLocationLabel={mapText.panelGoToLocation}
+        btnExploreNowLabel={mapText.btnExploreNow}
         onClose={() => {
           restoreOnCloseRef.current = true;
           setActiveIdx(null);
@@ -673,7 +685,7 @@ export default function GlobeSection({ cities = [], globe }: Props) {
             className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
             onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
           >
-            {text[REGION_TEXT_KEY[r.key]] ?? r.label}
+            {mapText[REGION_TEXT_KEY[r.key]] ?? r.label}
           </button>
         ))}
       </div>
@@ -712,15 +724,15 @@ export default function GlobeSection({ cities = [], globe }: Props) {
       <div className={`ga-hints${isOpen ? ' visible' : ''}`} aria-hidden="true">
         <div className="ga-hint">
           <Move />
-          <span>{text.hintDrag}</span>
+          <span>{mapText.hintDrag}</span>
         </div>
         <div className="ga-hint">
           <ZoomIn />
-          <span>{text.hintZoom}</span>
+          <span>{mapText.hintZoom}</span>
         </div>
         <div className="ga-hint">
           <MapPin />
-          <span>{text.hintClickCity}</span>
+          <span>{mapText.hintClickCity}</span>
         </div>
       </div>
 
@@ -729,7 +741,7 @@ export default function GlobeSection({ cities = [], globe }: Props) {
         role="status"
         aria-live="polite"
       >
-        {zoomEdge === 'in' ? text.zoomMaxToast : text.zoomMinToast}
+        {zoomEdge === 'in' ? mapText.zoomMaxToast : mapText.zoomMinToast}
       </div>
 
     </section>
