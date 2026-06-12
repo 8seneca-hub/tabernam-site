@@ -33,8 +33,8 @@ export function I18nProvider({ children, languages, dictionaries }: I18nProvider
   const [lang, setLangState] = useState(defaultLang);
 
   useEffect(() => {
-    setLangState(getLang(codes));
-  }, [codes]);
+    setLangState(getLang(codes, defaultLang));
+  }, [codes, defaultLang]);
 
   useEffect(() => {
     document.documentElement.lang = lang;

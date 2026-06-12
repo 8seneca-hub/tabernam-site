@@ -53,7 +53,7 @@ export default function VideoCard({
     <Video
       videoUrl={videoUrl}
       title={title}
-      className={`block ${aspectClass} rounded-3 border border-border bg-gray-40 ${shadow} overflow-hidden ${className}`.trim()}
+      className={`block ${aspectClass} bg-gray-40 ${shadow} overflow-hidden ${className}`.trim()}
     >
       <div className={`absolute inset-0 ${dimClass} transition-colors`} />
       <div className="absolute inset-0 flex items-center justify-center">

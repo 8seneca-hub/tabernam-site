@@ -76,15 +76,18 @@ export const FALLBACK_DICTIONARIES: Record<string, Record<string, string>> = Obj
   ]),
 );
 
-export function getLang(supportedCodes: string[]): string {
-  if (typeof window === 'undefined') return supportedCodes[0] || 'en';
+export function getLang(supportedCodes: string[], defaultLang = 'en'): string {
+  const fallback = supportedCodes.includes(defaultLang)
+    ? defaultLang
+    : supportedCodes[0] || 'en';
+  if (typeof window === 'undefined') return fallback;
   try {
     const saved = localStorage.getItem('lang');
     if (saved && supportedCodes.includes(saved)) return saved;
   } catch {
     // private mode
   }
-  return supportedCodes[0] || 'en';
+  return fallback;
 }
 
 export function setLang(lang: string): void {

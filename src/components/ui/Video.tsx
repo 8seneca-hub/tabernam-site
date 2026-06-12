@@ -12,8 +12,13 @@ interface Props {
 }
 
 function getYouTubeId(url: string): string | null {
+  if (!url) return null;
+  // The URL constructor requires a scheme. Editors often paste
+  // `youtube.com/watch?v=...` or `www.youtube.com/...` without one, so
+  // assume https:// when missing instead of throwing.
+  const withScheme = /^https?:\/\//i.test(url) ? url : `https://${url}`;
   try {
-    const u = new URL(url);
+    const u = new URL(withScheme);
     if (u.hostname === 'youtu.be') return u.pathname.slice(1) || null;
     if (u.hostname.endsWith('youtube.com')) {
       const v = u.searchParams.get('v');
@@ -100,8 +105,7 @@ export default function Video({
         <Image
           src={thumbnailSrc}
           alt=""
-          fill
-          className="object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
       )}
       {children}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import FadeIn from '@/animations/FadeIn';
 import Button from '@/components/ui/Button';
@@ -27,7 +27,6 @@ interface Props {
 export default function ClosingQuote({ closingQuote }: Props) {
   const { lang } = useI18n();
 
-  // Active language → English → empty.
   const langText = closingQuote.byLang[lang];
   const enText = closingQuote.byLang['en'];
   const text =
@@ -44,6 +43,19 @@ export default function ClosingQuote({ closingQuote }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: -1000, y: -1000 });
 
+  useEffect(() => {
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (!isTouch) return;
+    const center = () => {
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPos({ x: rect.width / 2, y: rect.height / 2 });
+    };
+    center();
+    window.addEventListener('resize', center);
+    return () => window.removeEventListener('resize', center);
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -53,6 +65,13 @@ export default function ClosingQuote({ closingQuote }: Props) {
         setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
       }}
       onMouseLeave={() => setPos({ x: -1000, y: -1000 })}
+      onTouchMove={(e) => {
+        const touch = e.touches[0];
+        if (!touch) return;
+        const rect = sectionRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        setPos({ x: touch.clientX - rect.left, y: touch.clientY - rect.top });
+      }}
       className="relative text-white overflow-hidden py-32 md:py-44 bg-fit bg-center"
       style={{
         backgroundImage: `url(${backgroundImage})`,

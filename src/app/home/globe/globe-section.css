@@ -612,6 +612,11 @@
   .ga-section.city-open .ga-hints {
     display: none;
   }
+  /* Region tabs sit at the top of the viewport; on mobile they overlap with
+     the pin detail sheet and feel cluttered, so hide them once a pin is open. */
+  .ga-section.city-open .ga-regions {
+    display: none;
+  }
   .ga-hints {
     left: 16px;
     right: 16px;

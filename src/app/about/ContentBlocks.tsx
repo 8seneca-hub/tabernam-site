@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import Image from '@/components/ui/Image';
 import AboutParagraph from './AboutParagraph';
 import VideoCard from '@/components/ui/VideoCard';
-import SlideTabs from '@/components/ui/SlideTabs';
+import MediaSlider, { type MediaSlide } from '@/components/ui/MediaSlider';
 import TravelRoutes from './TravelRoutes';
 import type { TravelRoutesBundle } from '@/lib/directus';
 
@@ -27,7 +27,7 @@ function ImageFrame({ src, aspect }: { src: string; aspect: string }) {
   return (
     <div className="py-[20px]">
       <div className={`feathered-image relative w-full ${aspect} overflow-hidden rounded-3 bg-gray-40`}>
-        <Image src={src} alt="" fill className="object-cover" />
+        <Image src={src} alt="" className="absolute inset-0 w-full h-full object-cover" />
       </div>
     </div>
   );
@@ -89,17 +89,8 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
       if (imgs.length === 1) {
         return <ImageFrame src={imgs[0]} aspect="aspect-[16/9]" />;
       }
-      // 2+ → tabbed slide. Images have no native label, so use index numbers.
-      return (
-        <SlideTabs
-          items={imgs.map((src, i) => ({
-            id: i,
-            label: String(i + 1),
-            content: <ImageFrame src={src} aspect="aspect-[16/9]" />,
-          }))}
-          className="py-[20px]"
-        />
-      );
+      const slides: MediaSlide[] = imgs.map((src) => ({ type: 'image', src, alt: '' }));
+      return <MediaSlider slides={slides} className="py-[20px]" />;
     }
 
     case 'videos_grid': {
@@ -112,17 +103,8 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
           </div>
         );
       }
-      // 2+ → tabbed slide. Use the video title as the label (or "Video N" if blank).
-      return (
-        <SlideTabs
-          items={vids.map((v, i) => ({
-            id: i,
-            label: v.title?.trim() || `Video ${i + 1}`,
-            content: <VideoCard videoUrl={v.url} title={v.title} />,
-          }))}
-          className="py-[20px]"
-        />
-      );
+      const slides: MediaSlide[] = vids.map((v) => ({ type: 'video', url: v.url, title: v.title }));
+      return <MediaSlider slides={slides} className="py-[20px]" />;
     }
 
     case 'horizontal': {

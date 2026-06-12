@@ -55,7 +55,7 @@ export default function TravelRoutes({ travelRoutes }: Props) {
     content: (
       <>
         <div className="relative w-full aspect-[16/9] overflow-hidden rounded-4 bg-gray-40">
-          <Image src={p.image} alt={p.name} fill className="object-contain" />
+          <Image src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-contain" />
         </div>
       </>
     ),
