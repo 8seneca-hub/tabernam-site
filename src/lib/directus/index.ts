@@ -15,6 +15,15 @@ export { getClosingQuote, type ClosingQuoteBundle, type ClosingQuoteText } from 
 export { getContactOffice, getContactTexts } from './contact/contact';
 export { getContactHeader, type ContactHeaderBundle, type ContactHeaderText } from './contact/contact-header';
 export { getCvTexts } from './about/cv';
+export {
+  getCvEducation,
+  getCvExperience,
+  pickEntry,
+  pickSectionTitle,
+  type CvEducationEntry,
+  type CvExperienceEntry,
+  type CvSection,
+} from './about/cv-entries';
 export { pickPageTexts, type PageTextsBundle } from './pages';
 export { getSiteSettings, getLanguages, getDictionaries } from './site';
 

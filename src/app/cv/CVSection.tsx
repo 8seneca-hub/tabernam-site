@@ -3,6 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/app/hook/useI18n';
+import {
+  pickEntry,
+  pickSectionTitle,
+  type CvEducationEntry,
+  type CvExperienceEntry,
+  type CvSection as CvSectionData,
+} from '@/lib/directus';
 import Section from '@/components/ui/Section';
 import Button from '@/components/ui/Button';
 import EntryRow from '@/app/home/EntryRow';
@@ -10,71 +17,66 @@ import LanguageBar from '@/app/home/LanguageBar';
 import RequestCvModal from './RequestCvModal';
 import ContactInfoCard from '../contact/ContactInfoCard';
 
-const EDUCATION_COUNT = 6;
-const EXPERIENCE_COUNT = 9;
-const CHINA_COUNT = 9;
-const SKILLS_COUNT = 5;
 const VISIBLE_EXPERIENCE = 4;
 const BLUR_PREVIEW_COUNT = 1;
 
-const LANGUAGE_META: { level: string; bars: number }[] = [
-  { level: '—', bars: 5 },
-  { level: 'C1', bars: 5 },
-  { level: 'C1', bars: 5 },
-  { level: 'B1', bars: 3 },
-  { level: 'B1', bars: 3 },
+const BLUR_CHINA = [
+  { text: 'Foreign trade missions and partnerships across multiple Chinese provinces.', years: '2010 – present' },
 ];
+const BLUR_LANGUAGES = [
+  { name: 'English', level: 'C1', descriptor: 'Professional working proficiency', bars: 5 },
+];
+const BLUR_SKILLS = ['Cross-cultural negotiation and stakeholder management.'];
 
 interface Props {
   backHref?: string;
+  education: CvSectionData<CvEducationEntry>;
+  experience: CvSectionData<CvExperienceEntry>;
 }
 
-export default function CVSection({ backHref }: Props) {
-  const { t } = useI18n();
+export default function CVSection({ backHref, education, experience }: Props) {
+  const { lang, t } = useI18n();
   const [requestOpen, setRequestOpen] = useState(false);
 
-  const optional = (key: string): string | undefined => {
-    const value = t(key);
-    return value === key ? undefined : value;
+  const educationTitle = pickSectionTitle(education, lang, t('cv.section.education'));
+  const experienceTitle = pickSectionTitle(experience, lang, t('cv.section.experience'));
+
+  const visibleExperience = experience.entries.slice(0, VISIBLE_EXPERIENCE);
+  const hiddenExperience = experience.entries.slice(
+    VISIBLE_EXPERIENCE,
+    VISIBLE_EXPERIENCE + BLUR_PREVIEW_COUNT,
+  );
+
+  const renderExperience = (entry: CvExperienceEntry, i: number) => {
+    const v = pickEntry(entry, lang);
+    if (!v) return null;
+    return (
+      <li key={i}>
+        <EntryRow title={v.title} org={v.org} date={v.date} desc={v.desc || undefined} />
+      </li>
+    );
   };
-
-  const visibleExperienceIndexes = Array.from({ length: VISIBLE_EXPERIENCE }, (_, i) => i);
-  const hiddenExperienceIndexes = Array.from(
-    { length: Math.min(BLUR_PREVIEW_COUNT, EXPERIENCE_COUNT - VISIBLE_EXPERIENCE) },
-    (_, i) => i + VISIBLE_EXPERIENCE,
-  );
-
-  const renderExperienceItem = (i: number) => (
-    <li key={i}>
-      <EntryRow
-        title={t(`cv.exp.${i}.title`)}
-        org={t(`cv.exp.${i}.org`)}
-        date={t(`cv.exp.${i}.date`)}
-        desc={optional(`cv.exp.${i}.desc`)}
-      />
-    </li>
-  );
 
   return (
     <>
       <div className="w-[80%] mx-auto pt-14 flex flex-col gap-14">
-        <Section title={t('cv.section.education')}>
+        <Section title={educationTitle}>
           <ul className="flex flex-col gap-6">
-            {Array.from({ length: EDUCATION_COUNT }).map((_, i) => (
-              <li key={i}>
-                <EntryRow
-                  title={t(`cv.edu.${i}.title`)}
-                  org={t(`cv.edu.${i}.org`)}
-                  date={t(`cv.edu.${i}.date`)}
-                />
-              </li>
-            ))}
+            {education.entries.map((entry, i) => {
+              const v = pickEntry(entry, lang);
+              if (!v) return null;
+              return (
+                <li key={i}>
+                  <EntryRow title={v.title} org={v.org} date={v.date} />
+                </li>
+              );
+            })}
           </ul>
         </Section>
 
-        <Section title={t('cv.section.experience')}>
+        <Section title={experienceTitle}>
           <ul className="flex flex-col gap-7">
-            {visibleExperienceIndexes.map(renderExperienceItem)}
+            {visibleExperience.map(renderExperience)}
           </ul>
 
           <div className="relative mt-10 mb-2 flex items-center justify-center">
@@ -109,45 +111,47 @@ export default function CVSection({ backHref }: Props) {
 
           <div className="relative mt-2 select-none" aria-hidden="true">
             <ul className="flex flex-col gap-7 blur-md opacity-70 pointer-events-none">
-              {hiddenExperienceIndexes.map(renderExperienceItem)}
+              {hiddenExperience.map(renderExperience)}
             </ul>
           </div>
         </Section>
 
+        {/* Blur preview: china / languages / skills. Static placeholders — */}
+        {/* the user can't read these under blur so they don't need CMS data. */}
         <div className="relative select-none" aria-hidden="true">
           <div className="flex flex-col gap-14 blur-md opacity-70 pointer-events-none">
-            <Section title={t('cv.section.china')}>
+            <Section title="Activities in China">
               <ul className="flex flex-col gap-3">
-                {Array.from({ length: Math.min(BLUR_PREVIEW_COUNT, CHINA_COUNT) }).map((_, i) => (
+                {BLUR_CHINA.map((row, i) => (
                   <li key={i} className="grid grid-cols-[auto_1fr_auto] gap-x-4 items-baseline max-md:grid-cols-[auto_1fr]">
                     <span className="text-brand text-xs leading-relaxed mt-1.5" aria-hidden>●</span>
-                    <span className="text-base text-text leading-relaxed">{t(`cv.china.${i}.text`)}</span>
-                    <span className="text-sm italic text-muted whitespace-nowrap max-md:col-start-2 max-md:mt-0.5">{t(`cv.china.${i}.years`)}</span>
+                    <span className="text-base text-text leading-relaxed">{row.text}</span>
+                    <span className="text-sm italic text-muted whitespace-nowrap max-md:col-start-2 max-md:mt-0.5">{row.years}</span>
                   </li>
                 ))}
               </ul>
             </Section>
 
-            <Section title={t('cv.section.languages')}>
+            <Section title="Languages">
               <div className="grid grid-cols-2 gap-x-12 gap-y-6 max-md:grid-cols-1">
-                {LANGUAGE_META.slice(0, BLUR_PREVIEW_COUNT).map((meta, i) => (
+                {BLUR_LANGUAGES.map((meta, i) => (
                   <LanguageBar
                     key={i}
-                    name={t(`cv.lang.${i}.name`)}
+                    name={meta.name}
                     level={meta.level}
-                    descriptor={t(`cv.lang.${i}.descriptor`)}
+                    descriptor={meta.descriptor}
                     bars={meta.bars}
                   />
                 ))}
               </div>
             </Section>
 
-            <Section title={t('cv.section.skills')}>
+            <Section title="Personal skills">
               <ul className="flex flex-col gap-3">
-                {Array.from({ length: Math.min(BLUR_PREVIEW_COUNT, SKILLS_COUNT) }).map((_, i) => (
+                {BLUR_SKILLS.map((skill, i) => (
                   <li key={i} className="flex gap-3 text-base text-text leading-relaxed">
                     <span className="text-brand text-xs mt-1.5 shrink-0" aria-hidden>●</span>
-                    <span>{t(`cv.skill.${i}`)}</span>
+                    <span>{skill}</span>
                   </li>
                 ))}
               </ul>

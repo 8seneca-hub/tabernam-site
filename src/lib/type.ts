@@ -168,6 +168,10 @@ export interface CMSSchema {
     contact_translations: CMSPageTranslation[];
     contact_files: CMSContactFile[];
     cv: CMSPageSingleton;
+    cv_education: CMSPageSingleton;
+    cv_education_translations: CMSPageTranslation[];
+    cv_experience: CMSPageSingleton;
+    cv_experience_translations: CMSPageTranslation[];
     cv_translations: CMSPageTranslation[];
     header: CMSPageSingleton;
     header_translations: CMSPageTranslation[];

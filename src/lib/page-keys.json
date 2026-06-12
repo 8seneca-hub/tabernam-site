@@ -73,18 +73,6 @@
       "page": "cv",
       "field": "section_experience"
     },
-    "cv.section.china": {
-      "page": "cv",
-      "field": "section_china"
-    },
-    "cv.section.languages": {
-      "page": "cv",
-      "field": "section_languages"
-    },
-    "cv.section.skills": {
-      "page": "cv",
-      "field": "section_skills"
-    },
     "cv.contact.intro": {
       "page": "cv",
       "field": "contact_intro"
@@ -147,67 +135,7 @@
     }
   },
   "dictionaryDynamic": {
-    "_comment": "CV repeatable items — patterns expand into N concrete dictionary entries at apply/build time.",
-    "cv.edu.{i}.title": {
-      "page": "cv",
-      "field": "edu_{i}_title",
-      "range": 6
-    },
-    "cv.edu.{i}.org": {
-      "page": "cv",
-      "field": "edu_{i}_org",
-      "range": 6
-    },
-    "cv.edu.{i}.date": {
-      "page": "cv",
-      "field": "edu_{i}_date",
-      "range": 6
-    },
-    "cv.exp.{i}.title": {
-      "page": "cv",
-      "field": "exp_{i}_title",
-      "range": 9
-    },
-    "cv.exp.{i}.org": {
-      "page": "cv",
-      "field": "exp_{i}_org",
-      "range": 9
-    },
-    "cv.exp.{i}.date": {
-      "page": "cv",
-      "field": "exp_{i}_date",
-      "range": 9
-    },
-    "cv.exp.{i}.desc": {
-      "page": "cv",
-      "field": "exp_{i}_desc",
-      "range": 9
-    },
-    "cv.china.{i}.text": {
-      "page": "cv",
-      "field": "china_{i}_text",
-      "range": 9
-    },
-    "cv.china.{i}.years": {
-      "page": "cv",
-      "field": "china_{i}_years",
-      "range": 9
-    },
-    "cv.lang.{i}.name": {
-      "page": "cv",
-      "field": "lang_{i}_name",
-      "range": 5
-    },
-    "cv.lang.{i}.descriptor": {
-      "page": "cv",
-      "field": "lang_{i}_descriptor",
-      "range": 5
-    },
-    "cv.skill.{i}": {
-      "page": "cv",
-      "field": "skill_{i}",
-      "range": 5
-    }
+    "_comment": "CV repeatable items moved out — Education/Experience now live in cv_education / cv_experience multi-row collections; blur preview (china/lang/skill) is hardcoded in CVSection."
   },
   "pageTexts": {
     "_comment": "Fields on each page singleton that the legacy frontend reads via texts.X (NOT through t()). Mostly text content; image fields listed in `assets` are emitted as full URLs.",

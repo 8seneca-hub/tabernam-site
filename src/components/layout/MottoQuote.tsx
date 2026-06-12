@@ -32,7 +32,12 @@ export default function MottoQuote({ className = '', latin, translation, author 
         {resolvedLatin}
       </blockquote>
       <figcaption className="mt-2 text-text">({resolvedTranslation})</figcaption>
-      <p className="mt-2 text-[24px] max-md:text-[18px] font-semibold italic text-text text-right">{resolvedAuthor}</p>
+      <p
+        className="mt-2 text-[32px] max-md:text-[24px] text-text text-right leading-none"
+        style={{ fontFamily: 'var(--font-pinyon-script)' }}
+      >
+        {resolvedAuthor}
+      </p>
     </figure>
   );
 }
