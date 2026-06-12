@@ -106,6 +106,12 @@ export interface SiteSettings {
   maxWidth: string;
   sidePadding: string;
   headerHeight: string;
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string[];
+  /** Open Graph / Twitter card image URL. Empty string when not set — the
+   *  layout falls back to the site logo. */
+  metaOgImage: string;
 }
 
 export interface PageTexts {
@@ -288,4 +294,18 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   maxWidth: '1512px',
   sidePadding: '40px',
   headerHeight: '60px',
+  metaTitle: 'Tabernam — Global activity presence',
+  metaDescription:
+    'Tabernam — Four decades of foreign trade, partnerships and consulting across Asia, Europe and the Americas. Founded by Tibor Buček.',
+  metaKeywords: [
+    'Tabernam',
+    'Tibor Buček',
+    'foreign trade',
+    'consulting',
+    'Slovakia China',
+    'Asia Europe trade',
+    'innovation diplomat',
+    'investment',
+  ],
+  metaOgImage: '',
 };

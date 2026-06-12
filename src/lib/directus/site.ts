@@ -26,6 +26,14 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       maxWidth: s.max_width || DEFAULT_SETTINGS.maxWidth,
       sidePadding: s.side_padding || DEFAULT_SETTINGS.sidePadding,
       headerHeight: s.header_height || DEFAULT_SETTINGS.headerHeight,
+      metaTitle: s.meta_title || DEFAULT_SETTINGS.metaTitle,
+      metaDescription: s.meta_description || DEFAULT_SETTINGS.metaDescription,
+      metaKeywords: Array.isArray(s.meta_keywords) && s.meta_keywords.length
+        ? s.meta_keywords.filter((k): k is string => typeof k === 'string' && !!k)
+        : DEFAULT_SETTINGS.metaKeywords,
+      metaOgImage: typeof s.meta_og_image === 'string' && s.meta_og_image
+        ? assetUrl(s.meta_og_image)
+        : DEFAULT_SETTINGS.metaOgImage,
     };
   } catch (e) {
     console.warn('Directus fetch failed for site_settings, using defaults:', e);

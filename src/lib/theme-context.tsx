@@ -22,6 +22,16 @@ const defaults: SiteSettings = {
   maxWidth: '1512px',
   sidePadding: '40px',
   headerHeight: '60px',
+  metaTitle: 'Tabernam',
+  metaOgImage: '',
+  metaDescription: 'Discover the vibrant culture, rich history, and dynamic economy of the cities along the New Silk Road with Tabernam.',
+  metaKeywords: [
+    'Tabernam',
+    'Tibor Buček',
+    'foreign trade',
+    'Asia–Europe relations',
+    'international business',
+  ]
 };
 
 const ThemeContext = createContext<SiteSettings>(defaults);

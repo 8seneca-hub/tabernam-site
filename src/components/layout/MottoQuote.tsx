@@ -28,10 +28,18 @@ export default function MottoQuote({ className = '', latin, translation, author 
 
   return (
     <figure className={`mt-8 w-fit mx-auto text-center ${className}`}>
-      <blockquote className="text-[24px] font-medium text-text leading-snug">
+      <blockquote
+        className="text-[24px] font-medium text-text leading-snug"
+        style={{ fontFamily: 'var(--font-crimson-text)' }}
+      >
         {resolvedLatin}
       </blockquote>
-      <figcaption className="mt-2 text-text">({resolvedTranslation})</figcaption>
+      <figcaption
+        className="mt-2 text-text"
+        style={{ fontFamily: 'var(--font-crimson-text)' }}
+      >
+        ({resolvedTranslation})
+      </figcaption>
       <p
         className="mt-2 text-[32px] max-md:text-[24px] text-text text-right leading-none"
         style={{ fontFamily: 'var(--font-pinyon-script)' }}

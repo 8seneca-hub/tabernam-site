@@ -417,6 +417,12 @@ export interface CMSSiteSettings {
     max_width: string | null;
     side_padding: string | null;
     header_height: string | null;
+    meta_title: string | null;
+    meta_description: string | null;
+    meta_keywords: string[] | null;
+    /** Open Graph image (1200x630 recommended). UUID of a directus_files row,
+     *  resolved to a full URL via `assetUrl` in the fetcher. */
+    meta_og_image: string | null;
 }
 
 export interface GlobeCityTranslation {
