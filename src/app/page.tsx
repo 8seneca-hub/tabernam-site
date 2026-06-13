@@ -5,7 +5,7 @@ import HomeMarquee from '@/app/home/HomeMarquee';
 import GlobeSection from '@/app/home/globe/GlobeSection';
 import HomeAbout from './home/HomeAbout';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tabernam-site-production-4656.up.railway.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tabernam.at';
 
 const ORGANIZATION_JSONLD = {
   '@context': 'https://schema.org',

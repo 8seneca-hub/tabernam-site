@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://tabernam-site-production-4656.up.railway.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tabernam.at';
 
 export default function robots(): MetadataRoute.Robots {
   return {
