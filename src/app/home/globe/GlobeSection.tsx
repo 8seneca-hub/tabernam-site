@@ -693,7 +693,7 @@ export default function GlobeSection({ cities = [], globe, map }: Props) {
       <button
         type="button"
         aria-label="Close"
-        className={`ga-exit${isOpen ? ' visible' : ''}`}
+        className={`ga-exit${isOpen && activeIdx === null ? ' visible' : ''}`}
         onClick={() => { setIsOpen(false); setActiveIdx(null); setRegionKey('world'); }}
       >
         <X />
