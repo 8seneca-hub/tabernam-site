@@ -5,6 +5,7 @@ import { useI18n } from '@/app/hook/useI18n';
 import { useTheme } from '@/lib/theme-context';
 import type { ContactOffice } from '@/lib/data';
 import Image from '@/components/ui/Image';
+import MottoQuote from '@/components/layout/MottoQuote';
 import { Globe, Mail, MapPin, Phone } from 'lucide-react';
 
 // Button-like link with the same hover-underline treatment as the header nav
@@ -40,19 +41,14 @@ export default function Footer({ office }: Props) {
             <Link href="/" className="flex items-center w-fit" aria-label={`${logoText || 'Tabernam'} home`}>
               <Image src={logoImage} alt={logoText || 'Tabernam'} height={80} className="w-auto" style={{ height: '80px', width: 'auto', filter: 'brightness(0)' }} />
             </Link>
-            {/* Motto block — fixed Latin slogan, its translation, then the author
-                (right-aligned), per the Figma footer design. */}
-            <div className="flex flex-col w-fit">
-              <p className="text-[20px] font-semibold tracking-[-0.01em] text-text text-center">
-                Honeste lucra, nobiliter dona
-              </p>
-              <p className="text-[16px] font-light tracking-[-0.01em] text-text text-center mt-[10px]">
-                ({t('footer.quote')})
-              </p>
-              <p className="text-[18px] font-bold italic tracking-[-0.01em] text-text text-right mt-[16px]">
-                {t('footer.quoteAuthor')}
-              </p>
-            </div>
+            <MottoQuote
+              translation={t('footer.quote')}
+              author={t('footer.quoteAuthor')}
+              className="flex flex-col w-fit"
+              latinClassName="text-[20px] font-semibold tracking-[-0.01em] text-text text-center"
+              translationClassName="text-[16px] font-light tracking-[-0.01em] text-text text-center mt-[10px]"
+              authorClassName="text-[18px] tracking-[-0.01em] text-text text-right mt-[16px]"
+            />
           </div>
 
           {/* Explore + Presence — share the other half on large screens. They sit
