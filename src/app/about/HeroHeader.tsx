@@ -1,6 +1,5 @@
 'use client';
 
-import { useI18n } from '@/app/hook/useI18n';
 import type { PageTexts } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
 import Image from '@/components/ui/Image';
@@ -10,7 +9,6 @@ interface Props {
 }
 
 export default function HeroHeader({ texts }: Props) {
-  const { t } = useI18n();
   const heroName = texts.hero_name;
 
   return (

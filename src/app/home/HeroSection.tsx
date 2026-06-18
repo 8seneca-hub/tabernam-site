@@ -15,9 +15,6 @@ const FALLBACK_SLIDES: HeroSlide[] = [
   { image: '/carousel/photo-22.jpg', alt: '' },
 ];
 
-// Last-resort English fallback if Directus is unreachable AND no English row
-// was loaded. The hardcoded values previously lived in i18n.ts as dictionary
-// entries — we keep them here so the section never renders empty.
 const FALLBACK_TEXT = {
   title: 'Tabernam',
   body: '',
@@ -39,8 +36,6 @@ export default function HeroSection({ hero }: Props) {
   const items = hero?.slides && hero.slides.length > 0 ? hero.slides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Active language → English → hardcoded constant. A row exists but with an
-  // empty title counts as "no translation" so we still fall through.
   const langText = hero?.byLang[lang];
   const enText = hero?.byLang['en'];
   const text =
@@ -58,7 +53,7 @@ export default function HeroSection({ hero }: Props) {
 
   return (
     <section className="hero relative" style={{ paddingBottom: '60px' }}>
-      <div className="bg-gradient-to-b from-gray-20 to-white px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-[1025px]:pt-[150px] max-[1025px]:pb-[60px]">
+      <div className="bg-bg px-[40px] max-md:px-[16px] pt-[250px] pb-[200px] max-[1025px]:pt-[150px] max-[1025px]:pb-[60px]">
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
           <div className="flex flex-col items-center gap-[30px] text-center">
             <motion.h1

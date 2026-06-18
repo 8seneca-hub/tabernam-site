@@ -27,7 +27,7 @@ export default function HomeAbout({ homeAbout }: Props) {
   const bodies = [text.body1, text.body2].filter(Boolean);
 
   return (
-    <section className="w-full bg-white px-[60px] py-[120px] max-md:px-[16px] max-[1025px]:py-[60px]">
+    <section className="w-full bg-bg px-[60px] py-[120px] max-md:px-[16px] max-[1025px]:py-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col items-center justify-center gap-10">
         <FadeIn delay={0.05} className="flex flex-col gap-4 items-center text-center">
           {eyebrow && (
