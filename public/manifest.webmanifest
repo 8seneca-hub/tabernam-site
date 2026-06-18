@@ -1,0 +1,15 @@
+{
+  "name": "Tabernam",
+  "short_name": "Tabernam",
+  "description": "Tabernam — Four decades of foreign trade, partnerships and consulting across Asia, Europe and the Americas.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1759B0",
+  "icons": [
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/icon.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "/apple-icon.png", "type": "image/png", "sizes": "180x180", "purpose": "any" }
+  ]
+}

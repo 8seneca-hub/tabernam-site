@@ -65,6 +65,15 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: SITE_NAME,
     keywords,
     alternates: { canonical: '/' },
+    icons: {
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+        { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+      ],
+      shortcut: '/icon.png',
+      apple: { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    },
+    manifest: '/manifest.webmanifest',
     openGraph: {
       type: 'website',
       siteName: SITE_NAME,
@@ -137,11 +146,26 @@ export default async function RootLayout({
     ? `https://fonts.googleapis.com/css2?family=${encodeURIComponent(settings.fontFamily).replace(/%20/g, '+')}:wght@300;400;500;600;700;800&display=swap`
     : null;
 
+  // Organization JSON-LD. Google reads `logo` from this when picking the icon
+  // shown in search results / Knowledge Panel — it's a separate signal from
+  // the <link rel="icon"> favicon, and the two reinforce each other.
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/icon.png`,
+  };
+
   return (
     <html lang="en" className={`${inter.variable} ${notoSansSC.variable} ${pinyonScript.variable} ${crimsonText.variable}`} style={themeVars}>
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         {googleFontHref && <link rel="stylesheet" href={googleFontHref} />}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
       </head>
       <body
         className="bg-bg text-text leading-snug min-h-screen flex flex-col"
