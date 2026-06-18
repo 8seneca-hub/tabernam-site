@@ -24,6 +24,14 @@ export {
   type CvExperienceEntry,
   type CvSection,
 } from './about/cv-entries';
+export {
+  getCvExtras,
+  pickExtrasText,
+  type CvExtras,
+  type CvChinaEntry,
+  type CvLanguageEntry,
+  type CvSkillEntry,
+} from './about/cv-extras';
 export { pickPageTexts, type PageTextsBundle } from './pages';
 export { getSiteSettings, getLanguages, getDictionaries } from './site';
 

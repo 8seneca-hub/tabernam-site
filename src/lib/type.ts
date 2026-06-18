@@ -172,6 +172,8 @@ export interface CMSSchema {
     cv_education_translations: CMSPageTranslation[];
     cv_experience: CMSPageSingleton;
     cv_experience_translations: CMSPageTranslation[];
+    cv_extras: CMSPageSingleton;
+    cv_extras_translations: CMSPageTranslation[];
     cv_translations: CMSPageTranslation[];
     header: CMSPageSingleton;
     header_translations: CMSPageTranslation[];

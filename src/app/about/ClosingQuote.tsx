@@ -92,14 +92,23 @@ export default function ClosingQuote({ closingQuote }: Props) {
           <QuoteIcon />
         </FadeIn>
         <FadeIn delay={0.1} className="w-full max-w-3xl flex flex-col items-center gap-6 text-center">
-          <h2 className="text-2xl md:text-4xl font-semibold italic leading-snug">
+          <h2
+            className="text-2xl md:text-4xl font-semibold leading-snug"
+            style={{ fontFamily: 'var(--font-crimson-text)' }}
+          >
             &ldquo;{latin}&rdquo;
           </h2>
-          <p className="text-[24px] italic leading-snug text-white/90">
+          <p
+            className="text-[24px] leading-snug text-white/90"
+            style={{ fontFamily: 'var(--font-crimson-text)' }}
+          >
             ({translation})
           </p>
           {author && (
-            <p className="text-sm md:text-base font-medium italic tracking-wide text-white/80">
+            <p
+              className="text-2xl md:text-3xl tracking-wide text-white/90 leading-none"
+              style={{ fontFamily: 'var(--font-pinyon-script)' }}
+            >
               — {author}
             </p>
           )}
