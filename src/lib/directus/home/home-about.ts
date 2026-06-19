@@ -19,7 +19,7 @@ interface RawTranslation {
   body_1?: unknown;
   body_2?: unknown;
   btn_get_to_know_more?: unknown;
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawRow {
@@ -50,7 +50,7 @@ export async function getHomeAbout(): Promise<HomeAboutBundle> {
           'body_1',
           'body_2',
           'btn_get_to_know_more',
-          { translations: ['eyebrow', 'heading', 'body_1', 'body_2', 'btn_get_to_know_more', { language: ['code'] }] },
+          { translations: ['eyebrow', 'heading', 'body_1', 'body_2', 'btn_get_to_know_more', 'language_code'] },
         ],
       } as any),
     )) as RawRow | null;
@@ -65,7 +65,7 @@ export async function getHomeAbout(): Promise<HomeAboutBundle> {
         btnGetToKnowMore: asStr(row.btn_get_to_know_more),
       };
       for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+        const code = typeof t.language_code === 'string' ? t.language_code : null;
         if (!code || code === PRIMARY_LANG) continue;
         byLang[code] = {
           eyebrow: asStr(t.eyebrow),

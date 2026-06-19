@@ -20,7 +20,7 @@ export interface AboutBodyBundle {
 }
 
 interface RawTranslation extends Record<string, unknown> {
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawImage {
@@ -35,15 +35,15 @@ interface RawFile {
 }
 
 interface RawVideoTranslation {
-  url?: unknown;
   title?: unknown;
-  file?: unknown;
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawVideo {
   paragraph_number?: unknown;
   sort?: unknown;
+  url?: unknown;
+  file?: unknown;
   translations?: RawVideoTranslation[];
 }
 
@@ -84,31 +84,24 @@ const EMPTY_TEXT: AboutBodyText = {
 // numeric paragraph_number.
 export async function getAboutBody(): Promise<AboutBodyBundle> {
   try {
-    const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      readSingleton('about_body', {
-        fields: [
-          // `*` pulls every scalar field on the translation row, including
-          // any newly-added paragraph_N. The nested `language` is appended
-          // explicitly because `*` alone doesn't follow relations. (Note:
-          // travel-routes heading/body have moved to travel_route_map; no
-          // need to project them here anymore.)
-          { translations: ['*', { language: ['code'] }] },
-          { images: ['paragraph_number', 'sort', 'image'] },
-          {
-            videos: [
-              'paragraph_number', 'sort',
-              {
-                translations: [
-                  'url', 'title',
-                  { file: ['id', 'modified_on'] },
-                  { language: ['code'] },
-                ],
-              },
-            ],
-          },
+    // `*` pulls every scalar field on the translation row, including
+    // any newly-added paragraph_N field. `language_code` is included in
+    // the wildcard since it's a regular column on the translation row.
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const fields = [
+      { translations: ['*'] },
+      { images: ['paragraph_number', 'sort', 'image'] },
+      {
+        videos: [
+          'paragraph_number', 'sort', 'url',
+          { file: ['id', 'modified_on'] },
+          { translations: ['title', 'language_code'] },
         ],
-      } as any),
+      },
+    ] as any;
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    const row = (await directus.request(
+      readSingleton('about_body', { fields }),
     )) as RawRow | null;
 
     const byLang: Record<string, AboutBodyText> = {};
@@ -117,7 +110,7 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
 
     if (row) {
       for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+        const code = typeof t.language_code === 'string' ? t.language_code : null;
         if (!code) continue;
         byLang[code] = projectTranslation(t);
       }
@@ -140,23 +133,23 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
       for (const vid of sortedVids) {
         const n = typeof vid.paragraph_number === 'number' ? vid.paragraph_number : null;
         if (!n) continue;
+        // URL/file are on the parent video — shared across all languages. Prefer
+        // the uploaded file when set; cache-bust via modified_on so file
+        // replaces bust the browser's 30-day asset cache.
+        let url = '';
+        if (vid.file && typeof vid.file === 'object') {
+          const f = vid.file as RawFile;
+          const id = typeof f.id === 'string' ? f.id : '';
+          if (id) {
+            const v = typeof f.modified_on === 'string' ? f.modified_on : '';
+            url = v ? `${assetUrl(id)}?v=${encodeURIComponent(v)}` : assetUrl(id);
+          }
+        }
+        if (!url) url = asStr(vid.url);
         const videoByLang: Record<string, { url: string; title: string }> = {};
         for (const t of vid.translations ?? []) {
-          const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+          const code = typeof t.language_code === 'string' ? t.language_code : null;
           if (!code) continue;
-          // Prefer the uploaded file when set — gives the user a way to host
-          // the video directly. Cache-bust via modified_on so file replaces
-          // bust the browser's 30-day asset cache.
-          let url = '';
-          if (t.file && typeof t.file === 'object') {
-            const f = t.file as RawFile;
-            const id = typeof f.id === 'string' ? f.id : '';
-            if (id) {
-              const v = typeof f.modified_on === 'string' ? f.modified_on : '';
-              url = v ? `${assetUrl(id)}?v=${encodeURIComponent(v)}` : assetUrl(id);
-            }
-          }
-          if (!url) url = asStr(t.url);
           videoByLang[code] = { url, title: asStr(t.title) };
         }
         (videosByParagraph[n] ||= []).push({ byLang: videoByLang });

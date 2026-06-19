@@ -9,7 +9,7 @@ import { Move, ZoomIn, MapPin, X } from 'lucide-react';
 import { pickTranslation } from '@/lib/directus';
 import PinDetailSheet from './PinDetailSheet';
 import type { GlobeCity } from '@/lib/type';
-import type { GlobeBundle, GlobeText, MapBundle, MapText } from '@/lib/directus';
+import type { GlobeText, GlobeTextBundle, MapBundle, MapText } from '@/lib/directus';
 
 const FALLBACK_GLOBE_TEXT: GlobeText = {
   introHeading: 'A career mapped across continents.',
@@ -56,23 +56,20 @@ import {
 
 interface Props {
   cities?: GlobeCity[];
-  globe?: GlobeBundle;
+  globeText?: GlobeTextBundle;
   map?: MapBundle;
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-export default function GlobeSection({ cities = [], globe, map }: Props) {
+export default function GlobeSection({ cities = [], globeText, map }: Props) {
   const { lang } = useI18n();
 
-  // Active language → English → hardcoded fallback. An entry with an empty
-  // introHeading counts as "no text" so we still fall through. Globe drives
-  // the intro hero; Map drives all the in-canvas UI labels.
-  const langText = globe?.byLang[lang];
-  const enText = globe?.byLang['en'];
+  const langGlobe = globeText?.[lang];
+  const enGlobe = globeText?.['en'];
   const text: GlobeText =
-    (langText && langText.introHeading ? langText : null) ??
-    (enText && enText.introHeading ? enText : null) ??
+    (langGlobe && langGlobe.introHeading ? langGlobe : null) ??
+    (enGlobe && enGlobe.introHeading ? enGlobe : null) ??
     FALLBACK_GLOBE_TEXT;
 
   const langMap = map?.byLang[lang];

@@ -1,4 +1,4 @@
-import { readSingleton } from '@directus/sdk';
+import { readItems, readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from './client';
 import type { PageTexts } from '../data';
 import pageKeysConfig from '../page-keys.json';
@@ -49,8 +49,9 @@ export interface SingletonReadShape {
   byLang: Record<string, Record<string, string>>;
 }
 
-// Read a page singleton with all its translations and asset fields. Exported
-// so `site.ts`'s dictionary loader can reuse it.
+// Read a page's translation rows and (when applicable) singleton asset fields.
+// `contact` and `cv` still own a singleton parent (with an asset field set);
+// `header` and `footer` are now bare translation tables.
 export async function readPageSingleton(
   page: 'contact' | 'cv' | 'header' | 'footer',
   textFields: string[],
@@ -58,10 +59,16 @@ export async function readPageSingleton(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   extraSingletonFields: string[] = [],
 ): Promise<SingletonReadShape> {
+  if (page === 'header' || page === 'footer') {
+    return readStandaloneTranslations(`${page}_translations`, textFields);
+  }
   // Query `*` + a wildcard expansion on translations so renaming/dropping
   // a single field on the singleton never 403s the whole batch. We then
-  // pick out the fields the caller asked for client-side.
-  const fields: unknown[] = ['*', { translations: ['*', { language: ['code'] }] }];
+  // pick out the fields the caller asked for client-side. `contact` rows
+  // carry `language_code` (string); `cv` rows still use the `language` M2O.
+  const translationFields: unknown[] =
+    page === 'contact' ? ['*'] : ['*', { language: ['code'] }];
+  const fields: unknown[] = ['*', { translations: translationFields }];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const row = (await directus.request(readSingleton(page, { fields } as any))) as Record<string, unknown>;
   const assets: Record<string, string> = {};
@@ -72,8 +79,13 @@ export async function readPageSingleton(
   const byLang: Record<string, Record<string, string>> = {};
   const translations = (row.translations as Array<Record<string, unknown>>) ?? [];
   for (const t of translations) {
-    const langObj = t.language as { code?: string } | null;
-    const code = langObj && typeof langObj === 'object' ? langObj.code : null;
+    let code: string | null = null;
+    if (typeof t.language_code === 'string') {
+      code = t.language_code;
+    } else {
+      const langObj = t.language as { code?: string } | null;
+      code = langObj && typeof langObj === 'object' ? (langObj.code ?? null) : null;
+    }
     if (!code) continue;
     byLang[code] = {};
     for (const f of textFields) {
@@ -82,6 +94,26 @@ export async function readPageSingleton(
     }
   }
   return { assets, byLang };
+}
+
+async function readStandaloneTranslations(
+  collection: 'header_translations' | 'footer_translations',
+  textFields: string[],
+): Promise<SingletonReadShape> {
+  const rows = (await directus.request(
+    readItems(collection, { limit: -1, fields: ['*'] }),
+  )) as Array<Record<string, unknown>>;
+  const byLang: Record<string, Record<string, string>> = {};
+  for (const t of rows) {
+    const code = typeof t.language_code === 'string' ? t.language_code : null;
+    if (!code) continue;
+    byLang[code] = {};
+    for (const f of textFields) {
+      const v = t[f];
+      if (typeof v === 'string') byLang[code][f] = v;
+    }
+  }
+  return { assets: {}, byLang };
 }
 
 export type PageTextsBundle = Record<string, PageTexts>;

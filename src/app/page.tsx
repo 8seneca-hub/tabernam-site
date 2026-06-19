@@ -1,4 +1,4 @@
-import { getActivities, getGlobe, getHero, getHomeAbout, getHomeMarquee, getMap, getQuote } from '@/lib/directus';
+import { getActivities, getGlobeText, getHeroSlides, getHeroText, getHomeAbout, getHomeMarquee, getMap, getQuote } from '@/lib/directus';
 import HeroSection from '@/app/home/HeroSection';
 import QuoteSection from '@/app/home/QuoteSection';
 import HomeMarquee from '@/app/home/HomeMarquee';
@@ -36,12 +36,13 @@ const PERSON_JSONLD = {
 
 export default async function HomePage() {
 
-  const [activities, marqueeImages, hero, quote, globe, map, homeAbout] = await Promise.all([
+  const [activities, marqueeImages, heroSlides, heroText, quote, globeText, map, homeAbout] = await Promise.all([
     getActivities(),
     getHomeMarquee(),
-    getHero(),
+    getHeroSlides(),
+    getHeroText(),
     getQuote(),
-    getGlobe(),
+    getGlobeText(),
     getMap(),
     getHomeAbout(),
   ]);
@@ -56,11 +57,11 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(PERSON_JSONLD) }}
       />
-      <HeroSection hero={hero} />
+      <HeroSection slides={heroSlides} text={heroText} />
       <QuoteSection quote={quote} />
       <HomeAbout homeAbout={homeAbout} />
       <HomeMarquee images={marqueeImages} />
-      <GlobeSection cities={activities} globe={globe} map={map} />
+      <GlobeSection cities={activities} globeText={globeText} map={map} />
     </main>
   );
 }

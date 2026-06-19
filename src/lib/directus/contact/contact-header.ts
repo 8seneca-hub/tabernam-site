@@ -1,4 +1,4 @@
-import { readSingleton } from '@directus/sdk';
+import { readItems } from '@directus/sdk';
 import directus from '../client';
 
 export interface ContactHeaderText {
@@ -17,16 +17,12 @@ interface RawTranslation {
   heading_title?: unknown;
   subheading?: unknown;
   motto_translation?: unknown;
-  language?: { code?: string } | null;
-}
-
-interface RawRow {
-  motto_latin?: unknown;
-  motto_author?: unknown;
-  translations?: RawTranslation[];
+  language_code?: unknown;
 }
 
 const PRIMARY_LANG = 'en';
+const MOTTO_LATIN = 'Honeste lucra, nobiliter dona';
+const MOTTO_AUTHOR = 'Tibor Buček';
 
 function asStr(v: unknown): string {
   return typeof v === 'string' ? v : '';
@@ -34,43 +30,29 @@ function asStr(v: unknown): string {
 
 export async function getContactHeader(): Promise<ContactHeaderBundle> {
   try {
-    const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      readSingleton('contact_header', {
-        fields: [
-          'motto_latin', 'motto_author',
-          {
-            translations: [
-              'heading_title', 'subheading', 'motto_translation',
-              { language: ['code'] },
-            ],
-          },
-        ],
-      } as any),
-    )) as RawRow | null;
+    const rows = (await directus.request(
+      readItems('contact_header_translations', {
+        limit: -1,
+        fields: ['heading_title', 'subheading', 'motto_translation', 'language_code'],
+      }),
+    )) as RawTranslation[];
 
     const byLang: Record<string, ContactHeaderText> = {};
-    let mottoLatin = '';
-    let mottoAuthor = '';
-    if (row) {
-      for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
-        if (!code) continue;
-        byLang[code] = {
-          headingTitle: asStr(t.heading_title),
-          subheading: asStr(t.subheading),
-          mottoTranslation: asStr(t.motto_translation),
-        };
-      }
-      mottoLatin = asStr(row.motto_latin);
-      mottoAuthor = asStr(row.motto_author);
+    for (const t of rows) {
+      const code = typeof t.language_code === 'string' ? t.language_code : null;
+      if (!code) continue;
+      byLang[code] = {
+        headingTitle: asStr(t.heading_title),
+        subheading: asStr(t.subheading),
+        mottoTranslation: asStr(t.motto_translation),
+      };
     }
     if (!byLang[PRIMARY_LANG]) {
       byLang[PRIMARY_LANG] = { headingTitle: '', subheading: '', mottoTranslation: '' };
     }
-    return { byLang, mottoLatin, mottoAuthor };
+    return { byLang, mottoLatin: MOTTO_LATIN, mottoAuthor: MOTTO_AUTHOR };
   } catch (e) {
-    console.warn('Directus fetch failed for contact_header, using fallback:', e);
-    return { byLang: {}, mottoLatin: '', mottoAuthor: '' };
+    console.warn('Directus fetch failed for contact_header_translations, using fallback:', e);
+    return { byLang: {}, mottoLatin: MOTTO_LATIN, mottoAuthor: MOTTO_AUTHOR };
   }
 }

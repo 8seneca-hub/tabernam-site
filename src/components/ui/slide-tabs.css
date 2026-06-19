@@ -34,7 +34,7 @@
   flex-shrink: 0;
   border: none;
   cursor: pointer;
-  background: transparent;
+  background: var(--color-button);
   font-family: inherit;
   font-size: 16px;
   font-weight: 500;
@@ -52,7 +52,6 @@
 @media (min-width: 768px) {
   .slide-tabs-btn {
     max-width: none;
-    background: var(--color-button);
   }
 }
 

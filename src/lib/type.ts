@@ -12,10 +12,11 @@ export interface CMSActivity {
 export interface CMSActivityTranslation {
     id: number;
     activities_id: number;
-    language: number | CMSLanguage | null;
+    language_code: string | null;
     name: string;
     business: string;
     description: string;
+    slug: string | null;
 }
 
 export interface CMSActivityFile {
@@ -27,7 +28,6 @@ export interface CMSActivityFile {
 
 export interface CMSHeroSlide {
     id: number;
-    hero_id: number;
     image: string;
     alt: string;
     sort: number;
@@ -59,7 +59,7 @@ export interface CMSTravelRoutes {
 export interface CMSTravelRoutesTranslation {
     id: number;
     travel_routes_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
     heading: string;
     body: string;
 }
@@ -67,7 +67,8 @@ export interface CMSTravelRoutesTranslation {
 export interface CMSTravelRouteMapTranslation {
     id: number;
     travel_route_map_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
+    slug: string | null;
     name: string;
     /** Section-level heading. Read only from the first sorted map row. */
     heading: string;
@@ -137,9 +138,9 @@ export interface CMSSchema {
     // The following are Directus singletons (one row each, queried via
     // readSingleton). Schema-wise we type them as the row object directly so
     // SDK type narrowing picks the singleton overloads.
-    hero: CMSHero;
-    hero_translations: CMSHeroTranslation[];
     hero_slides: CMSHeroSlide[];
+    hero_translations: CMSHeroTranslation[];
+    globe_translations: CMSGlobeTranslation[];
     home_marquee: CMSHomeMarquee[];
     travel_route_map: CMSTravelRouteMap[];
     travel_route_map_translations: CMSTravelRouteMapTranslation[];
@@ -147,8 +148,6 @@ export interface CMSSchema {
     travel_routes_translations: CMSTravelRoutesTranslation[];
     quote: CMSQuote;
     quote_translations: CMSQuoteTranslation[];
-    globe: CMSGlobe;
-    globe_translations: CMSGlobeTranslation[];
     map: CMSMap;
     map_translations: CMSMapTranslation[];
     home_about: CMSHomeAbout;
@@ -162,41 +161,24 @@ export interface CMSSchema {
     about_body_videos_translations: CMSAboutBodyVideoTranslation[];
     closing_quote: CMSClosingQuote;
     closing_quote_translations: CMSClosingQuoteTranslation[];
-    contact_header: CMSContactHeader;
     contact_header_translations: CMSContactHeaderTranslation[];
     contact: CMSContact;
     contact_translations: CMSPageTranslation[];
     contact_files: CMSContactFile[];
     cv: CMSPageSingleton;
-    cv_education: CMSPageSingleton;
     cv_education_translations: CMSPageTranslation[];
-    cv_experience: CMSPageSingleton;
     cv_experience_translations: CMSPageTranslation[];
     cv_extras: CMSPageSingleton;
     cv_extras_translations: CMSPageTranslation[];
     cv_translations: CMSPageTranslation[];
-    header: CMSPageSingleton;
     header_translations: CMSPageTranslation[];
-    footer: CMSPageSingleton;
     footer_translations: CMSPageTranslation[];
     languages: CMSLanguage[];
     site_settings: CMSSiteSettings;
 }
 
-export interface CMSHero {
-    id: number;
-    title: string;
-    body: string;
-    sort: number | null;
-    translations: CMSHeroTranslation[];
-    slides: CMSHeroSlide[];
-}
-
 export interface CMSQuote {
     id: number;
-    title_accent: string;
-    title_rest: string;
-    primary: string;
     motto_latin: string;
     motto_author: string;
     motto_translation: string;
@@ -208,17 +190,11 @@ export interface CMSQuote {
 export interface CMSQuoteTranslation {
     id: number;
     quote_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
     title_accent: string;
     title_rest: string;
     primary: string;
     motto_translation: string;
-}
-
-interface CMSGlobeFields {
-    intro_heading: string;
-    intro_body: string;
-    intro_cta: string;
 }
 
 interface CMSMapFields {
@@ -246,19 +222,7 @@ export interface CMSMap extends CMSMapFields {
 export interface CMSMapTranslation extends CMSMapFields {
     id: number;
     map_id: number;
-    language: number | CMSLanguage | { code: string } | null;
-}
-
-export interface CMSGlobe extends CMSGlobeFields {
-    id: number;
-    sort: number | null;
-    translations: CMSGlobeTranslation[];
-}
-
-export interface CMSGlobeTranslation extends CMSGlobeFields {
-    id: number;
-    globe_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
 }
 
 interface CMSHomeAboutFields {
@@ -278,7 +242,7 @@ export interface CMSHomeAbout extends CMSHomeAboutFields {
 export interface CMSHomeAboutTranslation extends CMSHomeAboutFields {
     id: number;
     home_about_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
 }
 
 interface CMSAboutHeaderFields {
@@ -290,19 +254,16 @@ interface CMSAboutHeaderFields {
     motto_translation: string;
 }
 
-export interface CMSAboutHeader extends CMSAboutHeaderFields {
+export interface CMSAboutHeader {
     id: number;
     image: string | null;
-    motto_latin: string;
-    motto_author: string;
-    sort: number | null;
     translations: CMSAboutHeaderTranslation[];
 }
 
 export interface CMSAboutHeaderTranslation extends CMSAboutHeaderFields {
     id: number;
     about_header_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
 }
 
 interface CMSAboutBodyTranslationFields {
@@ -322,7 +283,7 @@ export interface CMSAboutBody {
 export interface CMSAboutBodyTranslation extends CMSAboutBodyTranslationFields {
     id: number;
     about_body_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
 }
 
 export interface CMSAboutBodyImage {
@@ -338,20 +299,21 @@ export interface CMSAboutBodyVideo {
     about_body_id: number;
     paragraph_number: number;
     sort: number | null;
+    /** YouTube / external URL — shared across all languages. */
+    url: string | null;
+    /** Uploaded file UUID — shared across all languages (takes precedence over url). */
+    file: string | null;
     translations: CMSAboutBodyVideoTranslation[];
 }
 
 export interface CMSAboutBodyVideoTranslation {
     id: number;
     about_body_videos_id: number;
-    language: number | CMSLanguage | { code: string } | null;
-    url: string;
+    language_code: string | null;
     title: string;
-    file: string | null;
 }
 
 interface CMSClosingQuoteTranslationFields {
-    quote: string;
     motto_translation: string;
     cta: string;
 }
@@ -368,7 +330,7 @@ export interface CMSClosingQuote {
 export interface CMSClosingQuoteTranslation extends CMSClosingQuoteTranslationFields {
     id: number;
     closing_quote_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
 }
 
 interface CMSContactHeaderTranslationFields {
@@ -377,26 +339,24 @@ interface CMSContactHeaderTranslationFields {
     motto_translation: string;
 }
 
-export interface CMSContactHeader {
-    id: number;
-    motto_latin: string;
-    motto_author: string;
-    sort: number | null;
-    translations: CMSContactHeaderTranslation[];
-}
-
 export interface CMSContactHeaderTranslation extends CMSContactHeaderTranslationFields {
     id: number;
-    contact_header_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
 }
 
 export interface CMSHeroTranslation {
     id: number;
-    hero_id: number;
-    language: number | CMSLanguage | { code: string } | null;
+    language_code: string | null;
     title: string;
     body: string;
+}
+
+export interface CMSGlobeTranslation {
+    id: number;
+    language_code: string | null;
+    intro_heading: string;
+    intro_body: string;
+    intro_cta: string;
 }
 
 export interface CMSSiteSettings {

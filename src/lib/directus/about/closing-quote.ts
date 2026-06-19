@@ -2,7 +2,6 @@ import { readSingleton } from '@directus/sdk';
 import directus, { assetUrl } from '../client';
 
 export interface ClosingQuoteText {
-  quote: string;
   mottoTranslation: string;
   cta: string;
 }
@@ -15,10 +14,9 @@ export interface ClosingQuoteBundle {
 }
 
 interface RawTranslation {
-  quote?: unknown;
   motto_translation?: unknown;
   cta?: unknown;
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawRow {
@@ -36,25 +34,23 @@ function asStr(v: unknown): string {
 
 function projectTranslation(src: RawTranslation): ClosingQuoteText {
   return {
-    quote: asStr(src.quote),
     mottoTranslation: asStr(src.motto_translation),
     cta: asStr(src.cta),
   };
 }
 
 // /about page closing-quote content. Latin motto + author + background live
-// on the `closing_quote` parent; per-language motto translation, CTA, and
-// long-form quote live on `closing_quote_translations`.
+// on the `closing_quote` parent; per-language motto translation and CTA live
+// on `closing_quote_translations`.
 export async function getClosingQuote(): Promise<ClosingQuoteBundle> {
   try {
     const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       readSingleton('closing_quote', {
         fields: [
           'background', 'motto_latin', 'motto_author',
-          { translations: ['quote', 'motto_translation', 'cta', { language: ['code'] }] },
+          { translations: ['motto_translation', 'cta', 'language_code'] },
         ],
-      } as any),
+      }),
     )) as RawRow | null;
 
     const byLang: Record<string, ClosingQuoteText> = {};
@@ -63,7 +59,7 @@ export async function getClosingQuote(): Promise<ClosingQuoteBundle> {
     let mottoAuthor = '';
     if (row) {
       for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+        const code = typeof t.language_code === 'string' ? t.language_code : null;
         if (!code) continue;
         byLang[code] = projectTranslation(t);
       }
@@ -72,7 +68,7 @@ export async function getClosingQuote(): Promise<ClosingQuoteBundle> {
       mottoAuthor = asStr(row.motto_author);
     }
     if (!byLang[PRIMARY_LANG]) {
-      byLang[PRIMARY_LANG] = { quote: '', mottoTranslation: '', cta: '' };
+      byLang[PRIMARY_LANG] = { mottoTranslation: '', cta: '' };
     }
     return { byLang, background, mottoLatin, mottoAuthor };
   } catch (e) {

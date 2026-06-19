@@ -1,4 +1,4 @@
-import { readSingleton } from '@directus/sdk';
+import { readItems } from '@directus/sdk';
 import directus, { assetUrl } from '../client';
 import type { HeroSlide } from '@/lib/data';
 
@@ -7,72 +7,62 @@ export interface HeroText {
   body: string;
 }
 
-export interface HeroBundle {
-  byLang: Record<string, HeroText>;
-  slides: HeroSlide[];
-}
-
-interface RawTranslation {
-  title?: unknown;
-  body?: unknown;
-  language?: { code?: string } | null;
-}
+export type HeroTextBundle = Record<string, HeroText>;
 
 interface RawSlide {
   image?: unknown;
   alt?: unknown;
 }
 
-interface RawHeroRow {
+interface RawHeroTranslation {
   title?: unknown;
   body?: unknown;
-  translations?: RawTranslation[];
-  slides?: RawSlide[];
+  language_code?: unknown;
 }
 
-// Parent row carries the canonical (English) title + body, plus its slides.
-// Non-English text lives in `hero_translations`.
-const PRIMARY_LANG = 'en';
-
-export async function getHero(): Promise<HeroBundle> {
+export async function getHeroSlides(): Promise<HeroSlide[]> {
   try {
-    const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      readSingleton('hero', {
-        fields: [
-          'title',
-          'body',
-          { translations: ['title', 'body', { language: ['code'] }] },
-          { slides: ['image', 'alt'] },
-        ],
-      } as any),
-    )) as RawHeroRow | null;
+    const items = (await directus.request(
+      readItems('hero_slides', {
+        sort: ['sort'],
+        limit: -1,
+        fields: ['image', 'alt'],
+      }),
+    )) as RawSlide[];
 
-    const byLang: Record<string, HeroText> = {};
-    let slides: HeroSlide[] = [];
-    if (row) {
-      byLang[PRIMARY_LANG] = {
-        title: typeof row.title === 'string' ? row.title : '',
-        body: typeof row.body === 'string' ? row.body : '',
-      };
-      for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
-        if (!code || code === PRIMARY_LANG) continue;
-        byLang[code] = {
-          title: typeof t.title === 'string' ? t.title : '',
-          body: typeof t.body === 'string' ? t.body : '',
-        };
-      }
-      slides = (row.slides ?? [])
-        .filter((s) => typeof s.image === 'string' && s.image)
-        .map((s) => ({
-          image: assetUrl(s.image as string),
-          alt: typeof s.alt === 'string' ? s.alt : '',
-        }));
-    }
-    return { byLang, slides };
+    return items
+      .filter((s) => typeof s.image === 'string' && s.image)
+      .map((s) => ({
+        image: assetUrl(s.image as string),
+        alt: typeof s.alt === 'string' ? s.alt : '',
+      }));
   } catch (e) {
-    console.warn('Directus fetch failed for hero, using fallback:', e);
-    return { byLang: {}, slides: [] };
+    console.warn('Directus fetch failed for hero_slides, using fallback:', e);
+    return [];
+  }
+}
+
+export async function getHeroText(): Promise<HeroTextBundle> {
+  try {
+    const items = (await directus.request(
+      readItems('hero_translations', {
+        limit: -1,
+        fields: ['title', 'body', 'language_code'],
+      }),
+    )) as RawHeroTranslation[];
+
+    const byLang: HeroTextBundle = {};
+    for (const t of items) {
+      const code = typeof t.language_code === 'string' ? t.language_code : null;
+      if (!code) continue;
+      byLang[code] = {
+        title: typeof t.title === 'string' ? t.title : '',
+        body: typeof t.body === 'string' ? t.body : '',
+      };
+    }
+    return byLang;
+  } catch (e) {
+    console.warn('Directus fetch failed for hero_translations, using fallback:', e);
+    return {};
   }
 }

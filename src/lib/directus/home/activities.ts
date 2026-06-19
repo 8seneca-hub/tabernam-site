@@ -26,7 +26,7 @@ export async function getActivities(): Promise<GlobeCity[]> {
           'lat',
           'lng',
           'altitude',
-          { translations: ['name', 'business', 'description', { language: ['code'] }] },
+          { translations: ['name', 'business', 'description', 'language_code'] },
           { photos: ['directus_files_id'] },
         ],
       }),
@@ -38,7 +38,7 @@ export async function getActivities(): Promise<GlobeCity[]> {
       altitude: a.altitude,
       translations: (a.translations || [])
         .map((t) => {
-          const code = typeof t.language === 'object' && t.language ? t.language.code : null;
+          const code = typeof t.language_code === 'string' ? t.language_code : null;
           if (!code) return null;
           return {
             language: code,

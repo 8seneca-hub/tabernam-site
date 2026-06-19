@@ -20,12 +20,12 @@ interface RawFile {
 interface RawTranslation {
   heading?: unknown;
   body?: unknown;
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawMapTranslation {
   name?: unknown;
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawMap {
@@ -64,26 +64,26 @@ function fileUrl(file: unknown): string {
 // section text (heading/body per language) and the list of region maps.
 export async function getTravelRoutes(): Promise<TravelRoutesBundle> {
   try {
-    const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      readSingleton('travel_routes', {
-        fields: [
-          { translations: ['heading', 'body', { language: ['code'] }] },
-          {
-            maps: [
-              'slug', 'sort',
-              { image: ['id', 'modified_on'] },
-              { translations: ['name', { language: ['code'] }] },
-            ],
-          },
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const fields = [
+      { translations: ['heading', 'body', 'language_code'] },
+      {
+        maps: [
+          'slug', 'sort',
+          { image: ['id', 'modified_on'] },
+          { translations: ['name', 'language_code'] },
         ],
-      } as any),
+      },
+    ] as any;
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    const row = (await directus.request(
+      readSingleton('travel_routes', { fields }),
     )) as RawRow | null;
 
     const byLang: Record<string, TravelRoutesText> = {};
     if (row) {
       for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+        const code = typeof t.language_code === 'string' ? t.language_code : null;
         if (!code) continue;
         byLang[code] = { heading: asStr(t.heading), body: asStr(t.body) };
       }
@@ -102,7 +102,7 @@ export async function getTravelRoutes(): Promise<TravelRoutesBundle> {
         image: fileUrl(m.image),
         translations: (m.translations || [])
           .map((t) => {
-            const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+            const code = typeof t.language_code === 'string' ? t.language_code : null;
             const name = asStr(t.name);
             if (!code || !name) return null;
             return { language: code, name, heading: '', body: '' };

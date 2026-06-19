@@ -6,7 +6,7 @@ import MottoQuote from '@/components/layout/MottoQuote';
 import { useI18n } from '@/app/hook/useI18n';
 import type { QuoteBundle } from '@/lib/directus';
 
-const FALLBACK_EN = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
+const FALLBACK_BODY = 'Trade is not a transaction. It is a relationship — built across decades, sustained through trust, and measured by what endures long after the contract is signed.';
 const FALLBACK_TITLE_ACCENT = 'Build on trust,';
 const FALLBACK_TITLE_REST = ' not transactions';
 
@@ -27,17 +27,12 @@ export default function QuoteSection({ quote }: Props) {
   const imageUrl = quote?.image;
   const { lang } = useI18n();
 
-  // Active language → English → hardcoded constants.
   const langText = quote?.byLang[lang];
   const enText = quote?.byLang['en'];
-  const text =
-    (langText && langText.primary ? langText : null) ??
-    (enText && enText.primary ? enText : null) ??
-    { titleAccent: FALLBACK_TITLE_ACCENT, titleRest: FALLBACK_TITLE_REST, primary: FALLBACK_EN, mottoTranslation: '' };
-
-  const body = text.primary;
-  const titleAccent = text.titleAccent;
-  const titleRest = text.titleRest;
+  const titleAccent = langText?.titleAccent || enText?.titleAccent || FALLBACK_TITLE_ACCENT;
+  const titleRest = langText?.titleRest || enText?.titleRest || FALLBACK_TITLE_REST;
+  const body = langText?.primary || enText?.primary || FALLBACK_BODY;
+  const mottoTranslation = langText?.mottoTranslation || enText?.mottoTranslation || '';
 
   return (
     <section className="quote w-full px-[60px] py-[150px] max-md:px-[16px] max-[1025px]:py-[40px]">
@@ -81,7 +76,7 @@ export default function QuoteSection({ quote }: Props) {
               className="w-full h-auto"
             />
           </div>
-          <MottoQuote latin={quote?.mottoLatin} translation={text.mottoTranslation} author={quote?.mottoAuthor} />
+          <MottoQuote latin={quote?.mottoLatin} translation={mottoTranslation} author={quote?.mottoAuthor} />
         </motion.div>
       </div>
     </section>

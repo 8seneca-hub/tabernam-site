@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import type { HeroSlide, HeroBundle } from '@/lib/directus';
+import type { HeroSlide } from '@/lib/data';
+import type { HeroTextBundle } from '@/lib/directus';
 import { useI18n } from '@/app/hook/useI18n';
 
 interface Props {
-  hero?: HeroBundle;
+  slides?: HeroSlide[];
+  text?: HeroTextBundle;
 }
 
 const FALLBACK_SLIDES: HeroSlide[] = [
@@ -31,14 +33,14 @@ const fadeUp = {
   }),
 };
 
-export default function HeroSection({ hero }: Props) {
+export default function HeroSection({ slides, text }: Props) {
   const { lang } = useI18n();
-  const items = hero?.slides && hero.slides.length > 0 ? hero.slides : FALLBACK_SLIDES;
+  const items = slides && slides.length > 0 ? slides : FALLBACK_SLIDES;
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const langText = hero?.byLang[lang];
-  const enText = hero?.byLang['en'];
-  const text =
+  const langText = text?.[lang];
+  const enText = text?.['en'];
+  const resolved =
     (langText && langText.title ? langText : null) ??
     (enText && enText.title ? enText : null) ??
     FALLBACK_TEXT;
@@ -63,7 +65,7 @@ export default function HeroSection({ hero }: Props) {
               animate="visible"
               variants={fadeUp}
             >
-              {text.title}
+              {resolved.title}
             </motion.h1>
             <motion.p
               className="text-[28px] leading-[32px] max-md:text-[24px] max-md:leading-[28px] tracking-[-0.03em] font-medium text-text w-0 min-w-full"
@@ -72,7 +74,7 @@ export default function HeroSection({ hero }: Props) {
               animate="visible"
               variants={fadeUp}
             >
-              {text.body}
+              {resolved.body}
             </motion.p>
           </div>
         </div>

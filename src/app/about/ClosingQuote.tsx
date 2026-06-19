@@ -12,7 +12,7 @@ const FALLBACK_AUTHOR = 'Tibor Buček';
 const FALLBACK_TRANSLATION = 'Earn honestly, give generously';
 const FALLBACK_BACKGROUND = '/carousel/photo-12.jpg';
 
-const EMPTY_TEXT: ClosingQuoteText = { quote: '', mottoTranslation: '', cta: '' };
+const EMPTY_TEXT: ClosingQuoteText = { mottoTranslation: '', cta: '' };
 
 const QuoteIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="w-14 h-14 opacity-40">

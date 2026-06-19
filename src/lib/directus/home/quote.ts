@@ -20,13 +20,10 @@ interface RawTranslation {
   title_rest?: unknown;
   primary?: unknown;
   motto_translation?: unknown;
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawQuoteRow {
-  title_accent?: unknown;
-  title_rest?: unknown;
-  primary?: unknown;
   motto_translation?: unknown;
   motto_latin?: unknown;
   motto_author?: unknown;
@@ -34,37 +31,30 @@ interface RawQuoteRow {
   translations?: RawTranslation[];
 }
 
-const PRIMARY_LANG = 'en';
-
 function asStr(v: unknown): string {
   return typeof v === 'string' ? v : '';
 }
 
-// Quote section content (home page). English canonical lives on the `quote`
-// singleton; non-English translations live on `quote_translations`. Motto
-// fields (latin, author, per-language translation) are independent from any
-// other section's motto.
 export async function getQuote(): Promise<QuoteBundle> {
   try {
     const row = (await directus.request(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       readSingleton('quote', {
         fields: [
-          'title_accent',
-          'title_rest',
-          'primary',
           'motto_translation',
           'motto_latin',
           'motto_author',
           'image',
           {
             translations: [
-              'title_accent', 'title_rest', 'primary', 'motto_translation',
-              { language: ['code'] },
+              'title_accent',
+              'title_rest',
+              'primary',
+              'motto_translation',
+              'language_code',
             ],
           },
         ],
-      } as any),
+      }),
     )) as RawQuoteRow | null;
 
     const byLang: Record<string, QuoteText> = {};
@@ -72,15 +62,9 @@ export async function getQuote(): Promise<QuoteBundle> {
     let mottoLatin = '';
     let mottoAuthor = '';
     if (row) {
-      byLang[PRIMARY_LANG] = {
-        titleAccent: asStr(row.title_accent),
-        titleRest: asStr(row.title_rest),
-        primary: asStr(row.primary),
-        mottoTranslation: asStr(row.motto_translation),
-      };
       for (const t of row.translations ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
-        if (!code || code === PRIMARY_LANG) continue;
+        const code = typeof t.language_code === 'string' ? t.language_code : null;
+        if (!code) continue;
         byLang[code] = {
           titleAccent: asStr(t.title_accent),
           titleRest: asStr(t.title_rest),

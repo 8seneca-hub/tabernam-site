@@ -51,7 +51,7 @@ function project(src: Record<string, unknown>): MapText {
 }
 
 interface RawTranslation extends Record<string, unknown> {
-  language?: { code?: string } | null;
+  language_code?: unknown;
 }
 
 interface RawMapRow extends Record<string, unknown> {
@@ -63,7 +63,7 @@ export async function getMap(): Promise<MapBundle> {
     const apiFields = FIELD_TO_TS.map(([, apiKey]) => apiKey);
     const queryFields = [
       ...apiFields,
-      { translations: [...apiFields, { language: ['code'] }] },
+      { translations: [...apiFields, 'language_code'] },
     ];
     const row = (await directus.request(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,7 +74,7 @@ export async function getMap(): Promise<MapBundle> {
     if (row) {
       byLang[PRIMARY_LANG] = project(row);
       for (const t of (row.translations as RawTranslation[] | undefined) ?? []) {
-        const code = t.language && typeof t.language === 'object' ? t.language.code : null;
+        const code = typeof t.language_code === 'string' ? t.language_code : null;
         if (!code || code === PRIMARY_LANG) continue;
         byLang[code] = project(t);
       }
