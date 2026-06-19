@@ -63,12 +63,9 @@ export async function readPageSingleton(
     return readStandaloneTranslations(`${page}_translations`, textFields);
   }
   // Query `*` + a wildcard expansion on translations so renaming/dropping
-  // a single field on the singleton never 403s the whole batch. We then
-  // pick out the fields the caller asked for client-side. `contact` rows
-  // carry `language_code` (string); `cv` rows still use the `language` M2O.
-  const translationFields: unknown[] =
-    page === 'contact' ? ['*'] : ['*', { language: ['code'] }];
-  const fields: unknown[] = ['*', { translations: translationFields }];
+  // a single field on the singleton never 403s the whole batch. `*` includes
+  // the `language_code` column on every translation row.
+  const fields: unknown[] = ['*', { translations: ['*'] }];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const row = (await directus.request(readSingleton(page, { fields } as any))) as Record<string, unknown>;
   const assets: Record<string, string> = {};
@@ -79,13 +76,7 @@ export async function readPageSingleton(
   const byLang: Record<string, Record<string, string>> = {};
   const translations = (row.translations as Array<Record<string, unknown>>) ?? [];
   for (const t of translations) {
-    let code: string | null = null;
-    if (typeof t.language_code === 'string') {
-      code = t.language_code;
-    } else {
-      const langObj = t.language as { code?: string } | null;
-      code = langObj && typeof langObj === 'object' ? (langObj.code ?? null) : null;
-    }
+    const code = typeof t.language_code === 'string' ? t.language_code : null;
     if (!code) continue;
     byLang[code] = {};
     for (const f of textFields) {
