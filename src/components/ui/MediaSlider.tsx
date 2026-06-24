@@ -7,16 +7,17 @@ import VideoCard from './VideoCard';
 
 export type MediaSlide =
   | { type: 'image'; src: string; alt?: string }
-  | { type: 'video'; url: string; title?: string };
+  | { type: 'video'; url: string; title?: string; chinaUrl?: string };
 
 interface Props {
   slides: MediaSlide[];
   className?: string;
   /** Tailwind aspect utility applied to each slide. Default `aspect-[16/9]`. */
   aspect?: string;
+  useChina?: boolean;
 }
 
-export default function MediaSlider({ slides, className = '', aspect = 'aspect-[16/9]' }: Props) {
+export default function MediaSlider({ slides, className = '', aspect = 'aspect-[16/9]', useChina = false }: Props) {
   const [index, setIndex] = useState(0);
   if (slides.length === 0) return null;
   const last = slides.length - 1;
@@ -42,6 +43,8 @@ export default function MediaSlider({ slides, className = '', aspect = 'aspect-[
                   <VideoCard
                     key={isActive ? 'active' : 'idle'}
                     videoUrl={slide.url}
+                    chinaUrl={slide.chinaUrl}
+                    useChina={useChina}
                     title={slide.title}
                     className="w-full h-full"
                   />

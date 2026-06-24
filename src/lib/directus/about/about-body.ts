@@ -7,8 +7,8 @@ export interface AboutBodyText {
 }
 
 export interface AboutBodyVideo {
-  /** Per-language { url, title }. */
-  byLang: Record<string, { url: string; title: string }>;
+  /** Per-language { url, title, chinaUrl? }. chinaUrl is shared across languages. */
+  byLang: Record<string, { url: string; title: string; chinaUrl?: string }>;
 }
 
 export interface AboutBodyBundle {
@@ -43,6 +43,7 @@ interface RawVideo {
   paragraph_number?: unknown;
   sort?: unknown;
   url?: unknown;
+  china_url?: unknown;
   file?: unknown;
   translations?: RawVideoTranslation[];
 }
@@ -93,7 +94,7 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
       { images: ['paragraph_number', 'sort', 'image'] },
       {
         videos: [
-          'paragraph_number', 'sort', 'url',
+          'paragraph_number', 'sort', 'url', 'china_url',
           { file: ['id', 'modified_on'] },
           { translations: ['title', 'language_code'] },
         ],
@@ -146,11 +147,12 @@ export async function getAboutBody(): Promise<AboutBodyBundle> {
           }
         }
         if (!url) url = asStr(vid.url);
-        const videoByLang: Record<string, { url: string; title: string }> = {};
+        const chinaUrl = asStr(vid.china_url) || undefined;
+        const videoByLang: Record<string, { url: string; title: string; chinaUrl?: string }> = {};
         for (const t of vid.translations ?? []) {
           const code = typeof t.language_code === 'string' ? t.language_code : null;
           if (!code) continue;
-          videoByLang[code] = { url, title: asStr(t.title) };
+          videoByLang[code] = { url, title: asStr(t.title), chinaUrl };
         }
         (videosByParagraph[n] ||= []).push({ byLang: videoByLang });
       }

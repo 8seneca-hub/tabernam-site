@@ -1,12 +1,14 @@
 import { getAboutBody, getAboutHeader, getClosingQuote, getTravelRoutes } from '@/lib/directus';
+import { isChinaVisitor } from '@/lib/geo';
 import AboutContent from './AboutContent';
 
 export default async function AboutPage() {
-  const [travelRoutes, aboutHeader, aboutBody, closingQuote] = await Promise.all([
+  const [travelRoutes, aboutHeader, aboutBody, closingQuote, isChina] = await Promise.all([
     getTravelRoutes(),
     getAboutHeader(),
     getAboutBody(),
     getClosingQuote(),
+    isChinaVisitor(),
   ]);
   return (
     <AboutContent
@@ -14,6 +16,7 @@ export default async function AboutPage() {
       aboutBody={aboutBody}
       closingQuote={closingQuote}
       travelRoutes={travelRoutes}
+      isChina={isChina}
     />
   );
 }

@@ -14,6 +14,7 @@ interface Props {
   aboutBody: AboutBodyBundle;
   closingQuote: ClosingQuoteBundle;
   travelRoutes: TravelRoutesBundle;
+  isChina?: boolean;
 }
 
 const EMPTY_HEADER: AboutHeaderText = {
@@ -29,8 +30,10 @@ const EMPTY_BODY: AboutBodyText = {
   paragraphs: {},
 };
 
-export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRoutes }: Props) {
+export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRoutes, isChina = false }: Props) {
   const { lang } = useI18n();
+  const langLc = lang.toLowerCase();
+  const useChina = isChina || langLc === 'cn' || langLc.startsWith('zh');
 
   // Header: active language → English → hardcoded fallback.
   const langHeader = aboutHeader.byLang[lang];
@@ -51,13 +54,15 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
     EMPTY_BODY;
 
   // Pull the videos for the current language (each video's `byLang` carries
-  // its own per-language URL + title).
-  function pickVideo(v: { byLang: Record<string, { url: string; title: string }> }) {
-    return v.byLang[lang] ?? v.byLang['en'] ?? { url: '', title: '' };
+  // its own per-language URL + title; chinaUrl is shared across languages).
+  function pickVideo(v: { byLang: Record<string, { url: string; title: string; chinaUrl?: string }> }) {
+    return v.byLang[lang] ?? v.byLang['en'] ?? { url: '', title: '', chinaUrl: undefined };
   }
-  const videosByParagraph: Record<number, Array<{ url: string; title: string }>> = {};
+  const videosByParagraph: Record<number, Array<{ url: string; title: string; chinaUrl?: string }>> = {};
   for (const [k, vids] of Object.entries(aboutBody.videosByParagraph)) {
-    videosByParagraph[Number(k)] = vids.map(pickVideo).filter((v) => v.url);
+    videosByParagraph[Number(k)] = vids
+      .map(pickVideo)
+      .filter((v) => (useChina ? v.chinaUrl || v.url : v.url));
   }
 
   // Dynamic paragraph slots — walk every N that has *any* content (text,
@@ -104,6 +109,7 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
         blocks={blocks}
         travelRoutes={travelRoutes}
         body={''}
+        useChina={useChina}
       />
       <ClosingQuote closingQuote={closingQuote} />
     </main>

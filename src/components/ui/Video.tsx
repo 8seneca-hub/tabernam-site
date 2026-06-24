@@ -5,6 +5,8 @@ import Image from './Image';
 
 interface Props {
   videoUrl?: string;
+  chinaUrl?: string;
+  useChina?: boolean;
   thumbnail?: string;
   className?: string;
   children?: ReactNode;
@@ -13,9 +15,6 @@ interface Props {
 
 function getYouTubeId(url: string): string | null {
   if (!url) return null;
-  // The URL constructor requires a scheme. Editors often paste
-  // `youtube.com/watch?v=...` or `www.youtube.com/...` without one, so
-  // assume https:// when missing instead of throwing.
   const withScheme = /^https?:\/\//i.test(url) ? url : `https://${url}`;
   try {
     const u = new URL(withScheme);
@@ -33,26 +32,47 @@ function getYouTubeId(url: string): string | null {
   return null;
 }
 
+function getBilibiliId(url: string): string | null {
+  if (!url) return null;
+  const withScheme = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  try {
+    const u = new URL(withScheme);
+    if (!/(^|\.)bilibili\.com$/.test(u.hostname) && u.hostname !== 'b23.tv') return null;
+    const parts = u.pathname.split('/').filter(Boolean);
+    const videoIdx = parts.indexOf('video');
+    if (videoIdx !== -1 && parts[videoIdx + 1]) return parts[videoIdx + 1];
+    if (parts[0] && /^BV[\w]+$/i.test(parts[0])) return parts[0];
+  } catch {
+    // fall through
+  }
+  return null;
+}
+
 export default function Video({
   videoUrl,
+  chinaUrl,
+  useChina = false,
   thumbnail,
   className = '',
   children,
   title = 'Video',
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const videoId = videoUrl ? getYouTubeId(videoUrl) : null;
+
+  const activeUrl = useChina && chinaUrl ? chinaUrl : videoUrl;
+  const bilibiliId = activeUrl ? getBilibiliId(activeUrl) : null;
+  const youtubeId = activeUrl && !bilibiliId ? getYouTubeId(activeUrl) : null;
 
   const initialSrc = thumbnail
     ? thumbnail
-    : videoId
-    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+    : youtubeId
+    ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
     : null;
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(initialSrc);
 
   useEffect(() => {
-    if (thumbnail || !videoId) return;
-    const maxUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    if (thumbnail || !youtubeId) return;
+    const maxUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
     const probe = new window.Image();
     probe.onload = () => {
       if (probe.naturalWidth >= 200) setThumbnailSrc(maxUrl);
@@ -61,13 +81,13 @@ export default function Video({
     return () => {
       probe.onload = null;
     };
-  }, [thumbnail, videoId]);
+  }, [thumbnail, youtubeId]);
 
-  if (videoUrl && !videoId) {
+  if (activeUrl && !youtubeId && !bilibiliId) {
     return (
       <div className={`relative overflow-hidden bg-black ${className}`.trim()}>
         <video
-          src={videoUrl}
+          src={activeUrl}
           controls
           playsInline
           poster={thumbnail}
@@ -79,12 +99,12 @@ export default function Video({
     );
   }
 
-  if (isPlaying && videoId) {
+  if (isPlaying && youtubeId) {
     return (
       <div className={`relative overflow-hidden ${className}`.trim()}>
         <iframe
           className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -93,20 +113,38 @@ export default function Video({
     );
   }
 
+  if (isPlaying && bilibiliId) {
+    return (
+      <div className={`relative overflow-hidden ${className}`.trim()}>
+        <iframe
+          className="absolute inset-0 w-full h-full"
+          src={`https://player.bilibili.com/player.html?bvid=${bilibiliId}&autoplay=1&danmaku=0&high_quality=1`}
+          title={title}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          referrerPolicy="no-referrer"
+        />
+      </div>
+    );
+  }
+
+  const playable = !!(youtubeId || bilibiliId);
   return (
     <button
       type="button"
-      onClick={() => videoId && setIsPlaying(true)}
-      disabled={!videoId}
+      onClick={() => playable && setIsPlaying(true)}
+      disabled={!playable}
       aria-label={`Play ${title}`}
       className={`relative block w-full cursor-pointer group disabled:cursor-default text-left p-0 border-0 bg-transparent overflow-hidden ${className}`.trim()}
     >
-      {thumbnailSrc && (
+      {thumbnailSrc ? (
         <Image
           src={thumbnailSrc}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
+      ) : (
+        <div className="absolute inset-0 bg-gray-900" />
       )}
       {children}
     </button>

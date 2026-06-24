@@ -14,11 +14,11 @@ export type ContentBlock = BlockSpacing & (
   | { type: 'paragraph'; start?: number; end?: number; text?: string; paragraphGap?: string }
   | { type: 'two_images'; images: [string, string] }
   | { type: 'one_image'; image: string }
-  | { type: 'video'; video?: string; title?: string }
+  | { type: 'video'; video?: string; chinaUrl?: string; title?: string }
   | { type: 'travel_routes' }
-  | { type: 'horizontal'; start: number; end?: number; text?: string; image?: string; video?: string; videoTitle?: string }
+  | { type: 'horizontal'; start: number; end?: number; text?: string; image?: string; video?: string; chinaUrl?: string; videoTitle?: string }
   | { type: 'images_grid'; images: string[] }
-  | { type: 'videos_grid'; videos: Array<{ url: string; title?: string }> }
+  | { type: 'videos_grid'; videos: Array<{ url: string; chinaUrl?: string; title?: string }> }
 );
 
 const BODY_CLASS = 'text-[18px] leading-[26px] font-medium tracking-[-0.02rem] text-dark';
@@ -37,6 +37,7 @@ interface Props {
   blocks: ContentBlock[];
   travelRoutes?: TravelRoutesBundle;
   body: string;
+  useChina?: boolean;
 }
 
 const DEFAULT_SPACING = 'mt-[40px]';
@@ -46,7 +47,7 @@ function sliceBody(body: string, start = 0, end?: number): string {
   return paragraphs.slice(start, end).join('\n\n');
 }
 
-function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | undefined, body: string): ReactNode {
+function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | undefined, body: string, useChina: boolean): ReactNode {
   switch (block.type) {
     case 'paragraph': {
       const text = block.text ?? sliceBody(body, block.start, block.end);
@@ -76,7 +77,7 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
       if (!block.video) return null;
       return (
         <div className="py-[20px]">
-          <VideoCard videoUrl={block.video} title={block.title} />
+          <VideoCard videoUrl={block.video} chinaUrl={block.chinaUrl} useChina={useChina} title={block.title} />
         </div>
       );
 
@@ -99,12 +100,12 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
       if (vids.length === 1) {
         return (
           <div className="py-[20px]">
-            <VideoCard videoUrl={vids[0].url} title={vids[0].title} />
+            <VideoCard videoUrl={vids[0].url} chinaUrl={vids[0].chinaUrl} useChina={useChina} title={vids[0].title} />
           </div>
         );
       }
-      const slides: MediaSlide[] = vids.map((v) => ({ type: 'video', url: v.url, title: v.title }));
-      return <MediaSlider slides={slides} className="py-[20px]" />;
+      const slides: MediaSlide[] = vids.map((v) => ({ type: 'video', url: v.url, chinaUrl: v.chinaUrl, title: v.title }));
+      return <MediaSlider slides={slides} className="py-[20px]" useChina={useChina} />;
     }
 
     case 'horizontal': {
@@ -116,7 +117,7 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
             paragraphClassName={BODY_CLASS}
           />
           {block.video ? (
-            <VideoCard videoUrl={block.video} title={block.videoTitle} />
+            <VideoCard videoUrl={block.video} chinaUrl={block.chinaUrl} useChina={useChina} title={block.videoTitle} />
           ) : block.image ? (
             <ImageFrame src={block.image} aspect="aspect-[4/3]" />
           ) : null}
@@ -129,12 +130,12 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
   }
 }
 
-export default function ContentBlocks({ blocks, travelRoutes, body }: Props) {
+export default function ContentBlocks({ blocks, travelRoutes, body, useChina = false }: Props) {
   return (
     <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[16px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col">
         {blocks.map((block, i) => {
-          const content = renderBlock(block, travelRoutes, body);
+          const content = renderBlock(block, travelRoutes, body, useChina);
           if (!content) return null;
           return (
             <div key={i} className={i === 0 ? undefined : (block.spacingTop ?? DEFAULT_SPACING)}>
