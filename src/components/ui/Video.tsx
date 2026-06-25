@@ -58,6 +58,15 @@ export default function Video({
   title = 'Video',
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: coarse), (max-width: 768px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   const activeUrl = useChina && chinaUrl ? chinaUrl : videoUrl;
   const bilibiliId = activeUrl ? getBilibiliId(activeUrl) : null;
@@ -114,11 +123,14 @@ export default function Video({
   }
 
   if (isPlaying && bilibiliId) {
+    const bilibiliSrc = isMobile
+      ? `https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${bilibiliId}&autoplay=1&danmaku=0&high_quality=1&quality=80&as_wide=1&hideCoverInfo=1`
+      : `https://player.bilibili.com/player.html?bvid=${bilibiliId}&autoplay=1&danmaku=0&high_quality=1`;
     return (
       <div className={`relative overflow-hidden ${className}`.trim()}>
         <iframe
           className="absolute inset-0 w-full h-full"
-          src={`https://player.bilibili.com/player.html?bvid=${bilibiliId}&autoplay=1&danmaku=0&high_quality=1`}
+          src={bilibiliSrc}
           title={title}
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
