@@ -379,6 +379,7 @@ export interface CMSSiteSettings {
     max_width: string | null;
     side_padding: string | null;
     header_height: string | null;
+    home_marquee_speed: number | null;
     meta_title: string | null;
     meta_description: string | null;
     meta_keywords: string[] | null;
