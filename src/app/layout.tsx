@@ -139,6 +139,7 @@ export default async function RootLayout({
     '--max-width': settings.maxWidth,
     '--side-padding': settings.sidePadding,
     '--header-height': settings.headerHeight,
+    '--home-marquee-speed': `${settings.homeMarqueeSpeed}s`,
     ...(settings.fontFamily ? { '--font-override': `'${settings.fontFamily}'` } : {}),
   } as React.CSSProperties;
 

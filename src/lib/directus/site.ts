@@ -26,6 +26,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       maxWidth: s.max_width || DEFAULT_SETTINGS.maxWidth,
       sidePadding: s.side_padding || DEFAULT_SETTINGS.sidePadding,
       headerHeight: s.header_height || DEFAULT_SETTINGS.headerHeight,
+      homeMarqueeSpeed: typeof s.home_marquee_speed === 'number' && s.home_marquee_speed > 0
+        ? s.home_marquee_speed
+        : DEFAULT_SETTINGS.homeMarqueeSpeed,
       metaTitle: s.meta_title || DEFAULT_SETTINGS.metaTitle,
       metaDescription: s.meta_description || DEFAULT_SETTINGS.metaDescription,
       metaKeywords: Array.isArray(s.meta_keywords) && s.meta_keywords.length

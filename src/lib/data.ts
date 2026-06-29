@@ -106,6 +106,8 @@ export interface SiteSettings {
   maxWidth: string;
   sidePadding: string;
   headerHeight: string;
+  /** Home marquee animation duration in seconds. Lower = faster. */
+  homeMarqueeSpeed: number;
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string[];
@@ -294,6 +296,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   maxWidth: '1512px',
   sidePadding: '40px',
   headerHeight: '60px',
+  homeMarqueeSpeed: 46,
   metaTitle: 'Tabernam — Global activity presence',
   metaDescription:
     'Tabernam — Four decades of foreign trade, partnerships and consulting across Asia, Europe and the Americas. Founded by Tibor Buček.',

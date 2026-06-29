@@ -331,11 +331,11 @@ h2 {
 }
 
 .marquee-track--right {
-  animation: marquee-scroll-right 60s linear infinite;
+  animation: marquee-scroll-right var(--home-marquee-speed, 46s) linear infinite;
 }
 
 .marquee-track--left {
-  animation: marquee-scroll-left 60s linear infinite;
+  animation: marquee-scroll-left var(--home-marquee-speed, 46s) linear infinite;
 }
 
 .marquee-cell {
