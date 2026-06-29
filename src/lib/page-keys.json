@@ -33,6 +33,10 @@
       "page": "footer",
       "field": "footer_quote_author"
     },
+    "footer.quoteAuthorTranslation": {
+      "page": "footer",
+      "field": "footer_quote_author_translation"
+    },
     "contact.addressLabel": {
       "page": "contact",
       "field": "contact_addressLabel"

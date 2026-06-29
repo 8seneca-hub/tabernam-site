@@ -33,6 +33,7 @@ export default function QuoteSection({ quote }: Props) {
   const titleRest = langText?.titleRest || enText?.titleRest || FALLBACK_TITLE_REST;
   const body = langText?.primary || enText?.primary || FALLBACK_BODY;
   const mottoTranslation = langText?.mottoTranslation || enText?.mottoTranslation || '';
+  const mottoAuthorTranslation = langText?.mottoAuthor || '';
 
   return (
     <section className="quote w-full px-[60px] py-[150px] max-md:px-[16px] max-[1025px]:py-[40px]">
@@ -76,7 +77,12 @@ export default function QuoteSection({ quote }: Props) {
               className="w-full h-auto"
             />
           </div>
-          <MottoQuote latin={quote?.mottoLatin} translation={mottoTranslation} author={quote?.mottoAuthor} />
+          <MottoQuote
+            latin={quote?.mottoLatin}
+            translation={mottoTranslation}
+            author={quote?.mottoAuthor}
+            authorTranslation={mottoAuthorTranslation}
+          />
         </motion.div>
       </div>
     </section>

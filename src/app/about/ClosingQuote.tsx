@@ -12,7 +12,7 @@ const FALLBACK_AUTHOR = 'Tibor Buček';
 const FALLBACK_TRANSLATION = 'Earn honestly, give generously';
 const FALLBACK_BACKGROUND = '/carousel/photo-12.jpg';
 
-const EMPTY_TEXT: ClosingQuoteText = { mottoTranslation: '', cta: '' };
+const EMPTY_TEXT: ClosingQuoteText = { mottoTranslation: '', mottoAuthor: '', cta: '' };
 
 const QuoteIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="w-14 h-14 opacity-40">
@@ -36,6 +36,7 @@ export default function ClosingQuote({ closingQuote }: Props) {
 
   const latin = closingQuote.mottoLatin || FALLBACK_LATIN;
   const author = closingQuote.mottoAuthor || FALLBACK_AUTHOR;
+  const authorTranslation = langText?.mottoAuthor || '';
   const translation = text.mottoTranslation || FALLBACK_TRANSLATION;
   const cta = text.cta;
   const backgroundImage = closingQuote.background || FALLBACK_BACKGROUND;
@@ -105,12 +106,19 @@ export default function ClosingQuote({ closingQuote }: Props) {
             ({translation})
           </p>
           {author && (
-            <p
-              className="text-2xl md:text-3xl tracking-wide text-white/90 leading-none"
-              style={{ fontFamily: 'var(--font-pinyon-script)' }}
-            >
-              — {author}
-            </p>
+            <div className="flex flex-col items-center gap-1">
+              <p
+                className="text-2xl md:text-3xl tracking-wide text-white/90 leading-none"
+                style={{ fontFamily: 'var(--font-pinyon-script)' }}
+              >
+                — {author}
+              </p>
+              {authorTranslation && (
+                <p className="text-lg md:text-xl text-white/80 leading-none">
+                  {authorTranslation}
+                </p>
+              )}
+            </div>
           )}
           {cta && (
             <Button as={Link} href="/contact" variant="primary" shape="pill" className="mt-2 !text-[18px] font-medium !text-white !bg-brand !px-[28px] !py-[16px] !gap-[10px]">

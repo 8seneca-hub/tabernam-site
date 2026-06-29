@@ -5,6 +5,7 @@ export interface ContactHeaderText {
   headingTitle: string;
   subheading: string;
   mottoTranslation: string;
+  mottoAuthor: string;
 }
 
 export interface ContactHeaderBundle {
@@ -17,6 +18,7 @@ interface RawTranslation {
   heading_title?: unknown;
   subheading?: unknown;
   motto_translation?: unknown;
+  motto_author?: unknown;
   language_code?: unknown;
 }
 
@@ -33,7 +35,7 @@ export async function getContactHeader(): Promise<ContactHeaderBundle> {
     const rows = (await directus.request(
       readItems('contact_header_translations', {
         limit: -1,
-        fields: ['heading_title', 'subheading', 'motto_translation', 'language_code'],
+        fields: ['heading_title', 'subheading', 'motto_translation', 'motto_author', 'language_code'],
       }),
     )) as RawTranslation[];
 
@@ -45,10 +47,11 @@ export async function getContactHeader(): Promise<ContactHeaderBundle> {
         headingTitle: asStr(t.heading_title),
         subheading: asStr(t.subheading),
         mottoTranslation: asStr(t.motto_translation),
+        mottoAuthor: asStr(t.motto_author),
       };
     }
     if (!byLang[PRIMARY_LANG]) {
-      byLang[PRIMARY_LANG] = { headingTitle: '', subheading: '', mottoTranslation: '' };
+      byLang[PRIMARY_LANG] = { headingTitle: '', subheading: '', mottoTranslation: '', mottoAuthor: '' };
     }
     return { byLang, mottoLatin: MOTTO_LATIN, mottoAuthor: MOTTO_AUTHOR };
   } catch (e) {

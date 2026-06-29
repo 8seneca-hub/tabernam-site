@@ -44,10 +44,14 @@ export default function Footer({ office }: Props) {
             <MottoQuote
               translation={t('footer.quote')}
               author={t('footer.quoteAuthor')}
+              authorTranslation={(() => {
+                const v = t('footer.quoteAuthorTranslation');
+                return v && v !== 'footer.quoteAuthorTranslation' ? v : '';
+              })()}
               className="flex flex-col w-fit"
               latinClassName="text-[20px] font-semibold tracking-[-0.01em] text-text text-center"
               translationClassName="text-[16px] font-light tracking-[-0.01em] text-text text-center mt-[10px]"
-              authorClassName="text-[18px] tracking-[-0.01em] text-text text-right mt-[16px]"
+              authorClassName="text-[25px] tracking-[-0.01em] text-text text-right mt-[16px]"
             />
           </div>
 

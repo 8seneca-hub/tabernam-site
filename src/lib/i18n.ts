@@ -76,6 +76,56 @@ export const FALLBACK_DICTIONARIES: Record<string, Record<string, string>> = Obj
   ]),
 );
 
+// Reduce a BCP-47 tag (e.g. "zh-CN", "en-US", "vi") to its primary subtag for
+// matching against the site's language codes, which are ISO 639-1 ("en", "sk",
+// "vi", "zh", "ru") — so script/region subtags can be dropped wholesale.
+function normalizeBrowserTag(tag: string): string {
+  return tag.toLowerCase().split('-')[0];
+}
+
+// Parse an `Accept-Language` HTTP header and pick the best-matching supported
+// code. Tags are weighted by their q-value (default 1.0); ties are broken by
+// header appearance order. Returns `null` when no supported language matches.
+export function pickAcceptLanguage(
+  acceptLanguage: string | null | undefined,
+  supportedCodes: string[],
+): string | null {
+  if (!acceptLanguage) return null;
+  const entries = acceptLanguage
+    .split(',')
+    .map((part, i) => {
+      const [tag, ...params] = part.trim().split(';').map((s) => s.trim());
+      let q = 1;
+      for (const p of params) {
+        const m = /^q=([\d.]+)$/i.exec(p);
+        if (m) q = parseFloat(m[1]) || 0;
+      }
+      return { tag, q, order: i };
+    })
+    .filter((e) => e.tag && e.q > 0)
+    .sort((a, b) => b.q - a.q || a.order - b.order);
+  for (const { tag } of entries) {
+    const code = normalizeBrowserTag(tag);
+    if (supportedCodes.includes(code)) return code;
+  }
+  return null;
+}
+
+function detectBrowserLang(supportedCodes: string[]): string | null {
+  if (typeof navigator === 'undefined') return null;
+  const tags: readonly string[] =
+    Array.isArray(navigator.languages) && navigator.languages.length > 0
+      ? navigator.languages
+      : navigator.language
+        ? [navigator.language]
+        : [];
+  for (const raw of tags) {
+    const code = normalizeBrowserTag(raw);
+    if (supportedCodes.includes(code)) return code;
+  }
+  return null;
+}
+
 export function getLang(supportedCodes: string[], defaultLang = 'en'): string {
   const fallback = supportedCodes.includes(defaultLang)
     ? defaultLang
@@ -87,7 +137,7 @@ export function getLang(supportedCodes: string[], defaultLang = 'en'): string {
   } catch {
     // private mode
   }
-  return fallback;
+  return detectBrowserLang(supportedCodes) ?? fallback;
 }
 
 export function setLang(lang: string): void {

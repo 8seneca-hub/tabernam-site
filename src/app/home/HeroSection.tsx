@@ -86,7 +86,7 @@ export default function HeroSection({ slides, text }: Props) {
             <div
               key={slide.image}
               aria-hidden={idx !== activeIndex}
-              className="absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out"
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-[600ms] ease-in-out"
               style={{
                 backgroundImage: `url('${slide.image}')`,
                 opacity: idx === activeIndex ? 1 : 0,
@@ -94,6 +94,25 @@ export default function HeroSection({ slides, text }: Props) {
               aria-label={slide.alt || undefined}
             />
           ))}
+          {items.length > 1 && (
+            <div
+              className="absolute bottom-[14px] left-1/2 -translate-x-1/2 z-[3] flex gap-1 pointer-events-none"
+              aria-hidden="true"
+            >
+              {items.map((slide, idx) => (
+                <span
+                  key={slide.image}
+                  className="w-[30px] h-[2px] rounded-full transition-[background] duration-300"
+                  style={{
+                    background:
+                      idx === activeIndex
+                        ? 'rgba(255,255,255,0.85)'
+                        : 'rgba(255,255,255,0.28)',
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

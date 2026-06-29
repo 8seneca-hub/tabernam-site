@@ -26,6 +26,9 @@ interface Props {
   translation?: string;
   /** Author line. Falls back to the hardcoded constant. */
   author?: string;
+  /** Optional translated author rendered below the main author line (e.g. the
+   *  Chinese transliteration of the Latin author's name). Hidden when empty. */
+  authorTranslation?: string;
 }
 
 export default function MottoQuote({
@@ -36,6 +39,7 @@ export default function MottoQuote({
   latin,
   translation,
   author,
+  authorTranslation,
 }: Props) {
   const { t } = useI18n();
   const resolvedLatin = latin || DEFAULT_LATIN;
@@ -66,6 +70,11 @@ export default function MottoQuote({
       >
         {resolvedAuthor}
       </p>
+      {authorTranslation ? (
+        <p className="mt-1 text-[16px] max-md:text-[16px] text-text text-right leading-none">
+          {authorTranslation}
+        </p>
+      ) : null}
     </figure>
   );
 }

@@ -8,6 +8,7 @@ export interface AboutHeaderText {
   body: string;
   cvButtonLabel: string;
   mottoTranslation: string;
+  mottoAuthor: string;
 }
 
 export interface AboutHeaderBundle {
@@ -24,6 +25,7 @@ interface RawTranslation {
   body?: unknown;
   cv_button_label?: unknown;
   motto_translation?: unknown;
+  motto_author?: unknown;
   language_code?: unknown;
 }
 
@@ -53,6 +55,7 @@ export async function getAboutHeader(): Promise<AboutHeaderBundle> {
               'body',
               'cv_button_label',
               'motto_translation',
+              'motto_author',
               'language_code',
             ],
           },
@@ -73,6 +76,7 @@ export async function getAboutHeader(): Promise<AboutHeaderBundle> {
           body: asStr(t.body),
           cvButtonLabel: asStr(t.cv_button_label),
           mottoTranslation: asStr(t.motto_translation),
+          mottoAuthor: asStr(t.motto_author),
         };
       }
       image = typeof row.image === 'string' ? assetUrl(row.image) : '';

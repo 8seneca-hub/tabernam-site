@@ -340,8 +340,7 @@ h2 {
 
 .marquee-cell {
   flex-shrink: 0;
-  width: 462px;
-  /* 16:9 of 462 ≈ 260px */
+  width: auto;
   height: 260px;
   border-radius: var(--radius-3);
   overflow: hidden;
@@ -350,17 +349,14 @@ h2 {
 
 .marquee-cell img,
 .marquee-cell video {
-  width: 100%;
+  width: auto;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
-/* On phones the full-size cells fill the viewport one at a time; shrink them
-   (keeping 16:9) so more of the marquee is visible at once. */
 @media (max-width: 768px) {
   .marquee-cell {
-    width: 280px;
     height: 158px;
   }
 }

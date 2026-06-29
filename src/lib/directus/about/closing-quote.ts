@@ -3,6 +3,7 @@ import directus, { assetUrl } from '../client';
 
 export interface ClosingQuoteText {
   mottoTranslation: string;
+  mottoAuthor: string;
   cta: string;
 }
 
@@ -15,6 +16,7 @@ export interface ClosingQuoteBundle {
 
 interface RawTranslation {
   motto_translation?: unknown;
+  motto_author?: unknown;
   cta?: unknown;
   language_code?: unknown;
 }
@@ -35,6 +37,7 @@ function asStr(v: unknown): string {
 function projectTranslation(src: RawTranslation): ClosingQuoteText {
   return {
     mottoTranslation: asStr(src.motto_translation),
+    mottoAuthor: asStr(src.motto_author),
     cta: asStr(src.cta),
   };
 }
@@ -48,7 +51,7 @@ export async function getClosingQuote(): Promise<ClosingQuoteBundle> {
       readSingleton('closing_quote', {
         fields: [
           'background', 'motto_latin', 'motto_author',
-          { translations: ['motto_translation', 'cta', 'language_code'] },
+          { translations: ['motto_translation', 'motto_author', 'cta', 'language_code'] },
         ],
       }),
     )) as RawRow | null;
@@ -68,7 +71,7 @@ export async function getClosingQuote(): Promise<ClosingQuoteBundle> {
       mottoAuthor = asStr(row.motto_author);
     }
     if (!byLang[PRIMARY_LANG]) {
-      byLang[PRIMARY_LANG] = { mottoTranslation: '', cta: '' };
+      byLang[PRIMARY_LANG] = { mottoTranslation: '', mottoAuthor: '', cta: '' };
     }
     return { byLang, background, mottoLatin, mottoAuthor };
   } catch (e) {

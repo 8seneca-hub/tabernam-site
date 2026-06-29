@@ -24,6 +24,7 @@ const EMPTY_HEADER: AboutHeaderText = {
   body: '',
   cvButtonLabel: 'View my CV',
   mottoTranslation: '',
+  mottoAuthor: '',
 };
 
 const EMPTY_BODY: AboutBodyText = {
@@ -33,7 +34,7 @@ const EMPTY_BODY: AboutBodyText = {
 export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRoutes, isChina = false }: Props) {
   const { lang } = useI18n();
   const langLc = lang.toLowerCase();
-  const useChina = isChina || langLc === 'cn' || langLc.startsWith('zh');
+  const useChina = isChina || langLc.startsWith('zh');
 
   // Header: active language → English → hardcoded fallback.
   const langHeader = aboutHeader.byLang[lang];
@@ -99,6 +100,7 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
         mottoLatin={aboutHeader.mottoLatin}
         mottoTranslation={header.mottoTranslation}
         mottoAuthor={aboutHeader.mottoAuthor}
+        mottoAuthorTranslation={langHeader?.mottoAuthor || ''}
       >
         <AboutParagraph text={header.body} />
         <Button as={Link} href="/cv" variant="primary" shape="pill" className="self-start !text-[18px] font-medium !text-white !bg-brand !px-[28px] !py-[16px] !gap-[10px]">

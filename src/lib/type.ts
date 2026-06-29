@@ -195,6 +195,7 @@ export interface CMSQuoteTranslation {
     title_rest: string;
     primary: string;
     motto_translation: string;
+    motto_author: string | null;
 }
 
 interface CMSMapFields {
@@ -252,6 +253,7 @@ interface CMSAboutHeaderFields {
     body: string;
     cv_button_label: string;
     motto_translation: string;
+    motto_author: string | null;
 }
 
 export interface CMSAboutHeader {
@@ -315,6 +317,7 @@ export interface CMSAboutBodyVideoTranslation {
 
 interface CMSClosingQuoteTranslationFields {
     motto_translation: string;
+    motto_author: string | null;
     cta: string;
 }
 
@@ -337,6 +340,7 @@ interface CMSContactHeaderTranslationFields {
     heading_title: string;
     subheading: string;
     motto_translation: string;
+    motto_author: string | null;
 }
 
 export interface CMSContactHeaderTranslation extends CMSContactHeaderTranslationFields {

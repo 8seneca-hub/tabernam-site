@@ -35,7 +35,7 @@ export default function CVSection({ backHref, education, experience, extras }: P
   // Chinese visitors see the full CV inline (no blur, no contact gate) to
   // match the printed CN handout. Other languages keep the teaser flow with
   // the three extra sections rendered behind blur as a contact prompt.
-  const isFullView = lang === 'cn';
+  const isFullView = lang === 'zh';
 
   const educationTitle = pickSectionTitle(education, lang, t('cv.section.education'));
   const experienceTitle = pickSectionTitle(experience, lang, t('cv.section.experience'));

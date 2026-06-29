@@ -19,9 +19,11 @@ interface Props {
   mottoTranslation?: string;
   /** Author line override. */
   mottoAuthor?: string;
+  /** Translated author rendered below the main author line. Hidden when empty. */
+  mottoAuthorTranslation?: string;
 }
 
-export default function SubpageHero({ heading, eyebrow, subheading, image, imageAlt = '', children, mottoLatin, mottoTranslation, mottoAuthor }: Props) {
+export default function SubpageHero({ heading, eyebrow, subheading, image, imageAlt = '', children, mottoLatin, mottoTranslation, mottoAuthor, mottoAuthorTranslation }: Props) {
   return (
     <section className="px-[60px] py-20 max-md:px-[16px] max-[1025px]:pb-0">
       <div className="max-w-[1320px] mx-auto flex flex-col gap-[80px] lg:flex-row lg:items-start">
@@ -49,7 +51,7 @@ export default function SubpageHero({ heading, eyebrow, subheading, image, image
           <div className="feathered-image relative rounded-6 overflow-hidden bg-surface">
             <Image src={image} alt={imageAlt} priority className="w-full h-auto" />
           </div>
-          <MottoQuote latin={mottoLatin} translation={mottoTranslation} author={mottoAuthor} />
+          <MottoQuote latin={mottoLatin} translation={mottoTranslation} author={mottoAuthor} authorTranslation={mottoAuthorTranslation} />
         </div>
       </div>
     </section>

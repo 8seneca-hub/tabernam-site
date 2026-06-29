@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_SC, Pinyon_Script, Crimson_Text } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 
 export const dynamic = 'force-dynamic';
 import { I18nProvider } from '@/app/hook/useI18n';
 import { ThemeProvider } from '@/lib/theme-context';
 import { getLanguages, getDictionaries, getSiteSettings, getContactOffice } from '@/lib/directus';
+import { pickAcceptLanguage } from '@/lib/i18n';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
@@ -114,12 +116,24 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [languages, dictionaries, settings, office] = await Promise.all([
+  const [languages, dictionaries, settings, office, headerList] = await Promise.all([
     getLanguages(),
     getDictionaries(),
     getSiteSettings(),
     getContactOffice(),
+    headers(),
   ]);
+
+  // Pick the initial language from the browser's `Accept-Language` request
+  // header so the first HTML render is in the user's preferred language. The
+  // client may later switch this if `localStorage.lang` carries an explicit
+  // user choice.
+  const supportedCodes = languages.map((l) => l.code);
+  const defaultLangCode =
+    languages.find((l) => l.isDefault)?.code || languages[0]?.code || 'en';
+  const initialLang =
+    pickAcceptLanguage(headerList.get('accept-language'), supportedCodes) ??
+    defaultLangCode;
 
   const themeVars = {
     '--color-bg': settings.colorBg,
@@ -159,7 +173,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${inter.variable} ${notoSansSC.variable} ${pinyonScript.variable} ${crimsonText.variable}`} style={themeVars}>
+    <html lang={initialLang} className={`${inter.variable} ${notoSansSC.variable} ${pinyonScript.variable} ${crimsonText.variable}`} style={themeVars}>
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         {googleFontHref && <link rel="stylesheet" href={googleFontHref} />}
@@ -172,7 +186,7 @@ export default async function RootLayout({
         className="bg-bg text-text leading-snug min-h-screen flex flex-col"
         suppressHydrationWarning
       >
-        <I18nProvider languages={languages} dictionaries={dictionaries}>
+        <I18nProvider languages={languages} dictionaries={dictionaries} initialLang={initialLang}>
           <ThemeProvider settings={settings}>
             <Header />
             <main className="flex-1">{children}</main>

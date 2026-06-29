@@ -6,6 +6,7 @@ export interface QuoteText {
   titleRest: string;
   primary: string;
   mottoTranslation: string;
+  mottoAuthor: string;
 }
 
 export interface QuoteBundle {
@@ -20,6 +21,7 @@ interface RawTranslation {
   title_rest?: unknown;
   primary?: unknown;
   motto_translation?: unknown;
+  motto_author?: unknown;
   language_code?: unknown;
 }
 
@@ -50,6 +52,7 @@ export async function getQuote(): Promise<QuoteBundle> {
               'title_rest',
               'primary',
               'motto_translation',
+              'motto_author',
               'language_code',
             ],
           },
@@ -70,6 +73,7 @@ export async function getQuote(): Promise<QuoteBundle> {
           titleRest: asStr(t.title_rest),
           primary: asStr(t.primary),
           mottoTranslation: asStr(t.motto_translation),
+          mottoAuthor: asStr(t.motto_author),
         };
       }
       image = typeof row.image === 'string' ? assetUrl(row.image) : '';

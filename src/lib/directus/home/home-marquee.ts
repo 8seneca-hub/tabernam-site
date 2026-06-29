@@ -11,11 +11,13 @@ export async function getHomeMarquee(): Promise<MarqueeImage[]> {
       })
     );
     return items
-      .filter((m) => m.image)
+      .filter((m): m is typeof m & { image: string; row: 1 | 2 | 3 } =>
+        Boolean(m.image) && (m.row === 1 || m.row === 2 || m.row === 3),
+      )
       .map((m) => ({
         image: assetUrl(m.image),
         alt: m.alt ?? '',
-        row: (m.row === 2 || m.row === 3 ? m.row : 1) as 1 | 2 | 3,
+        row: m.row,
       }));
   } catch (e) {
     console.warn('Directus fetch failed for home_marquee, using fallback:', e);

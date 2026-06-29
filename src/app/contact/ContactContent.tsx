@@ -39,7 +39,7 @@ export default function ContactContent({ texts: bundle, office: active, contactH
   const header =
     (langHeader && langHeader.headingTitle ? langHeader : null) ??
     (enHeader && enHeader.headingTitle ? enHeader : null) ??
-    { headingTitle: FALLBACK_HEADING, subheading: FALLBACK_SUBHEADING, mottoTranslation: '' };
+    { headingTitle: FALLBACK_HEADING, subheading: FALLBACK_SUBHEADING, mottoTranslation: '', mottoAuthor: '' };
 
   if (!active) {
     return (
@@ -190,7 +190,12 @@ export default function ContactContent({ texts: bundle, office: active, contactH
                 className="w-full h-auto"
               />
             </div>
-            <MottoQuote latin={contactHeader.mottoLatin} translation={header.mottoTranslation} author={contactHeader.mottoAuthor} />
+            <MottoQuote
+              latin={contactHeader.mottoLatin}
+              translation={header.mottoTranslation}
+              author={contactHeader.mottoAuthor}
+              authorTranslation={langHeader?.mottoAuthor || ''}
+            />
           </FadeIn>
         </div>
       </section>
