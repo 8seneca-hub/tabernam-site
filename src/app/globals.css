@@ -394,13 +394,13 @@ h2 {
 /* Large feathered edge — 7 stacked inner shadows (per Figma spec). */
 .feathered-image::after {
   box-shadow:
-    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
-    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
-    inset 0 0 21px 24px rgba(255, 255, 255, 0.4),
-    inset 0 0 12px 18px rgba(255, 255, 255, 0.4),
-    inset 0 0 6px 7px rgba(255, 255, 255, 0.7),
-    inset 0 0 9px 11px rgba(255, 255, 255, 0.7),
-    inset 0 0 4px 4px #fff;
+    inset 0 0 8px 8px rgba(255, 255, 255, 0.4),
+    inset 0 0 8px 8px rgba(255, 255, 255, 0.4),
+    inset 0 0 8px 8px rgba(255, 255, 255, 0.4),
+    inset 0 0 4px 7px rgba(255, 255, 255, 0.4),
+    inset 0 0 2px 2px rgba(255, 255, 255, 0.7),
+    inset 0 0 3px 3px rgba(255, 255, 255, 0.7),
+    inset 0 0 1px 1px #fff;
 }
 
 /* Smaller framed images (incl. marquee cells) use a lighter, proportionally
@@ -409,9 +409,9 @@ h2 {
 .feathered-image-sm::after,
 .marquee-cell::after {
   box-shadow:
+    inset 0 0 1px 1px #fff,
     inset 0 0 3px 2px #fff,
-    inset 0 0 8px 6px #fff,
-    inset 0 0 26px 23px #fff;
+    inset 0 0 10px 8px #fff;
 }
 
 /* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
@@ -428,9 +428,9 @@ h2 {
   pointer-events: none;
   border-radius: inherit;
   box-shadow:
-    inset 0 0 3.48px 2.61px var(--gray-20),
-    inset 0 0 8.71px 6.97px var(--gray-20),
-    inset 0 0 34.83px 31.35px var(--gray-20);
+    inset 0 0 1.28px 0.96px var(--gray-20),
+    inset 0 0 3.20px 2.56px var(--gray-20),
+    inset 0 0 12.80px 11.52px var(--gray-20);
 }
 
 @keyframes marquee-scroll-left {

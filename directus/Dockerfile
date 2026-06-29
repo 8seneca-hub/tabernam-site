@@ -1,4 +1,4 @@
-FROM directus/directus:11.17.0
+FROM directus/directus:11.17.4
 
 USER root
 RUN apk add --no-cache su-exec
