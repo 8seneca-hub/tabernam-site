@@ -371,43 +371,49 @@ h2 {
 .feathered-image-sm,
 .marquee-cell {
   position: relative;
-  /* Square corners for the standard feathered frames (overrides their
-     rounded-* utilities). The .feathered-image-gray variant keeps its radius. */
-  border-radius: 0;
+  border-radius: 4px;
 }
 
-.feathered-image::after,
-.feathered-image-sm::after,
-.marquee-cell::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  border-radius: inherit;
+/* Feathered edge — uses `mask-image` to fade the image's own alpha channel,
+   so the page background shows through at the edges instead of a flat white
+   overlay. Reads as a soft cloudy bloom rather than a frame.
+   `--feather-w` is the soft-fade width per side; override inline if you want
+   some images feathered more aggressively than others. */
+.feathered-image,
+.feathered-image-sm,
+.marquee-cell {
+  --feather-w: 16px;
+  -webkit-mask-image:
+    linear-gradient(to right,
+      transparent 0,
+      black var(--feather-w),
+      black calc(100% - var(--feather-w)),
+      transparent 100%),
+    linear-gradient(to bottom,
+      transparent 0,
+      black var(--feather-w),
+      black calc(100% - var(--feather-w)),
+      transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right,
+      transparent 0,
+      black var(--feather-w),
+      black calc(100% - var(--feather-w)),
+      transparent 100%),
+    linear-gradient(to bottom,
+      transparent 0,
+      black var(--feather-w),
+      black calc(100% - var(--feather-w)),
+      transparent 100%);
+  mask-composite: intersect;
 }
 
-/* Large feathered edge — 7 stacked inner shadows (per Figma spec). */
-.feathered-image::after {
-  box-shadow:
-    inset 0 0 8px 8px rgba(255, 255, 255, 0.4),
-    inset 0 0 8px 8px rgba(255, 255, 255, 0.4),
-    inset 0 0 8px 8px rgba(255, 255, 255, 0.4),
-    inset 0 0 4px 7px rgba(255, 255, 255, 0.4),
-    inset 0 0 2px 2px rgba(255, 255, 255, 0.7),
-    inset 0 0 3px 3px rgba(255, 255, 255, 0.7),
-    inset 0 0 1px 1px #fff;
-}
-
-/* Smaller framed images (incl. marquee cells) use a lighter, proportionally
-   smaller feather than the large .feathered-image — strong enough to fade
-   darker photo edges, but not as wide/heavy as the full-size spec. */
-.feathered-image-sm::after,
-.marquee-cell::after {
-  box-shadow:
-    inset 0 0 1px 1px #fff,
-    inset 0 0 3px 2px #fff,
-    inset 0 0 10px 8px #fff;
+/* Tighter fade on the smaller variants so the bloom-to-image ratio stays
+   consistent at their physical size. */
+.feathered-image-sm,
+.marquee-cell {
+  --feather-w: 12px;
 }
 
 /* Same feather spec as .feathered-image, but tinted gray-20 so it blends into
