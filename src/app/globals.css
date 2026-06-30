@@ -330,12 +330,22 @@ h2 {
   will-change: transform;
 }
 
+/* Safari/WebKit fails to resolve `var()` inside the `animation` shorthand on
+   initial paint, falling back to the default (46s) until a tab-switch forces
+   re-evaluation. Use longhand properties — `animation-duration` with `var()`
+   is reactive in Safari, the shorthand is not. */
 .marquee-track--right {
-  animation: marquee-scroll-right var(--home-marquee-speed, 46s) linear infinite;
+  animation-name: marquee-scroll-right;
+  animation-duration: var(--home-marquee-speed, 46s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 .marquee-track--left {
-  animation: marquee-scroll-left var(--home-marquee-speed, 46s) linear infinite;
+  animation-name: marquee-scroll-left;
+  animation-duration: var(--home-marquee-speed, 46s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 .marquee-cell {
