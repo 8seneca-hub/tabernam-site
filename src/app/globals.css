@@ -345,6 +345,14 @@ h2 {
   border-radius: var(--radius-3);
   overflow: hidden;
   position: relative;
+  /* Safari/iOS: promote each cell to its own compositing layer so the
+     mask-image (added below) doesn't flicker as the parent .marquee-track
+     animates via translate3d. Without this, masked cells inside a moving
+     layer intermittently disappear until a tab-switch rebuilds the layer
+     tree. */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .marquee-cell img,
