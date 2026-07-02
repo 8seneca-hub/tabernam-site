@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import posthog from 'posthog-js';
 import { useI18n } from '@/app/hook/useI18n';
 import Button from '@/components/ui/Button';
 
@@ -49,6 +50,10 @@ export default function RequestCvModal({ open, onClose, recipient = DEFAULT_RECI
     ].filter((l): l is string => l !== null);
     const body = lines.join('\n');
     const href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    posthog.capture('cv_request_submitted', {
+      has_company: Boolean(company),
+      has_message: Boolean(message),
+    });
     window.location.href = href;
     onClose();
   };

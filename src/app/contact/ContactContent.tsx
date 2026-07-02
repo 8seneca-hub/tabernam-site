@@ -1,5 +1,6 @@
 'use client';
 
+import posthog from 'posthog-js';
 import { useI18n } from '@/app/hook/useI18n';
 import { pickPageTexts, type ContactHeaderBundle, type PageTextsBundle } from '@/lib/directus';
 import FadeIn from '@/animations/FadeIn';
@@ -89,12 +90,14 @@ export default function ContactContent({ texts: bundle, office: active, contactH
                     <a
                       href={workMailHref}
                       className="text-[18px] font-semibold text-text hover:text-brand transition-colors break-all"
+                      onClick={() => posthog.capture('contact_email_clicked', { email_type: 'work' })}
                     >
                       {active.workEmail}
                     </a>
                     <a
                       href={personalMailHref}
                       className="text-[18px] font-semibold text-text hover:text-brand transition-colors break-all"
+                      onClick={() => posthog.capture('contact_email_clicked', { email_type: 'personal' })}
                     >
                       {active.personalEmail}
                     </a>
@@ -113,6 +116,7 @@ export default function ContactContent({ texts: bundle, office: active, contactH
                     <a
                       href={phoneHref}
                       className="text-[18px] font-semibold text-text hover:text-brand transition-colors"
+                      onClick={() => posthog.capture('contact_phone_clicked')}
                     >
                       {active.phone}
                     </a>
@@ -170,7 +174,11 @@ export default function ContactContent({ texts: bundle, office: active, contactH
                       {websiteLabel}
                     </span>
                     <div className="flex flex-col">
-                      <a href={websiteUrl} className="text-[18px] font-semibold text-text hover:text-brand transition-colors">
+                      <a
+                        href={websiteUrl}
+                        className="text-[18px] font-semibold text-text hover:text-brand transition-colors"
+                        onClick={() => posthog.capture('contact_website_clicked', { url: websiteUrl })}
+                      >
                         {websiteUrl}
                       </a>
                     </div>

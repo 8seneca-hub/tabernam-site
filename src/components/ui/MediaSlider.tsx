@@ -38,7 +38,7 @@ export default function MediaSlider({ slides, className = '', aspect = 'aspect-[
                 className={`relative w-full shrink-0 ${aspect} overflow-hidden bg-surface${isImage ? ' feathered-image' : ''}`}
               >
                 {isImage ? (
-                  <Image className="w-full h-full object-cover" src={slide.src} alt={slide.alt ?? ''} />
+                  <Image className="w-full h-full object-cover" src={slide.src} alt={slide.alt ?? ''} trackErrors errorSurface="media-slider" />
                 ) : (
                   <VideoCard
                     key={isActive ? 'active' : 'idle'}

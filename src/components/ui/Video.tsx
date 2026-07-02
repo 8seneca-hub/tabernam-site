@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import Image from './Image';
+import { captureMediaError } from '@/lib/capture-media-error';
 
 interface Props {
   videoUrl?: string;
@@ -79,6 +80,21 @@ export default function Video({
     : null;
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(initialSrc);
 
+  // A China visitor served a YouTube embed will hit a hard block (YouTube is
+  // unreachable in China). If we land here it means no chinaUrl fallback was
+  // configured — report it so it surfaces (and can be filtered to CN) in
+  // PostHog Error Tracking, since a blocked iframe fires no useful onerror.
+  useEffect(() => {
+    if (useChina && youtubeId) {
+      captureMediaError('youtube-iframe', {
+        src: activeUrl,
+        useChina,
+        title,
+        reason: 'youtube-served-to-china-visitor-without-fallback',
+      });
+    }
+  }, [useChina, youtubeId, activeUrl, title]);
+
   useEffect(() => {
     if (thumbnail || !youtubeId) return;
     const maxUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
@@ -100,6 +116,7 @@ export default function Video({
           controls
           playsInline
           poster={thumbnail}
+          onError={() => captureMediaError('video', { src: activeUrl, useChina, title })}
           className="absolute inset-0 w-full h-full object-contain"
         >
           <track kind="captions" />
@@ -153,6 +170,8 @@ export default function Video({
         <Image
           src={thumbnailSrc}
           alt=""
+          trackErrors
+          errorSurface="video-thumbnail"
           className="absolute inset-0 w-full h-full object-cover"
         />
       ) : (

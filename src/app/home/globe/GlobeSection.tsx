@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import posthog from 'posthog-js';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './globe-section.css';
@@ -292,6 +293,11 @@ export default function GlobeSection({ cities = [], globeText, map }: Props) {
       el.addEventListener('click', () => {
         setActiveIdx(i);
         setPhotoIdx(0);
+        posthog.capture('globe_city_selected', {
+          city_slug: v.city.slug,
+          city_name: v.name,
+          region: regionKey,
+        });
       });
       const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([v.city.lng, v.city.lat])
@@ -632,7 +638,12 @@ export default function GlobeSection({ cities = [], globeText, map }: Props) {
         <button
           type="button"
           className="ga-cta"
-          onClick={() => { setIsOpen(true); setActiveIdx(null); setRegionKey('world'); }}
+          onClick={() => {
+            setIsOpen(true);
+            setActiveIdx(null);
+            setRegionKey('world');
+            posthog.capture('globe_explore_opened');
+          }}
           disabled={cityViews.length === 0}
         >
           {text.introCta}
@@ -680,7 +691,11 @@ export default function GlobeSection({ cities = [], globeText, map }: Props) {
             key={r.key}
             type="button"
             className={`ga-region-btn${regionKey === r.key && activeIdx === null ? ' active' : ''}`}
-            onClick={() => { setActiveIdx(null); setRegionKey(r.key); }}
+            onClick={() => {
+              setActiveIdx(null);
+              setRegionKey(r.key);
+              posthog.capture('globe_region_changed', { region: r.key });
+            }}
           >
             {mapText[REGION_TEXT_KEY[r.key]] ?? r.label}
           </button>

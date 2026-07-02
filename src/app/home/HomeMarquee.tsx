@@ -67,7 +67,7 @@ export default function HomeMarquee({ images }: Props) {
             <div className={`marquee-track marquee-track--${direction}`} aria-hidden="true">
               {[...rowImages, ...rowImages].map((m, i) => (
                 <div key={`row${row}-${i}`} className="marquee-cell bg-gray-40">
-                  <Image src={m.image} alt={m.alt} />
+                  <Image src={m.image} alt={m.alt} trackErrors errorSurface="home-marquee" />
                 </div>
               ))}
             </div>

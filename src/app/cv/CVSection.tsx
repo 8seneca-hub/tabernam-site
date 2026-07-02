@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import posthog from 'posthog-js';
 import Link from 'next/link';
 import { useI18n } from '@/app/hook/useI18n';
 import {
@@ -123,7 +124,10 @@ export default function CVSection({ backHref, education, experience, extras }: P
                   size="md"
                   shape="pill"
                   icon="→"
-                  onClick={() => setRequestOpen(true)}
+                  onClick={() => {
+                    setRequestOpen(true);
+                    posthog.capture('cv_full_view_cta_clicked', { language: lang });
+                  }}
                   className="relative z-10 ml-2 text-sm font-semibold shadow-[0_8px_24px_rgba(178,34,34,0.25)]"
                 >
                   {t('cv.cta.viewFull')}

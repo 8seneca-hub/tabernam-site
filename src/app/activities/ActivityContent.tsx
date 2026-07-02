@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import posthog from 'posthog-js';
 import { useI18n } from '@/app/hook/useI18n';
 import { pickTranslation } from '@/lib/directus';
 import MediaSlider, { type MediaSlide } from '@/components/ui/MediaSlider';
@@ -15,6 +17,15 @@ export default function ActivityContent({ cities }: Props) {
   const params = useSearchParams();
   const id = params?.get('id') ?? '';
   const city = cities.find((c) => c.slug === id);
+  const citySlug = city?.slug;
+
+  useEffect(() => {
+    if (!citySlug) return;
+    posthog.capture('activity_page_viewed', {
+      city_slug: citySlug,
+      language: lang,
+    });
+  }, [citySlug, lang]);
 
   if (!city) {
     return (

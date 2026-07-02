@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type { PointerEvent } from 'react';
+import posthog from 'posthog-js';
 import Image from '@/components/ui/Image';
 
 export interface CardData {
@@ -88,6 +89,11 @@ export default function PinDetailCard({
                 JSON.stringify({ slug: card.citySlug, regionKey }),
               );
             } catch { /* private mode */ }
+            posthog.capture('globe_explore_now_clicked', {
+              city_slug: card.citySlug,
+              city_name: card.name,
+              region: regionKey,
+            });
           }}
         >
           {btnExploreNowLabel}
