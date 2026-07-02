@@ -37,7 +37,6 @@ interface Props {
   blocks: ContentBlock[];
   travelRoutes?: TravelRoutesBundle;
   body: string;
-  useChina?: boolean;
 }
 
 const DEFAULT_SPACING = 'mt-[40px]';
@@ -47,7 +46,7 @@ function sliceBody(body: string, start = 0, end?: number): string {
   return paragraphs.slice(start, end).join('\n\n');
 }
 
-function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | undefined, body: string, useChina: boolean): ReactNode {
+function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | undefined, body: string): ReactNode {
   switch (block.type) {
     case 'paragraph': {
       const text = block.text ?? sliceBody(body, block.start, block.end);
@@ -77,7 +76,7 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
       if (!block.video) return null;
       return (
         <div className="py-[20px]">
-          <VideoCard videoUrl={block.video} chinaUrl={block.chinaUrl} useChina={useChina} title={block.title} />
+          <VideoCard videoUrl={block.video} chinaUrl={block.chinaUrl} title={block.title} />
         </div>
       );
 
@@ -95,17 +94,17 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
     }
 
     case 'videos_grid': {
-      const vids = block.videos.filter((v) => v.url);
+      const vids = block.videos.filter((v) => v.url || v.chinaUrl);
       if (vids.length === 0) return null;
       if (vids.length === 1) {
         return (
           <div className="py-[20px]">
-            <VideoCard videoUrl={vids[0].url} chinaUrl={vids[0].chinaUrl} useChina={useChina} title={vids[0].title} />
+            <VideoCard videoUrl={vids[0].url} chinaUrl={vids[0].chinaUrl} title={vids[0].title} />
           </div>
         );
       }
       const slides: MediaSlide[] = vids.map((v) => ({ type: 'video', url: v.url, chinaUrl: v.chinaUrl, title: v.title }));
-      return <MediaSlider slides={slides} className="py-[20px]" useChina={useChina} />;
+      return <MediaSlider slides={slides} className="py-[20px]" />;
     }
 
     case 'horizontal': {
@@ -117,7 +116,7 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
             paragraphClassName={BODY_CLASS}
           />
           {block.video ? (
-            <VideoCard videoUrl={block.video} chinaUrl={block.chinaUrl} useChina={useChina} title={block.videoTitle} />
+            <VideoCard videoUrl={block.video} chinaUrl={block.chinaUrl} title={block.videoTitle} />
           ) : block.image ? (
             <ImageFrame src={block.image} aspect="aspect-[4/3]" />
           ) : null}
@@ -130,12 +129,12 @@ function renderBlock(block: ContentBlock, travelRoutes: TravelRoutesBundle | und
   }
 }
 
-export default function ContentBlocks({ blocks, travelRoutes, body, useChina = false }: Props) {
+export default function ContentBlocks({ blocks, travelRoutes, body }: Props) {
   return (
     <section className="px-[60px] pt-[100px] pb-[100px] max-md:px-[16px] max-md:pt-[60px] max-md:pb-[60px]">
       <div className="max-w-[1320px] mx-auto flex flex-col">
         {blocks.map((block, i) => {
-          const content = renderBlock(block, travelRoutes, body, useChina);
+          const content = renderBlock(block, travelRoutes, body);
           if (!content) return null;
           return (
             <div key={i} className={i === 0 ? undefined : (block.spacingTop ?? DEFAULT_SPACING)}>

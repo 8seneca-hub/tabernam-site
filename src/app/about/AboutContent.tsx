@@ -14,7 +14,6 @@ interface Props {
   aboutBody: AboutBodyBundle;
   closingQuote: ClosingQuoteBundle;
   travelRoutes: TravelRoutesBundle;
-  isChina?: boolean;
 }
 
 const EMPTY_HEADER: AboutHeaderText = {
@@ -31,10 +30,8 @@ const EMPTY_BODY: AboutBodyText = {
   paragraphs: {},
 };
 
-export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRoutes, isChina = false }: Props) {
+export default function AboutContent({ aboutHeader, aboutBody, closingQuote, travelRoutes }: Props) {
   const { lang } = useI18n();
-  const langLc = lang.toLowerCase();
-  const useChina = isChina || langLc.startsWith('zh');
 
   // Header: active language → English → hardcoded fallback.
   const langHeader = aboutHeader.byLang[lang];
@@ -61,9 +58,12 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
   }
   const videosByParagraph: Record<number, Array<{ url: string; title: string; chinaUrl?: string }>> = {};
   for (const [k, vids] of Object.entries(aboutBody.videosByParagraph)) {
+    // Keep any video that has at least one playable source. The player defaults
+    // to the primary `url` (YouTube) and only falls back to `chinaUrl` if
+    // YouTube turns out to be unreachable.
     videosByParagraph[Number(k)] = vids
       .map(pickVideo)
-      .filter((v) => (useChina ? v.chinaUrl || v.url : v.url));
+      .filter((v) => v.url || v.chinaUrl);
   }
 
   // Dynamic paragraph slots — walk every N that has *any* content (text,
@@ -111,7 +111,6 @@ export default function AboutContent({ aboutHeader, aboutBody, closingQuote, tra
         blocks={blocks}
         travelRoutes={travelRoutes}
         body={''}
-        useChina={useChina}
       />
       <ClosingQuote closingQuote={closingQuote} />
     </main>

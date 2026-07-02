@@ -5,7 +5,6 @@ import Video from './Video';
 interface Props {
   videoUrl?: string;
   chinaUrl?: string;
-  useChina?: boolean;
   title?: string;
   eyebrow?: string;
   // Default: 16:9. Use 'cinema' for the ExperienceStoriesSection hero look.
@@ -33,7 +32,6 @@ function PlayIcon({ size }: { size: 'sm' | 'lg' }) {
 export default function VideoCard({
   videoUrl,
   chinaUrl,
-  useChina = false,
   title,
   eyebrow,
   aspect = 'video',
@@ -57,7 +55,6 @@ export default function VideoCard({
     <Video
       videoUrl={videoUrl}
       chinaUrl={chinaUrl}
-      useChina={useChina}
       title={title}
       className={`block ${aspectClass} bg-gray-40 ${shadow} overflow-hidden ${className}`.trim()}
     >

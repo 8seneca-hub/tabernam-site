@@ -3,11 +3,11 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import Image from './Image';
 import { captureMediaError } from '@/lib/capture-media-error';
+import { useI18n } from '@/app/hook/useI18n';
 
 interface Props {
   videoUrl?: string;
   chinaUrl?: string;
-  useChina?: boolean;
   thumbnail?: string;
   className?: string;
   children?: ReactNode;
@@ -52,14 +52,22 @@ function getBilibiliId(url: string): string | null {
 export default function Video({
   videoUrl,
   chinaUrl,
-  useChina = false,
   thumbnail,
   className = '',
   children,
   title = 'Video',
 }: Props) {
+  const { lang } = useI18n();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  // Flips to true when the primary YouTube source looks unreachable (e.g. a
+  // mainland-China visitor behind the Great Firewall). Once set, the active
+  // source switches to the Bilibili `chinaUrl` so the video still plays.
+  const [fallbackToChina, setFallbackToChina] = useState(false);
+  // Set when no source works at all — a native <video> load error, or a
+  // YouTube-only video that turns out to be blocked with no chinaUrl fallback.
+  // When true, the whole container is hidden rather than showing a broken box.
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia('(pointer: coarse), (max-width: 768px)');
@@ -69,9 +77,19 @@ export default function Video({
     return () => mq.removeEventListener('change', update);
   }, []);
 
-  const activeUrl = useChina && chinaUrl ? chinaUrl : videoUrl;
+  // Chinese-language visitors get the Bilibili `chinaUrl` up front — they've
+  // explicitly chosen zh, YouTube is blocked in mainland China, and Bilibili is
+  // the native platform. Everyone else defaults to the primary YouTube URL and
+  // only switches to `chinaUrl` if the reachability probe below finds YouTube
+  // blocked. A video with only a chinaUrl falls straight through to it either way.
+  const preferChina = lang.toLowerCase() === 'zh';
+  const wantChina = preferChina || fallbackToChina;
+  const activeUrl = wantChina && chinaUrl ? chinaUrl : videoUrl || chinaUrl;
   const bilibiliId = activeUrl ? getBilibiliId(activeUrl) : null;
   const youtubeId = activeUrl && !bilibiliId ? getYouTubeId(activeUrl) : null;
+  // YouTube id of the *primary* source (before any fallback) — used to probe
+  // whether YouTube is actually reachable from this browser.
+  const primaryYouTubeId = videoUrl ? getYouTubeId(videoUrl) : null;
 
   const initialSrc = thumbnail
     ? thumbnail
@@ -79,21 +97,6 @@ export default function Video({
     ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
     : null;
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(initialSrc);
-
-  // A China visitor served a YouTube embed will hit a hard block (YouTube is
-  // unreachable in China). If we land here it means no chinaUrl fallback was
-  // configured — report it so it surfaces (and can be filtered to CN) in
-  // PostHog Error Tracking, since a blocked iframe fires no useful onerror.
-  useEffect(() => {
-    if (useChina && youtubeId) {
-      captureMediaError('youtube-iframe', {
-        src: activeUrl,
-        useChina,
-        title,
-        reason: 'youtube-served-to-china-visitor-without-fallback',
-      });
-    }
-  }, [useChina, youtubeId, activeUrl, title]);
 
   useEffect(() => {
     if (thumbnail || !youtubeId) return;
@@ -108,6 +111,64 @@ export default function Video({
     };
   }, [thumbnail, youtubeId]);
 
+  // Probe whether YouTube is actually reachable from this browser. YouTube's
+  // thumbnail host (img.youtube.com) sits behind the same Great Firewall that
+  // blocks the embed, so a failed or timed-out thumbnail load is a reliable
+  // signal that the YouTube iframe would render blank (a blocked iframe fires no
+  // onerror of its own, so this image probe is the only workable client signal).
+  // If YouTube is unreachable we switch to the Bilibili `chinaUrl` when one
+  // exists, otherwise we hide the container — there's nothing playable to show.
+  useEffect(() => {
+    if (wantChina) return; // already serving the china source (zh visitor or prior fallback)
+    if (!primaryYouTubeId) return; // primary isn't YouTube; native/bilibili failures handled elsewhere
+
+    const YT_PROBE_TIMEOUT_MS = 3000;
+    let settled = false;
+    const probe = new window.Image();
+
+    const onUnreachable = () => {
+      if (settled) return;
+      settled = true;
+      if (chinaUrl) {
+        // A Bilibili alternative exists — switch to it.
+        setFallbackToChina(true);
+        if (!thumbnail) setThumbnailSrc(null); // drop the (blocked) YouTube thumbnail
+        captureMediaError('youtube-iframe', {
+          src: videoUrl,
+          useChina: true,
+          title,
+          reason: 'youtube-unreachable-auto-fallback-to-china',
+        });
+      } else {
+        // No alternative source — hide the container instead of a blank embed.
+        setHidden(true);
+        captureMediaError('youtube-iframe', {
+          src: videoUrl,
+          title,
+          reason: 'youtube-unreachable-no-fallback-hidden',
+        });
+      }
+    };
+
+    const timer = setTimeout(onUnreachable, YT_PROBE_TIMEOUT_MS);
+    probe.onload = () => {
+      settled = true;
+      clearTimeout(timer);
+    };
+    probe.onerror = onUnreachable;
+    probe.src = `https://img.youtube.com/vi/${primaryYouTubeId}/hqdefault.jpg`;
+
+    return () => {
+      settled = true;
+      clearTimeout(timer);
+      probe.onload = probe.onerror = null;
+    };
+  }, [wantChina, primaryYouTubeId, chinaUrl, videoUrl, title, thumbnail]);
+
+  // No working source — render nothing (hide the container) rather than a broken
+  // or empty box. `!activeUrl` also covers a video that was given no URLs at all.
+  if (hidden || !activeUrl) return null;
+
   if (activeUrl && !youtubeId && !bilibiliId) {
     return (
       <div className={`relative overflow-hidden bg-black ${className}`.trim()}>
@@ -116,7 +177,10 @@ export default function Video({
           controls
           playsInline
           poster={thumbnail}
-          onError={() => captureMediaError('video', { src: activeUrl, useChina, title })}
+          onError={() => {
+            captureMediaError('video', { src: activeUrl, title });
+            setHidden(true);
+          }}
           className="absolute inset-0 w-full h-full object-contain"
         >
           <track kind="captions" />
